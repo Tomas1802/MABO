@@ -1,0 +1,5 @@
+Importar "src/scripts/receta_rapida.dsl"
+
+Ejecutar Tarea PingRapido
+
+Ejecutar PingRapido Cada 1 Minutos

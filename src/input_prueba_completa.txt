@@ -1,0 +1,340 @@
+# =============================================================
+# PRUEBA COMPLETA - DSL de Automatizacion Segura
+# Cubre: variables, operadores, funciones, condiciones,
+#        ciclos, archivos, filtros, simulacion,
+#        intentar/capturar, backup y scheduler
+# =============================================================
+
+Guardar "%USERPROFILE%/Documents/DSLDemo/Pruebas" En base
+Mostrar "Ruta de trabajo: " Mas base
+
+
+# =============================================================
+# BLOQUE 1: Variables y operadores aritmeticos
+# =============================================================
+Mostrar "=== BLOQUE 1: Variables y aritmetica ==="
+
+Guardar 10 En a
+Guardar 3 En b
+
+Mostrar "10 + 3 = " Mas (a Mas b)
+Mostrar "10 - 3 = " Mas (a Menos b)
+Mostrar "10 * 3 = " Mas (a Por b)
+Mostrar "10 / 3 = " Mas (a Entre b)
+Mostrar "10 % 3 = " Mas (a Modulo b)
+
+
+# =============================================================
+# BLOQUE 2: Operadores de comparacion y logica
+# =============================================================
+Mostrar "=== BLOQUE 2: Comparaciones y logica ==="
+
+Mostrar "10 > 3  = " Mas (a > b)
+Mostrar "10 < 3  = " Mas (a < b)
+Mostrar "10 == 10 = " Mas (a == 10)
+Mostrar "10 != 3  = " Mas (a != b)
+Mostrar "V Y V   = " Mas (Verdadero Y Verdadero)
+Mostrar "V O F   = " Mas (Verdadero O Falso)
+Mostrar "No V    = " Mas (No Verdadero)
+
+
+# =============================================================
+# BLOQUE 3: Funciones con parametros y Retornar
+# =============================================================
+Mostrar "=== BLOQUE 3: Funciones ==="
+
+Funcion Sumar(x, y)
+    Retornar x Mas y
+FinFuncion
+
+Funcion Saludar(nombre)
+    Mostrar "Hola, " Mas nombre Mas "!"
+FinFuncion
+
+Funcion EsPositivo(n)
+    Si n > 0 Entonces
+        Retornar Verdadero
+    Sino
+        Retornar Falso
+    FinSi
+FinFuncion
+
+Funcion Factorial(n)
+    Si n <= 1 Entonces
+        Retornar 1
+    Sino
+        Retornar n Por Factorial(n Menos 1)
+    FinSi
+FinFuncion
+
+Saludar("Mundo")
+
+Guardar Sumar(15, 27) En total
+Mostrar "15 + 27 = " Mas total
+
+Mostrar "EsPositivo(5)  = " Mas EsPositivo(5)
+Mostrar "EsPositivo(-3) = " Mas EsPositivo(-3)
+
+Guardar Factorial(5) En fact
+Mostrar "Factorial(5) = " Mas fact
+
+
+# =============================================================
+# BLOQUE 4: Condiciones Si / Sino / FinSi
+# =============================================================
+Mostrar "=== BLOQUE 4: Condiciones ==="
+
+Guardar 8 En nota
+
+Si nota >= 9 Entonces
+    Mostrar "Calificacion: Excelente"
+Sino
+    Si nota >= 6 Entonces
+        Mostrar "Calificacion: Aprobado"
+    Sino
+        Mostrar "Calificacion: Reprobado"
+    FinSi
+FinSi
+
+Si nota > 5 Y nota < 10 Entonces
+    Mostrar "Nota en rango valido"
+FinSi
+
+
+# =============================================================
+# BLOQUE 5: Ciclos Mientras y Para Cada
+# =============================================================
+Mostrar "=== BLOQUE 5: Ciclos ==="
+
+Mostrar "Conteo del 1 al 4:"
+Guardar 1 En i
+Mientras i <= 4
+    Mostrar i
+    i = i Mas 1   # Mas = suma, funciona igual con +
+FinMientras
+
+Mostrar "Colores:"
+Para Cada color En ["rojo", "verde", "azul"]
+    Mostrar color
+FinPara
+
+
+# =============================================================
+# BLOQUE 6: Crear estructura de archivos y carpetas
+# =============================================================
+Mostrar "=== BLOQUE 6: Crear archivos y carpetas ==="
+
+Tarea PrepararEstructura:
+    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas"
+    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs"
+    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos"
+    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp"
+    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo"
+
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+    Escribir "Contenido del informe principal" En Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+    Escribir "Nota 1" En Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+    Anexar "\nNota 2" En Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+    Anexar "\nNota 3" En Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/reporte.pdf"
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/backup_informe.txt"
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/backup_notas.txt"
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos/imagen1.jpg"
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos/imagen2.jpg"
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/cache1.tmp"
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/cache2.tmp"
+    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/cache3.tmp"
+    Mostrar "Estructura creada correctamente"
+Fin
+
+Ejecutar Tarea PrepararEstructura
+
+
+# =============================================================
+# BLOQUE 7: Leer, Copiar, Mover, Renombrar, Eliminar
+# =============================================================
+Mostrar "=== BLOQUE 7: Leer, Copiar, Mover, Renombrar ==="
+
+Mostrar "--- Contenido de notas.txt ---"
+Leer Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+
+Copiar Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/informe_copia.txt"
+Mostrar "Copia creada en temp/"
+
+Mover Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/informe_copia.txt" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/informe_movido.txt"
+Mostrar "Archivo movido a respaldo/"
+
+Renombrar Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/informe_movido.txt" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/informe_final.txt"
+Mostrar "Archivo renombrado a informe_final.txt"
+
+
+# =============================================================
+# BLOQUE 8: Buscar con TODOS los filtros
+# =============================================================
+Mostrar "=== BLOQUE 8: Busqueda con filtros ==="
+
+Mostrar "--- Con Extension .txt ---"
+Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" Con Extension ".txt"
+
+Mostrar "--- Con Nombre 'informe' ---"
+Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" Con Nombre "informe"
+
+Mostrar "--- Con Prefijo 'backup' ---"
+Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" Con Prefijo "backup"
+
+Mostrar "--- Con Extension .tmp ---"
+Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp" Con Extension ".tmp"
+
+Mostrar "--- Menores a 1 MB ---"
+Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas" Menores Que 1
+
+Mostrar "--- Carpetas en Pruebas ---"
+Buscar Carpetas En "%USERPROFILE%/Documents/DSLDemo/Pruebas" Con Nombre "docs"
+
+
+# =============================================================
+# BLOQUE 9: Listar, Existe, Tamano, Cantidad, Propiedad
+# =============================================================
+Mostrar "=== BLOQUE 9: Consultas sobre archivos ==="
+
+Mostrar "--- Contenido de docs/ ---"
+Listar Contenido En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs"
+
+Existe Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Si ultimoResultado Entonces
+    Mostrar "OK: informe.txt existe"
+Sino
+    Mostrar "ERROR: informe.txt no encontrado"
+FinSi
+
+Existe Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos"
+Si ultimoResultado Entonces
+    Mostrar "OK: carpeta fotos existe"
+FinSi
+
+Obtener Tamano Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Mostrar "Tamano informe.txt (bytes): " Mas ultimoResultado
+
+Obtener Cantidad Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas"
+Mostrar "Total archivos en Pruebas/: " Mas ultimoResultado
+
+Obtener Propiedad nombre De "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Mostrar "Nombre del archivo: " Mas ultimoResultado
+
+
+# =============================================================
+# BLOQUE 10: Para Cada sobre resultado de busqueda
+# =============================================================
+Mostrar "=== BLOQUE 10: Para Cada sobre busqueda ==="
+
+Mostrar "Archivos .tmp encontrados:"
+Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp" Con Extension ".tmp"
+Para Cada archivo En ultimoResultado
+    Mostrar "  -> " Mas archivo
+FinPara
+
+
+# =============================================================
+# BLOQUE 11: Modo simulacion
+# =============================================================
+Mostrar "=== BLOQUE 11: Modo simulacion ==="
+
+Simular Eliminar Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Mostrar "Simulacion ejecutada (no elimino nada)"
+
+Existe Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Si ultimoResultado Entonces
+    Mostrar "OK: el archivo sigue existiendo tras la simulacion"
+FinSi
+
+
+# =============================================================
+# BLOQUE 12: Intentar / Capturar
+# =============================================================
+Mostrar "=== BLOQUE 12: Intentar / Capturar ==="
+
+Intentar
+    Leer Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/no_existe.txt"
+    Mostrar "ERROR: no deberia llegar aqui"
+Capturar
+    Mostrar "OK: error capturado correctamente"
+FinIntentar
+
+
+# =============================================================
+# BLOQUE 13: Backup
+# =============================================================
+Mostrar "=== BLOQUE 13: Backup ==="
+
+Crear Backup De "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_backup"
+Mostrar "Backup de docs/ creado en respaldo/"
+
+
+# =============================================================
+# BLOQUE 14: Funcion que usa operaciones de archivos
+# =============================================================
+Mostrar "=== BLOQUE 14: Funcion con operaciones de archivos ==="
+
+Funcion ContarArchivos(ruta)
+    Obtener Cantidad Archivos En ruta
+    Retornar ultimoResultado
+FinFuncion
+
+Guardar ContarArchivos("%USERPROFILE%/Documents/DSLDemo/Pruebas/docs") En cantDocs
+Mostrar "Archivos en docs/: " Mas cantDocs
+
+Guardar ContarArchivos("%USERPROFILE%/Documents/DSLDemo/Pruebas/temp") En cantTemp
+Mostrar "Archivos en temp/: " Mas cantTemp
+
+Si cantDocs > cantTemp Entonces
+    Mostrar "docs/ tiene mas archivos que temp/"
+Sino
+    Mostrar "temp/ tiene igual o mas archivos que docs/"
+FinSi
+
+
+# =============================================================
+# BLOQUE 15: Tarea programada (proceso queda activo)
+# =============================================================
+Mostrar "=== BLOQUE 15: Tarea programada ==="
+
+Tarea VerificacionPeriodica:
+    Existe Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas"
+    Si ultimoResultado Entonces
+        Mostrar "[Scheduler] Carpeta Pruebas activa"
+    Sino
+        Mostrar "[Scheduler] Carpeta Pruebas no encontrada"
+    FinSi
+Fin
+
+Ejecutar VerificacionPeriodica Cada 1 Minutos
+
+
+# =============================================================
+# BLOQUE 16: Compresion y descompresion
+# =============================================================
+Mostrar "=== BLOQUE 16: Compresion ==="
+
+Comprimir "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_comprimido"
+Mostrar "ZIP creado en respaldo/"
+
+Existe Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_comprimido.zip"
+Si ultimoResultado Entonces
+    Mostrar "OK: docs_comprimido.zip existe"
+FinSi
+
+Descomprimir "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_comprimido.zip" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_descomprimido"
+Mostrar "ZIP extraido en respaldo/docs_descomprimido/"
+
+Obtener Cantidad Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_descomprimido"
+Mostrar "Archivos descomprimidos: " Mas ultimoResultado
+
+Simular Comprimir "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/fotos_sim"
+Mostrar "Simulacion de compresion ejecutada (no creo ZIP)"
+
+
+Mostrar "=== TODAS LAS PRUEBAS EJECUTADAS ==="
+Mostrar "Revisa los logs en: " Mas "%USERPROFILE%/Documents/DSLDemo/logs/app.log"
