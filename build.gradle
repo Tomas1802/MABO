@@ -1,0 +1,63 @@
+plugins {
+    id 'java'
+    id 'antlr'
+    id 'application'
+}
+
+group = 'edu.unal.mabo'
+version = '1.0.0'
+
+application {
+    applicationName = 'mabo'
+    mainClass = 'Main'
+}
+
+dependencies {
+    antlr 'org.antlr:antlr4:4.13.2'
+    implementation 'org.antlr:antlr4-runtime:4.13.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+            exclude 'test/**'
+        }
+        antlr {
+            srcDirs = []
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+    }
+}
+
+generateGrammarSource {
+    arguments += ['-visitor']
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('regenerateGrammar', JavaExec) {
+    group = 'build'
+    description = 'Regenerates checked-in ANTLR parser sources under src/gen.'
+    classpath = configurations.antlr
+    mainClass = 'org.antlr.v4.Tool'
+    args '-visitor', '-o', 'src/gen', '.idea/grammar/proyecto.g4'
+    doLast {
+        def generated = file('src/gen/.idea/grammar')
+        if (generated.exists()) {
+            copy {
+                from generated
+                into 'src/gen'
+            }
+            delete 'src/gen/.idea'
+        }
+    }
+}

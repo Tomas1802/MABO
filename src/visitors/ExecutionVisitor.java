@@ -9,13 +9,18 @@ import logs.LoggerService;
 import model.Task;
 import scheduler.SchedulerService;
 import scheduler.ScheduleStore;
+import scheduler.StartupRegistrationService;
 import semantic.ExecutionContext;
+import shell.ShellCommandService;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 
 import utils.FilterUtils;
 
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -27,23 +32,37 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     private final ExecutionContext ctx;
     private final FileSystemService fs;
     private final LoggerService logger;
+    private final ShellCommandService shell;
+    private final StartupRegistrationService startupRegistration;
     private final SchedulerService scheduler = new SchedulerService();
     private final ScheduleStore scheduleStore = new ScheduleStore();
     private final java.util.Set<String> scheduledTasks = new java.util.HashSet<>();
     private final java.util.Set<String> importedFiles = new java.util.HashSet<>();
+    private final Path scriptPath;
 
     public boolean hayTareasProgramadas() {
         return !scheduledTasks.isEmpty();
     }
 
     public ExecutionVisitor(ExecutionContext ctx, LoggerService logger) {
-        this(ctx, new FileSystemService(), logger);
+        this(ctx, new FileSystemService(), logger, null);
     }
 
     public ExecutionVisitor(ExecutionContext ctx, FileSystemService fs, LoggerService logger) {
+        this(ctx, fs, logger, null);
+    }
+
+    public ExecutionVisitor(ExecutionContext ctx, LoggerService logger, Path scriptPath) {
+        this(ctx, new FileSystemService(), logger, scriptPath);
+    }
+
+    public ExecutionVisitor(ExecutionContext ctx, FileSystemService fs, LoggerService logger, Path scriptPath) {
         this.ctx = ctx;
         this.fs = fs == null ? new FileSystemService() : fs;
         this.logger = logger;
+        this.shell = new ShellCommandService(logger);
+        this.startupRegistration = new StartupRegistrationService(logger);
+        this.scriptPath = scriptPath == null ? null : scriptPath.toAbsolutePath().normalize();
     }
 
     @Override
@@ -149,8 +168,18 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
             scheduleStore.saveSchedule(taskName, seconds);
             logger.info("Programada tarea " + taskName + " cada " + amount + " " + unit);
             executeTask(taskName);
+        } else if (node.LAS() != null) {
+            LocalTime time = parseTime(stripQuotes(node.cadena().getText()));
+            long initialDelay = secondsUntil(time);
+            scheduler.scheduleAtFixedRate(() -> executeTask(taskName), initialDelay, 1, TimeUnit.DAYS);
+            scheduledTasks.add(taskName);
+            scheduleStore.saveDailyTime(taskName, time.toString());
+            logger.info("Programada tarea " + taskName + " a las " + time);
         } else {
-            logger.info("Ejecución al iniciar sistema de tarea: " + taskName);
+            boolean registered = startupRegistration.register(taskName, scriptPath);
+            scheduleStore.saveStartupSchedule(taskName);
+            scheduledTasks.add(taskName);
+            logger.info("Ejecución al iniciar sistema de tarea: " + taskName + " registrada=" + registered);
             executeTask(taskName);
         }
         return null;
@@ -164,6 +193,19 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
                 logger.info("No existe tarea para reprogramar: " + se.task);
                 continue;
             }
+            if ("daily".equalsIgnoreCase(se.kind)) {
+                LocalTime time = parseTime(se.time);
+                scheduler.scheduleAtFixedRate(() -> executeTask(se.task), secondsUntil(time), 1, TimeUnit.DAYS);
+                scheduledTasks.add(se.task);
+                logger.info("Restaurada tarea diaria: " + se.task + " a las " + time);
+                continue;
+            }
+            if ("startup".equalsIgnoreCase(se.kind)) {
+                startupRegistration.register(se.task, scriptPath);
+                scheduledTasks.add(se.task);
+                logger.info("Restaurada tarea de inicio del sistema: " + se.task);
+                continue;
+            }
             if (se.periodSeconds <= 0) {
                 logger.info("Entrada de schedule inválida ignorada para " + se.task + ": " + se.periodSeconds + "s");
                 continue;
@@ -172,6 +214,23 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
             scheduledTasks.add(se.task);
             logger.info("Restaurada tarea programada: " + se.task + " cada " + se.periodSeconds + "s");
         }
+    }
+
+    private LocalTime parseTime(String text) {
+        try {
+            return LocalTime.parse(text);
+        } catch (Exception ex) {
+            throw new exceptions.ExecutionException("Hora inválida para programación. Usa HH:mm, recibido: " + text);
+        }
+    }
+
+    private long secondsUntil(LocalTime time) {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime next = now.withHour(time.getHour()).withMinute(time.getMinute()).withSecond(0).withNano(0);
+        if (!next.isAfter(now)) {
+            next = next.plusDays(1);
+        }
+        return Math.max(1L, Duration.between(now, next).toSeconds());
     }
 
     private long parseNumero(proyectoParser.NumeroContext numero) {
@@ -257,11 +316,31 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         boolean previous = this.ctx.modoSimulacion;
         this.ctx.modoSimulacion = true;
         try {
-            visit(node.accionArchivo());
+            if (node.accionArchivo() != null) {
+                visit(node.accionArchivo());
+            } else if (node.comandoSistema() != null) {
+                visit(node.comandoSistema());
+            }
         } finally {
             this.ctx.modoSimulacion = previous;
         }
         return null;
+    }
+
+    @Override
+    public Object visitEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext node) {
+        Object result = shell.execute("powershell", stringify(visit(node.expresion())), this.ctx.modoSimulacion);
+        setLast(result);
+        System.out.println(result);
+        return result;
+    }
+
+    @Override
+    public Object visitEjecutarLinux(proyectoParser.EjecutarLinuxContext node) {
+        Object result = shell.execute("linux", stringify(visit(node.expresion())), this.ctx.modoSimulacion);
+        setLast(result);
+        System.out.println(result);
+        return result;
     }
 
     @Override
@@ -443,7 +522,9 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
 
     @Override
     public Object visitCambiarPermisos(proyectoParser.CambiarPermisosContext node) {
-        logger.info("CambiarPermisos no implementado en Windows");
+        Path path = toPath(visit(node.expresion(0)));
+        String permissions = stringify(visit(node.expresion(1)));
+        fs.changePermissions(path, permissions, ctx.modoSimulacion);
         return null;
     }
 
@@ -725,6 +806,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         if (normalized.contains("seg")) return TimeUnit.SECONDS;
         if (normalized.contains("min")) return TimeUnit.MINUTES;
         if (normalized.contains("hora")) return TimeUnit.HOURS;
+        if (normalized.contains("dia")) return TimeUnit.DAYS;
         return TimeUnit.SECONDS;
     }
 }

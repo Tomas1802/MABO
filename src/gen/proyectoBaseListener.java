@@ -1,4 +1,4 @@
-// Generated from C:/Users/LauraValentinaPabonC/Downloads/Bash/Bash/.idea/grammar/proyecto.g4 by ANTLR 4.13.2
+// Generated from .idea/grammar/proyecto.g4 by ANTLR 4.13.2
 
     package gen;
 
@@ -254,6 +254,42 @@ public class proyectoBaseListener implements proyectoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitSimulacion(proyectoParser.SimulacionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterComandoSistema(proyectoParser.ComandoSistemaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComandoSistema(proyectoParser.ComandoSistemaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

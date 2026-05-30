@@ -10,9 +10,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import logs.AuditService;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -532,5 +536,55 @@ public class FileSystemService {
             audit.record("DECOMPRESS", resolvedSource, resolvedTarget, false, e.getMessage());
             throw new ExecutionException("Error descomprimiendo: " + resolvedSource, e);
         }
+    }
+
+    public void changePermissions(Path path, String permissions, boolean simulate) {
+        Path resolved = resolve(path);
+        AuditService audit = new logs.AuditService();
+        SecurityValidator.validatePath(resolved);
+        if (!Files.exists(resolved)) {
+            audit.record("CHMOD", resolved, null, false, "not found");
+            throw new ExecutionException("Ruta no encontrada para permisos: " + resolved);
+        }
+        Set<PosixFilePermission> parsed = parsePermissions(permissions);
+        try {
+            if (simulate) {
+                audit.record("CHMOD", resolved, null, true, "simulated: " + permissions);
+                return;
+            }
+            Files.setPosixFilePermissions(resolved, parsed);
+            audit.record("CHMOD", resolved, null, true, "ok: " + permissions);
+        } catch (UnsupportedOperationException ex) {
+            audit.record("CHMOD", resolved, null, false, "POSIX permissions unsupported");
+            throw new ExecutionException("Cambiar Permisos solo está disponible en sistemas con permisos POSIX", ex);
+        } catch (IOException ex) {
+            audit.record("CHMOD", resolved, null, false, ex.getMessage());
+            throw new ExecutionException("Error cambiando permisos: " + resolved, ex);
+        }
+    }
+
+    private Set<PosixFilePermission> parsePermissions(String raw) {
+        String value = raw == null ? "" : raw.trim();
+        if (value.matches("[0-7]{3}")) {
+            Set<PosixFilePermission> out = new HashSet<>();
+            addOctalPermissions(out, value.charAt(0), PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
+            addOctalPermissions(out, value.charAt(1), PosixFilePermission.GROUP_READ, PosixFilePermission.GROUP_WRITE, PosixFilePermission.GROUP_EXECUTE);
+            addOctalPermissions(out, value.charAt(2), PosixFilePermission.OTHERS_READ, PosixFilePermission.OTHERS_WRITE, PosixFilePermission.OTHERS_EXECUTE);
+            return out;
+        }
+        if (value.matches("[r-][w-][x-][r-][w-][x-][r-][w-][x-]")) {
+            return PosixFilePermissions.fromString(value);
+        }
+        throw new ExecutionException("Formato de permisos inválido. Usa 755 o rwxr-xr-x");
+    }
+
+    private void addOctalPermissions(Set<PosixFilePermission> out, char digit,
+                                     PosixFilePermission read,
+                                     PosixFilePermission write,
+                                     PosixFilePermission execute) {
+        int value = digit - '0';
+        if ((value & 4) != 0) out.add(read);
+        if ((value & 2) != 0) out.add(write);
+        if ((value & 1) != 0) out.add(execute);
     }
 }

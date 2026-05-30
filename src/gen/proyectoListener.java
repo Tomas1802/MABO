@@ -1,4 +1,4 @@
-// Generated from C:/Users/LauraValentinaPabonC/Downloads/Bash/Bash/.idea/grammar/proyecto.g4 by ANTLR 4.13.2
+// Generated from .idea/grammar/proyecto.g4 by ANTLR 4.13.2
 
     package gen;
 
@@ -209,6 +209,36 @@ public interface proyectoListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSimulacion(proyectoParser.SimulacionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#comandoSistema}.
+	 * @param ctx the parse tree
+	 */
+	void enterComandoSistema(proyectoParser.ComandoSistemaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#comandoSistema}.
+	 * @param ctx the parse tree
+	 */
+	void exitComandoSistema(proyectoParser.ComandoSistemaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#ejecutarPowerShell}.
+	 * @param ctx the parse tree
+	 */
+	void enterEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#ejecutarPowerShell}.
+	 * @param ctx the parse tree
+	 */
+	void exitEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#ejecutarLinux}.
+	 * @param ctx the parse tree
+	 */
+	void enterEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#ejecutarLinux}.
+	 * @param ctx the parse tree
+	 */
+	void exitEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link proyectoParser#accionArchivo}.
 	 * @param ctx the parse tree

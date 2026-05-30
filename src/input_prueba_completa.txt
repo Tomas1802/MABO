@@ -311,6 +311,16 @@ Tarea VerificacionPeriodica:
 Fin
 
 Ejecutar VerificacionPeriodica Cada 1 Minutos
+Ejecutar VerificacionPeriodica A Las "23:00"
+
+
+# =============================================================
+# BLOQUE 15B: Integracion con PowerShell / Linux en simulacion
+# =============================================================
+Mostrar "=== BLOQUE 15B: Comandos nativos simulados ==="
+
+Simular Ejecutar PowerShell "Write-Output 'Hola desde PowerShell'"
+Simular Ejecutar Linux "echo Hola desde Linux"
 
 
 # =============================================================

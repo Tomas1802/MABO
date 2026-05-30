@@ -22,8 +22,30 @@ public class ScheduleStore {
     public void saveSchedule(String taskName, long periodSeconds) {
         Map<String, Object> entry = new HashMap<>();
         entry.put("ts", Instant.now().toString());
+        entry.put("kind", "interval");
         entry.put("task", taskName);
         entry.put("period", periodSeconds);
+        writeEntry(entry);
+    }
+
+    public void saveDailyTime(String taskName, String time) {
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("ts", Instant.now().toString());
+        entry.put("kind", "daily");
+        entry.put("task", taskName);
+        entry.put("time", time);
+        writeEntry(entry);
+    }
+
+    public void saveStartupSchedule(String taskName) {
+        Map<String, Object> entry = new HashMap<>();
+        entry.put("ts", Instant.now().toString());
+        entry.put("kind", "startup");
+        entry.put("task", taskName);
+        writeEntry(entry);
+    }
+
+    private void writeEntry(Map<String, Object> entry) {
         try {
             String line = toJson(entry) + System.lineSeparator();
             Files.writeString(storeFile, line, java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
@@ -39,9 +61,15 @@ public class ScheduleStore {
             List<String> lines = Files.readAllLines(storeFile);
             for (String l : lines) {
                 String task = extract(l, '"'+"task"+'"');
+                String kind = extract(l, '"'+"kind"+'"');
                 String period = extract(l, '"'+"period"+'"');
-                if (task != null && period != null) {
-                    try { out.add(new ScheduleEntry(task, Long.parseLong(period))); } catch (NumberFormatException ignored) {}
+                String time = extract(l, '"'+"time"+'"');
+                if (task != null) {
+                    if (period != null) {
+                        try { out.add(new ScheduleEntry(task, kind == null ? "interval" : kind, Long.parseLong(period), time)); } catch (NumberFormatException ignored) {}
+                    } else {
+                        out.add(new ScheduleEntry(task, kind == null ? "interval" : kind, 0L, time));
+                    }
                 }
             }
         } catch (IOException ignored) {}
@@ -85,7 +113,14 @@ public class ScheduleStore {
 
     public static class ScheduleEntry {
         public final String task;
+        public final String kind;
         public final long periodSeconds;
-        public ScheduleEntry(String task, long periodSeconds) { this.task = task; this.periodSeconds = periodSeconds; }
+        public final String time;
+        public ScheduleEntry(String task, String kind, long periodSeconds, String time) {
+            this.task = task;
+            this.kind = kind;
+            this.periodSeconds = periodSeconds;
+            this.time = time;
+        }
     }
 }

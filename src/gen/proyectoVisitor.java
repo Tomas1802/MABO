@@ -1,4 +1,4 @@
-// Generated from C:/Users/LauraValentinaPabonC/Downloads/Bash/Bash/.idea/grammar/proyecto.g4 by ANTLR 4.13.2
+// Generated from .idea/grammar/proyecto.g4 by ANTLR 4.13.2
 
     package gen;
 
@@ -132,6 +132,24 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSimulacion(proyectoParser.SimulacionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#comandoSistema}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComandoSistema(proyectoParser.ComandoSistemaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#ejecutarPowerShell}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#ejecutarLinux}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link proyectoParser#accionArchivo}.
 	 * @param ctx the parse tree

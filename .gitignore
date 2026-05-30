@@ -33,3 +33,7 @@ bin/
 ### Runtime ###
 logs/*.log
 *.ndjson
+
+### Gradle ###
+.gradle/
+build/

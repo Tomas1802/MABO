@@ -49,7 +49,7 @@ public class Main {
         System.out.println("Analisis semantico completado");
 
         // Execution
-        ExecutionVisitor exec = new ExecutionVisitor(ctx, logger);
+        ExecutionVisitor exec = new ExecutionVisitor(ctx, logger, p);
         exec.visit(tree);
         // restore persisted schedules (if any)
         exec.restoreSchedules();

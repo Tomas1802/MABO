@@ -29,6 +29,7 @@ Este proyecto implementa un lenguaje de scripting en español que permite automa
 - **Java NIO** — operaciones de archivos (`Files`, `Path`, `Paths`)
 - **java.util.zip** — compresión y descompresión ZIP
 - **ScheduledExecutorService** — programación de tareas periódicas
+- **Gradle** — compilación, pruebas y regeneración de gramática
 - **IntelliJ IDEA** — entorno de desarrollo recomendado
 
 ---
@@ -94,7 +95,37 @@ src/
 src/input_prueba_completa.txt
 ```
 
-### Desde línea de comandos
+### Desde Gradle
+
+```bash
+gradle clean test
+gradle run --args="src/input_prueba_completa.txt"
+```
+
+Gradle regenera el parser desde `.idea/grammar/proyecto.g4` usando ANTLR y ejecuta las pruebas automatizadas.
+
+### Instalar en Windows
+
+Desde PowerShell, en la raíz del proyecto:
+
+```powershell
+.\scripts\install-windows.ps1
+```
+
+Esto compila la distribución con Gradle, la instala en `%LOCALAPPDATA%\MABO` y agrega `%LOCALAPPDATA%\MABO\bin` al `PATH` de usuario. Después de abrir una nueva terminal se puede ejecutar:
+
+```powershell
+mabo src/input_prueba_completa.txt
+mabo examples/automatizacion_combinada.dsl
+```
+
+Para desinstalar:
+
+```powershell
+.\scripts\uninstall-windows.ps1
+```
+
+### Desde línea de comandos manual
 
 ```bash
 java -classpath "out/production/Bash;antlr-runtime-4.13.1.jar" Main src/input_prueba_completa.txt
@@ -260,6 +291,20 @@ Ejecutar Tarea LimpiarTemp
 Importar "otro_script.txt"
 ```
 
+### Comandos Nativos PowerShell / Linux
+
+El DSL puede delegar acciones no soportadas a PowerShell o a un shell Linux. Los comandos se ejecutan desde un directorio seguro (`%USERPROFILE%/Documents/DSLDemo`), se auditan y se bloquean patrones peligrosos.
+
+```
+Ejecutar PowerShell "Get-ChildItem | Select-Object Name"
+Ejecutar Linux "ls -la"
+
+Simular Ejecutar PowerShell "Write-Output 'prueba'"
+Simular Ejecutar Linux "echo prueba"
+```
+
+La simulación registra la intención sin ejecutar el comando. La ejecución real de PowerShell está habilitada en Windows y la de Linux en Linux/Unix.
+
 ---
 
 ## Operaciones de Archivos y Carpetas
@@ -375,6 +420,17 @@ Descomprimir "ruta/archivo.zip" En "ruta/destino/"
 Crear Backup De "ruta/origen" En "ruta/respaldo"
 ```
 
+### Permisos
+
+En sistemas con permisos POSIX se puede cambiar permisos usando formato octal o simbólico:
+
+```
+Cambiar Permisos "ruta/script.sh" A "755"
+Cambiar Permisos "ruta/archivo.txt" A "rw-r-----"
+```
+
+En Windows la operación falla con un mensaje claro porque los permisos POSIX no están disponibles.
+
 ---
 
 ## Modo Simulación
@@ -409,9 +465,12 @@ Ejecutar VerificacionPeriodica Cada 1 Dias
 
 # Ejecutar al iniciar el sistema
 Ejecutar VerificacionPeriodica Al Iniciar Sistema
+
+# Ejecutar todos los días a una hora específica
+Ejecutar VerificacionPeriodica A Las "23:00"
 ```
 
-> El proceso permanece activo mientras haya tareas programadas. Presionar `Ctrl+C` para detenerlo.
+> El proceso permanece activo mientras haya tareas programadas en memoria. `Al Iniciar Sistema` intenta registrar una tarea nativa del sistema operativo: Task Scheduler en Windows y autostart de usuario en Linux. Si el registro nativo falla, se conserva el registro del DSL y se informa en logs.
 
 ---
 
@@ -455,6 +514,8 @@ Mostrar "Total archivos: " Mas ultimoResultado
 ## Seguridad
 
 El DSL implementa una lista blanca de rutas permitidas (`SecurityValidator`). Solo se pueden operar rutas que hayan sido registradas como raíces válidas, lo cual ocurre automáticamente al usar `Guardar <ruta> En variable`. Las rutas críticas del sistema operativo (System32, Program Files, raíces del disco) están bloqueadas.
+
+Los comandos nativos agregan una segunda capa de seguridad: validación de shell por plataforma, bloqueo de patrones peligrosos, confirmación para comandos potencialmente destructivos, soporte de simulación y auditoría de salida/código de retorno.
 
 ---
 

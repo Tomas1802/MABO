@@ -25,6 +25,7 @@ sentencia
     | tarea
     | ejecutarTarea
     | programacion
+    | comandoSistema
     | simulacion
     | intentarCapturar
     | importar
@@ -105,6 +106,7 @@ ejecutarTarea
 programacion
     : EJECUTAR ID CADA numero tiempo
     | EJECUTAR ID AL INICIAR SISTEMA
+    | EJECUTAR ID A LAS cadena
     ;
 
 tiempo
@@ -171,7 +173,25 @@ bloque
    ========================================================================= */
 
 simulacion
-    : SIMULAR accionArchivo
+    : SIMULAR (accionArchivo | comandoSistema)
+    ;
+
+
+/* =========================================================================
+   COMANDOS NATIVOS
+   ========================================================================= */
+
+comandoSistema
+    : ejecutarPowerShell
+    | ejecutarLinux
+    ;
+
+ejecutarPowerShell
+    : EJECUTAR POWERSHELL expresion
+    ;
+
+ejecutarLinux
+    : EJECUTAR LINUX expresion
     ;
 
 
@@ -524,10 +544,13 @@ RECURSIVAMENTE     : 'Recursivamente';
 AL                 : 'Al';
 INICIAR            : 'Iniciar';
 SISTEMA            : 'Sistema';
+LAS                : 'Las';
 
 HORAS              : 'Horas';
 MINUTOS            : 'Minutos';
 DIAS               : 'Dias';
+POWERSHELL         : 'PowerShell';
+LINUX              : 'Linux';
 
 MOSTRAR            : 'Mostrar';
 
