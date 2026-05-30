@@ -258,7 +258,7 @@ buscarCarpetas
     ;
 
 listarContenido
-    : LISTAR CONTENIDO EN expresion
+    : LISTAR CONTENIDO expresion
     ;
 
 existeArchivo
@@ -312,11 +312,11 @@ renombrarCarpeta
     ;
 
 escribirArchivo
-    : ESCRIBIR expresion EN ARCHIVO expresion
+    : ESCRIBIR expresion EN expresion
     ;
 
 anexarArchivo
-    : ANEXAR expresion EN ARCHIVO expresion
+    : ANEXAR expresion EN expresion
     ;
 
 cambiarPermisos
@@ -368,10 +368,17 @@ filtro
     | CON NOMBRE cadena
     | CON PREFIJO cadena
     | CON SUFIJO cadena
-    | MAYORES QUE expresion
-    | MENORES QUE expresion
+    | CON TAMANO MAYOR QUE expresion unidadTamano
+    | CON TAMANO MENOR QUE expresion unidadTamano
     | MAS ANTIGUOS QUE expresion DIAS
     | MAS RECIENTES QUE expresion DIAS
+    ;
+
+unidadTamano
+    : BYTES
+    | KB
+    | MB
+    | GB
     ;
 
 
@@ -532,8 +539,8 @@ NOMBRE             : 'Nombre';
 PREFIJO            : 'Prefijo';
 SUFIJO             : 'Sufijo';
 
-MAYORES            : 'Mayores';
-MENORES            : 'Menores';
+MAYOR              : 'Mayor';
+MENOR              : 'Menor';
 ANTIGUOS           : 'Antiguos';
 RECIENTES          : 'Recientes';
 
@@ -549,6 +556,10 @@ LAS                : 'Las';
 HORAS              : 'Horas';
 MINUTOS            : 'Minutos';
 DIAS               : 'Dias';
+BYTES              : 'Bytes';
+KB                 : 'KB';
+MB                 : 'MB';
+GB                 : 'GB';
 POWERSHELL         : 'PowerShell';
 LINUX              : 'Linux';
 

@@ -520,6 +520,16 @@ public interface proyectoListener extends ParseTreeListener {
 	 */
 	void exitFiltro(proyectoParser.FiltroContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link proyectoParser#unidadTamano}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnidadTamano(proyectoParser.UnidadTamanoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#unidadTamano}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnidadTamano(proyectoParser.UnidadTamanoContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link proyectoParser#mostrar}.
 	 * @param ctx the parse tree
 	 */

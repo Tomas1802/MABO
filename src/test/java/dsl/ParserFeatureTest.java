@@ -38,4 +38,48 @@ class ParserFeatureTest {
 
         assertEquals(1, parser.getNumberOfSyntaxErrors());
     }
+
+    @Test
+    void parsesSimplifiedFileWriteListAndExplicitSizeFilters() {
+        String script = """
+                Variable base = "%USERPROFILE%/Documents/DSLDemo"
+                Escribir "Mi primera nota" En base + "/notas.txt"
+                Anexar "\\nOtra nota" En base + "/notas.txt"
+                Listar Contenido base
+                Buscar Archivos En base Con Tamano Menor Que 5 MB
+                Buscar Archivos En base Con Tamano Mayor Que 100 KB
+                Buscar Archivos En base Con Tamano Menor Que 1024 Bytes
+                Buscar Archivos En base Con Tamano Mayor Que 1 GB
+                """;
+
+        proyectoLexer lexer = new proyectoLexer(CharStreams.fromString(script));
+        proyectoParser parser = new proyectoParser(new CommonTokenStream(lexer));
+
+        parser.programa();
+
+        assertEquals(0, parser.getNumberOfSyntaxErrors());
+    }
+
+    @Test
+    void rejectsRemovedFileListAndAmbiguousSizeSyntax() {
+        String[] removedForms = {
+                "Escribir \"nota\" En Archivo \"notas.txt\"",
+                "Anexar \"nota\" En Archivo \"notas.txt\"",
+                "Listar Contenido En \"ruta\"",
+                "Buscar Archivos En \"ruta\" Menores Que 5",
+                "Buscar Archivos En \"ruta\" Con Tamano Menor Que 5"
+        };
+
+        for (String script : removedForms) {
+            proyectoLexer lexer = new proyectoLexer(CharStreams.fromString(script));
+            proyectoParser parser = new proyectoParser(new CommonTokenStream(lexer));
+
+            parser.programa();
+
+            org.junit.jupiter.api.Assertions.assertTrue(
+                    parser.getNumberOfSyntaxErrors() > 0,
+                    "Expected syntax error for: " + script
+            );
+        }
+    }
 }

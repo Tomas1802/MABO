@@ -631,6 +631,18 @@ public class proyectoBaseListener implements proyectoListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterUnidadTamano(proyectoParser.UnidadTamanoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUnidadTamano(proyectoParser.UnidadTamanoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterMostrar(proyectoParser.MostrarContext ctx) { }
 	/**
 	 * {@inheritDoc}

@@ -2,7 +2,7 @@ Tarea PrepararMaquina:
     Variable dsl = "%USERPROFILE%/Documents/DSLDemo"
     Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Salida"
     Crear Archivo "%USERPROFILE%/Documents/DSLDemo/reporte.txt"
-    Escribir "Reporte de prueba desde DSL" En Archivo "%USERPROFILE%/Documents/DSLDemo/reporte.txt"
+    Escribir "Reporte de prueba desde DSL" En "%USERPROFILE%/Documents/DSLDemo/reporte.txt"
     Copiar Archivo "%USERPROFILE%/Documents/DSLDemo/reporte.txt" A "%USERPROFILE%/Documents/DSLDemo/Respaldos/reporte_backup.txt"
     Renombrar Archivo "%USERPROFILE%/Documents/DSLDemo/reporte.txt" A "%USERPROFILE%/Documents/DSLDemo/reporte_antiguo.txt"
     Eliminar Archivo "%USERPROFILE%/Documents/DSLDemo/reporte_antiguo.txt"
@@ -27,19 +27,19 @@ Tarea PruebasCompletas:
     Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub2"
 
     Crear Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
-    Escribir "Contenido A" En Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
+    Escribir "Contenido A" En "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
 
     Crear Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/b.log"
-    Escribir "Log inicial" En Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/b.log"
+    Escribir "Log inicial" En "%USERPROFILE%/Documents/DSLDemo/TestArea/b.log"
 
     Crear Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub1/c.txt"
-    Escribir "C dentro Sub1" En Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub1/c.txt"
+    Escribir "C dentro Sub1" En "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub1/c.txt"
 
     Copiar Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt" A "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub2/a_copy.txt"
     Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/TestArea/Backups"
     Copiar Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/b.log" A "%USERPROFILE%/Documents/DSLDemo/TestArea/Backups/b_backup.log"
 
-    Anexar "\nLinea adicional" En Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
+    Anexar "\nLinea adicional" En "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
     Leer Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
 
     Renombrar Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub2/a_copy.txt" A "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub2/a_renombrado.txt"
@@ -47,7 +47,7 @@ Tarea PruebasCompletas:
 
     Eliminar Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/b.log"
 
-    Listar Contenido En "%USERPROFILE%/Documents/DSLDemo/TestArea"
+    Listar Contenido "%USERPROFILE%/Documents/DSLDemo/TestArea"
     Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/TestArea" Con Extension ".txt"
 
     Existe Archivo "%USERPROFILE%/Documents/DSLDemo/Salida/a_renombrado.txt"
@@ -86,10 +86,10 @@ Ejecutar RespaldoDiario Cada 24 Horas
 
 Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/scripts"
 Crear Archivo "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
-Escribir "Tarea BackupManual:" En Archivo "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
-Anexar "    Buscar Archivos En \"%USERPROFILE%/Documents/DSLDemo/TestArea\" Con Extension \".txt\"" En Archivo "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
-Anexar "    Copiar Carpeta \"%USERPROFILE%/Documents/DSLDemo/TestArea\" A \"%USERPROFILE%/Documents/DSLDemo/Respaldo/TestArea_manual\"" En Archivo "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
-Anexar "Fin" En Archivo "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
+Escribir "Tarea BackupManual:" En "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
+Anexar "    Buscar Archivos En \"%USERPROFILE%/Documents/DSLDemo/TestArea\" Con Extension \".txt\"" En "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
+Anexar "    Copiar Carpeta \"%USERPROFILE%/Documents/DSLDemo/TestArea\" A \"%USERPROFILE%/Documents/DSLDemo/Respaldo/TestArea_manual\"" En "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
+Anexar "Fin" En "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
 
 
 Importar "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"

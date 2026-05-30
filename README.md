@@ -125,7 +125,7 @@ mabo examples/automatizacion_combinada.dsl
 ```text
 mabo> Variable base = "%USERPROFILE%/Documents/DSLDemo"
 mabo> Crear Carpeta base + "/prueba"
-mabo> Listar Contenido En base
+mabo> Listar Contenido base
 mabo> salir
 ```
 
@@ -340,8 +340,8 @@ Crear Carpeta "ruta/carpeta"
 
 ```
 Leer Archivo "ruta/archivo.txt"
-Escribir "contenido inicial" En Archivo "ruta/archivo.txt"
-Anexar "\nlinea adicional" En Archivo "ruta/archivo.txt"
+Escribir "contenido inicial" En "ruta/archivo.txt"
+Anexar "\nlinea adicional" En "ruta/archivo.txt"
 ```
 
 ### Copiar, Mover y Renombrar
@@ -379,8 +379,8 @@ Buscar Archivos En "ruta/" Con Prefijo "backup"
 Buscar Archivos En "ruta/" Con Sufijo "final"
 
 # Por tamaño (en MB)
-Buscar Archivos En "ruta/" Menores Que 5
-Buscar Archivos En "ruta/" Mayores Que 10
+Buscar Archivos En "ruta/" Con Tamano Menor Que 5 MB
+Buscar Archivos En "ruta/" Con Tamano Mayor Que 10 MB
 
 # Por antigüedad (en días)
 Buscar Archivos En "ruta/" Mas Antiguos Que 30 Dias
@@ -394,7 +394,7 @@ Buscar Carpetas En "ruta/" Con Nombre "docs"
 
 ```
 # Listar contenido directo de una carpeta
-Listar Contenido En "ruta/"
+Listar Contenido "ruta/"
 
 # Verificar existencia
 Existe Archivo "ruta/archivo.txt"
@@ -554,8 +554,8 @@ Mostrar "Trabajando en: " + base
 # Crear estructura
 Crear Carpeta base
 Crear Archivo base + "\datos.txt"
-Escribir "Linea 1" En Archivo base + "\datos.txt"
-Anexar "\nLinea 2" En Archivo base + "\datos.txt"
+Escribir "Linea 1" En base + "\datos.txt"
+Anexar "\nLinea 2" En base + "\datos.txt"
 
 # Leer
 Leer Archivo base + "\datos.txt"

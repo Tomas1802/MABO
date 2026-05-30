@@ -130,12 +130,12 @@ Tarea PrepararEstructura:
     Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo"
 
     Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
-    Escribir "Contenido del informe principal" En Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+    Escribir "Contenido del informe principal" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
 
     Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
-    Escribir "Nota 1" En Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
-    Anexar "\nNota 2" En Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
-    Anexar "\nNota 3" En Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+    Escribir "Nota 1" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+    Anexar "\nNota 2" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+    Anexar "\nNota 3" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
 
     Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/reporte.pdf"
     Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/backup_informe.txt"
@@ -187,7 +187,7 @@ Mostrar "--- Con Extension .tmp ---"
 Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp" Con Extension ".tmp"
 
 Mostrar "--- Menores a 1 MB ---"
-Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas" Menores Que 1
+Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas" Con Tamano Menor Que 1 MB
 
 Mostrar "--- Carpetas en Pruebas ---"
 Buscar Carpetas En "%USERPROFILE%/Documents/DSLDemo/Pruebas" Con Nombre "docs"
@@ -199,7 +199,7 @@ Buscar Carpetas En "%USERPROFILE%/Documents/DSLDemo/Pruebas" Con Nombre "docs"
 Mostrar "=== BLOQUE 9: Consultas sobre archivos ==="
 
 Mostrar "--- Contenido de docs/ ---"
-Listar Contenido En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs"
+Listar Contenido "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs"
 
 Existe Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
 Si ultimoResultado Entonces

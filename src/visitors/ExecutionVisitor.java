@@ -785,12 +785,12 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
             return FilterUtils.byPrefix(stripQuotes(filtro.cadena().getText()));
         } else if (filtro.SUFIJO() != null && filtro.cadena() != null) {
             return FilterUtils.bySuffix(stripQuotes(filtro.cadena().getText()));
-        } else if (filtro.MAYORES() != null && filtro.expresion() != null) {
-            long sizeMb = toLong(visit(filtro.expresion()));
-            return FilterUtils.sizeComparator(sizeMb, ">");
-        } else if (filtro.MENORES() != null && filtro.expresion() != null) {
-            long sizeMb = toLong(visit(filtro.expresion()));
-            return FilterUtils.sizeComparator(sizeMb, "<");
+        } else if (filtro.MAYOR() != null && filtro.expresion() != null) {
+            long bytes = toBytes(toNumber(visit(filtro.expresion())), filtro.unidadTamano().getText());
+            return FilterUtils.sizeComparator(bytes, ">");
+        } else if (filtro.MENOR() != null && filtro.expresion() != null) {
+            long bytes = toBytes(toNumber(visit(filtro.expresion())), filtro.unidadTamano().getText());
+            return FilterUtils.sizeComparator(bytes, "<");
         } else if (filtro.ANTIGUOS() != null && filtro.expresion() != null) {
             long days = toLong(visit(filtro.expresion()));
             return FilterUtils.olderThanDays(days);
@@ -799,6 +799,17 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
             return FilterUtils.recentThanDays(days);
         }
         return p -> true;
+    }
+
+    private long toBytes(double amount, String unit) {
+        String normalized = unit == null ? "" : unit.toUpperCase();
+        return switch (normalized) {
+            case "GB" -> (long) (amount * 1024 * 1024 * 1024);
+            case "MB" -> (long) (amount * 1024 * 1024);
+            case "KB" -> (long) (amount * 1024);
+            case "BYTES" -> (long) amount;
+            default -> (long) amount;
+        };
     }
 
     private TimeUnit toTimeUnit(String text) {

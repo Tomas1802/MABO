@@ -165,7 +165,7 @@ public class Main {
         System.out.println("Ejemplos:");
         System.out.println("  Variable base = \"%USERPROFILE%/Documents/DSLDemo\"");
         System.out.println("  Crear Carpeta base + \"/prueba\"");
-        System.out.println("  Listar Contenido En base");
+        System.out.println("  Listar Contenido base");
         System.out.println("  Simular Ejecutar PowerShell \"Write-Output 'hola'\"");
         System.out.println("Bloques multilinea:");
         System.out.println("  Tarea Demo:");

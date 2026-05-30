@@ -319,6 +319,12 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFiltro(proyectoParser.FiltroContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link proyectoParser#unidadTamano}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnidadTamano(proyectoParser.UnidadTamanoContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link proyectoParser#mostrar}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

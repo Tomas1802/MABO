@@ -129,9 +129,9 @@ mabo&gt; salir</code></pre>
       <pre><code>Variable base = "%USERPROFILE%/Documents/DSLDemo"
 Crear Carpeta base + "/prueba"
 Crear Archivo base + "/prueba/notas.txt"
-Escribir "Mi primera nota" En Archivo base + "/prueba/notas.txt"
+Escribir "Mi primera nota" En base + "/prueba/notas.txt"
 Leer Archivo base + "/prueba/notas.txt"
-Listar Contenido En base + "/prueba"</code></pre>
+Listar Contenido base + "/prueba"</code></pre>
       <div class="note">
         <strong>Que significa <code>base</code>?</strong>
         <p><code>base</code> es solo el nombre de una variable. La primera linea guarda la ruta <code>%USERPROFILE%/Documents/DSLDemo</code> dentro de esa variable.</p>
@@ -232,13 +232,13 @@ Mostrar base + "/archivo.txt"</code></pre>
           <p>Muestra el contenido y guarda el texto en <code>ultimoResultado</code>.</p>
         </article>
         <article>
-          <h3>Escribir en Archivo</h3>
-          <pre><code>Escribir "contenido" En Archivo "ruta/archivo.txt"</code></pre>
+          <h3>Escribir</h3>
+          <pre><code>Escribir "contenido" En "ruta/archivo.txt"</code></pre>
           <p>Crea o reemplaza el contenido completo del archivo.</p>
         </article>
         <article>
-          <h3>Anexar a Archivo</h3>
-          <pre><code>Anexar "\nlinea nueva" En Archivo "ruta/archivo.txt"</code></pre>
+          <h3>Anexar</h3>
+          <pre><code>Anexar "\nlinea nueva" En "ruta/archivo.txt"</code></pre>
           <p>Agrega texto al final sin borrar lo anterior.</p>
         </article>
         <article>
@@ -274,7 +274,7 @@ Mostrar base + "/archivo.txt"</code></pre>
         </article>
         <article>
           <h3>Listar Contenido</h3>
-          <pre><code>Listar Contenido En "ruta/carpeta"</code></pre>
+          <pre><code>Listar Contenido "ruta/carpeta"</code></pre>
           <p>Muestra archivos y carpetas directos. El resultado queda en <code>ultimoResultado</code>.</p>
         </article>
         <article>
@@ -309,8 +309,8 @@ Eliminar Carpeta "ruta/carpeta" Recursivamente</code></pre>
 Buscar Archivos En "ruta" Con Nombre "factura"
 Buscar Archivos En "ruta" Con Prefijo "backup"
 Buscar Archivos En "ruta" Con Sufijo "final"
-Buscar Archivos En "ruta" Menores Que 5
-Buscar Archivos En "ruta" Mayores Que 10
+Buscar Archivos En "ruta" Con Tamano Menor Que 5 MB
+Buscar Archivos En "ruta" Con Tamano Mayor Que 10 MB
 Buscar Archivos En "ruta" Mas Antiguos Que 30 Dias
 Buscar Archivos En "ruta" Mas Recientes Que 7 Dias</code></pre>
       <p>En <code>Mas Antiguos Que</code> y <code>Mas Recientes Que</code>, la palabra <code>Mas</code> forma parte del filtro. No significa suma ni concatenacion.</p>
@@ -318,7 +318,7 @@ Buscar Archivos En "ruta" Mas Recientes Que 7 Dias</code></pre>
       <pre><code>Buscar Archivos En descargas Con Extension ".pdf" Con Nombre "factura"</code></pre>
       <h3>Buscar carpetas</h3>
       <pre><code>Buscar Carpetas En "ruta" Con Nombre "docs"</code></pre>
-      <div class="note">Los filtros de tamano usan MB. Por ejemplo, <code>Menores Que 5</code> significa menores a 5 MB.</div>
+      <div class="note">Los filtros de tamano siempre deben indicar unidad: <code>Bytes</code>, <code>KB</code>, <code>MB</code> o <code>GB</code>.</div>
     </section>
 
     <section class="doc-section" id="consultas" data-search="existe obtener tamano cantidad propiedad nombre extension ruta existe esarchivo escarpeta">
@@ -513,8 +513,8 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
           <tr><td>Crear archivo</td><td><code>Crear Archivo ruta</code></td></tr>
           <tr><td>Crear carpeta</td><td><code>Crear Carpeta ruta</code></td></tr>
           <tr><td>Leer archivo</td><td><code>Leer Archivo ruta</code></td></tr>
-          <tr><td>Escribir archivo</td><td><code>Escribir contenido En Archivo ruta</code></td></tr>
-          <tr><td>Anexar archivo</td><td><code>Anexar contenido En Archivo ruta</code></td></tr>
+          <tr><td>Escribir archivo</td><td><code>Escribir contenido En ruta</code></td></tr>
+          <tr><td>Anexar archivo</td><td><code>Anexar contenido En ruta</code></td></tr>
           <tr><td>Copiar archivo</td><td><code>Copiar Archivo origen A destino</code></td></tr>
           <tr><td>Copiar carpeta</td><td><code>Copiar Carpeta origen A destino</code></td></tr>
           <tr><td>Mover archivo</td><td><code>Mover Archivo origen A destino</code></td></tr>
@@ -525,7 +525,7 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
           <tr><td>Eliminar carpeta</td><td><code>Eliminar Carpeta ruta Recursivamente</code></td></tr>
           <tr><td>Buscar archivos</td><td><code>Buscar Archivos En ruta filtros</code></td></tr>
           <tr><td>Buscar carpetas</td><td><code>Buscar Carpetas En ruta filtros</code></td></tr>
-          <tr><td>Listar</td><td><code>Listar Contenido En ruta</code></td></tr>
+          <tr><td>Listar</td><td><code>Listar Contenido ruta</code></td></tr>
           <tr><td>Existe archivo</td><td><code>Existe Archivo ruta</code></td></tr>
           <tr><td>Existe carpeta</td><td><code>Existe Carpeta ruta</code></td></tr>
           <tr><td>Tamano</td><td><code>Obtener Tamano Archivo ruta</code></td></tr>
