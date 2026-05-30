@@ -1,5 +1,5 @@
 Tarea PrepararMaquina:
-    Guardar "%USERPROFILE%/Documents/DSLDemo" En dsl
+    Variable dsl = "%USERPROFILE%/Documents/DSLDemo"
     Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Salida"
     Crear Archivo "%USERPROFILE%/Documents/DSLDemo/reporte.txt"
     Escribir "Reporte de prueba desde DSL" En Archivo "%USERPROFILE%/Documents/DSLDemo/reporte.txt"
@@ -10,7 +10,7 @@ Fin
 
 Ejecutar Tarea PrepararMaquina
 
-Guardar "%USERPROFILE%/Documents/DSLDemo" En raizDsl
+Variable raizDsl = "%USERPROFILE%/Documents/DSLDemo"
 Buscar Archivos En raizDsl Con Extension ".txt"
 Crear Archivo "%USERPROFILE%/Documents/DSLDemo/README.txt"
 Mover Archivo "%USERPROFILE%/Documents/DSLDemo/README.txt" A "%USERPROFILE%/Documents/DSLDemo/Salida/README.txt"

@@ -12,6 +12,7 @@ class ParserFeatureTest {
     @Test
     void parsesNativeCommandsAndSpecificTimeSchedules() {
         String script = """
+                Variable base = "%USERPROFILE%/Documents/DSLDemo"
                 Tarea RespaldoProgramado:
                     Mostrar "ok"
                 Fin
@@ -26,5 +27,15 @@ class ParserFeatureTest {
         parser.programa();
 
         assertEquals(0, parser.getNumberOfSyntaxErrors());
+    }
+
+    @Test
+    void rejectsOldGuardarVariableSyntax() {
+        proyectoLexer lexer = new proyectoLexer(CharStreams.fromString("Guardar 10 En numero"));
+        proyectoParser parser = new proyectoParser(new CommonTokenStream(lexer));
+
+        parser.programa();
+
+        assertEquals(1, parser.getNumberOfSyntaxErrors());
     }
 }

@@ -12,12 +12,11 @@ public class SecurityValidator {
     private static final Set<Path> allowedRoots = Collections.synchronizedSet(new HashSet<>());
 
     static {
-        // default allowed root: %USERPROFILE%/Documents/DSLDemo (expand user.home)
         String userHome = System.getProperty("user.home");
         if (userHome != null) {
-            Path defaultRoot = Paths.get(userHome).resolve("Documents").resolve("DSLDemo").toAbsolutePath().normalize();
-            allowedRoots.add(defaultRoot);
+            addDefaultRoot(Paths.get(userHome));
         }
+        addDefaultRoot(Paths.get(System.getProperty("user.dir")));
     }
 
     public static void addAllowedRoot(Path p) {
@@ -33,13 +32,6 @@ public class SecurityValidator {
         if (p == null) throw new SecurityException("Ruta inválida: null");
         Path abs = p.toAbsolutePath().normalize();
 
-        // allow if path is under any allowed root
-        for (Path root : allowedRoots) {
-            if (abs.startsWith(root)) {
-                return;
-            }
-        }
-
         String s = abs.toString().toLowerCase();
         // bloquear rutas raíz
         if (abs.getParent() == null) {
@@ -50,7 +42,20 @@ public class SecurityValidator {
             throw new SecurityException("Acceso a carpeta crítica bloqueado: " + abs);
         }
 
+        // allow if path is under any allowed root
+        for (Path root : allowedRoots) {
+            if (abs.startsWith(root)) {
+                return;
+            }
+        }
+
         // if not explicitly allowed, deny access
         throw new SecurityException("Acceso denegado fuera de rutas permitidas: " + abs);
+    }
+
+    private static void addDefaultRoot(Path p) {
+        if (p != null) {
+            allowedRoots.add(p.toAbsolutePath().normalize());
+        }
     }
 }

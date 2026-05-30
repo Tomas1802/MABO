@@ -581,7 +581,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
                 "Función '" + name + "' espera " + params.size() + " argumento(s), recibió " + args.size());
         }
 
-        // Guardar scope actual y crear scope de la función
+        // Conservar scope actual y crear scope de la función
         Map<String, Object> savedScope = new HashMap<>(ctx.variables);
         for (int i = 0; i < params.size(); i++) {
             ctx.variables.put(params.get(i), args.get(i));

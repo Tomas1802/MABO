@@ -92,7 +92,7 @@ public class SemanticVisitor extends proyectoBaseVisitor<Void> {
     @Override
     public Void visitEjecutarTarea(proyectoParser.EjecutarTareaContext node) {
         String nombre = node.ID().getText();
-        if (!tareasDef.containsKey(nombre)) {
+        if (!tareasDef.containsKey(nombre) && !ctx.tareas.containsKey(nombre)) {
             if (tieneImports) {
                 System.err.println("[ADVERTENCIA SEMÁNTICA] La tarea '" + nombre
                     + "' no está definida localmente (puede venir de un archivo importado)");
@@ -106,7 +106,7 @@ public class SemanticVisitor extends proyectoBaseVisitor<Void> {
     @Override
     public Void visitLlamadaFuncion(proyectoParser.LlamadaFuncionContext node) {
         String nombre = node.ID().getText();
-        if (!funcionesDef.containsKey(nombre)) {
+        if (!funcionesDef.containsKey(nombre) && !ctx.funciones.containsKey(nombre)) {
             reportar("Se llama a la función '" + nombre + "' pero no está definida");
         } else {
             // Validar cantidad de argumentos contra parámetros declarados

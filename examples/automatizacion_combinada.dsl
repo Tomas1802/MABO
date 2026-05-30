@@ -1,7 +1,6 @@
-Guardar "%USERPROFILE%/Documents/DSLDemo" En base
-Guardar base Mas "/Descargas" En descargas
-Guardar base Mas "/Documentos/PDF" En pdfs
-
+Variable base = "%USERPROFILE%/Documents/DSLDemo"
+Variable descargas = base + "/Descargas"
+Variable pdfs = base + "/Documentos/PDF"
 Crear Carpeta descargas
 Crear Carpeta pdfs
 
@@ -9,7 +8,7 @@ Tarea OrganizarPDF:
     Buscar Archivos En descargas Con Extension ".pdf"
     Para Cada archivo En ultimoResultado
         Obtener Propiedad nombre De archivo
-        Mover Archivo archivo A pdfs Mas "/" Mas ultimoResultado
+        Mover Archivo archivo A pdfs + "/" + ultimoResultado
     FinPara
     Mostrar "PDF organizados"
 Fin

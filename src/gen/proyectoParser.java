@@ -19,7 +19,7 @@ public class proyectoParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		IMPORTAR=1, GUARDAR=2, EN=3, FUNCION=4, FINFUNCION=5, RETORNAR=6, FIN=7,
+		IMPORTAR=1, VARIABLE=2, EN=3, FUNCION=4, FINFUNCION=5, RETORNAR=6, FIN=7,
 		TAREA=8, EJECUTAR=9, SI=10, ENTONCES=11, SINO=12, FINSI=13, MIENTRAS=14,
 		FINMIENTRAS=15, PARA=16, CADA=17, FINPARA=18, INTENTAR=19, CAPTURAR=20,
 		FININTENTAR=21, SIMULAR=22, CREAR=23, LEER=24, ESCRIBIR=25, ANEXAR=26,
@@ -73,7 +73,7 @@ public class proyectoParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'Importar'", "'Guardar'", "'En'", "'Funcion'", "'FinFuncion'",
+			null, "'Importar'", "'Variable'", "'En'", "'Funcion'", "'FinFuncion'",
 			"'Retornar'", "'Fin'", "'Tarea'", "'Ejecutar'", "'Si'", "'Entonces'",
 			"'Sino'", "'FinSi'", "'Mientras'", "'FinMientras'", "'Para'", "'Cada'",
 			"'FinPara'", "'Intentar'", "'Capturar'", "'FinIntentar'", "'Simular'",
@@ -93,7 +93,7 @@ public class proyectoParser extends Parser {
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, "IMPORTAR", "GUARDAR", "EN", "FUNCION", "FINFUNCION", "RETORNAR",
+			null, "IMPORTAR", "VARIABLE", "EN", "FUNCION", "FINFUNCION", "RETORNAR",
 			"FIN", "TAREA", "EJECUTAR", "SI", "ENTONCES", "SINO", "FINSI", "MIENTRAS",
 			"FINMIENTRAS", "PARA", "CADA", "FINPARA", "INTENTAR", "CAPTURAR", "FININTENTAR",
 			"SIMULAR", "CREAR", "LEER", "ESCRIBIR", "ANEXAR", "BUSCAR", "LISTAR",
@@ -496,12 +496,12 @@ public class proyectoParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class DeclaracionVariableContext extends ParserRuleContext {
-		public TerminalNode GUARDAR() { return getToken(proyectoParser.GUARDAR, 0); }
+		public TerminalNode VARIABLE() { return getToken(proyectoParser.VARIABLE, 0); }
+		public TerminalNode ID() { return getToken(proyectoParser.ID, 0); }
+		public TerminalNode IGUAL() { return getToken(proyectoParser.IGUAL, 0); }
 		public ExpresionContext expresion() {
 			return getRuleContext(ExpresionContext.class,0);
 		}
-		public TerminalNode EN() { return getToken(proyectoParser.EN, 0); }
-		public TerminalNode ID() { return getToken(proyectoParser.ID, 0); }
 		public DeclaracionVariableContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -528,13 +528,13 @@ public class proyectoParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(147);
-			match(GUARDAR);
+			match(VARIABLE);
 			setState(148);
-			expresion(0);
-			setState(149);
-			match(EN);
-			setState(150);
 			match(ID);
+			setState(149);
+			match(IGUAL);
+			setState(150);
+			expresion(0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -4981,8 +4981,8 @@ public class proyectoParser extends Parser {
 		"\u0000\u008e\u008d\u0001\u0000\u0000\u0000\u008f\u0003\u0001\u0000\u0000"+
 		"\u0000\u0090\u0091\u0005\u0001\u0000\u0000\u0091\u0092\u0003p8\u0000\u0092"+
 		"\u0005\u0001\u0000\u0000\u0000\u0093\u0094\u0005\u0002\u0000\u0000\u0094"+
-		"\u0095\u0003h4\u0000\u0095\u0096\u0005\u0003\u0000\u0000\u0096\u0097\u0005"+
-		"_\u0000\u0000\u0097\u0007\u0001\u0000\u0000\u0000\u0098\u0099\u0005_\u0000"+
+		"\u0095\u0005_\u0000\u0000\u0095\u0096\u0005M\u0000\u0000\u0096\u0097\u0003"+
+		"h4\u0000\u0097\u0007\u0001\u0000\u0000\u0000\u0098\u0099\u0005_\u0000"+
 		"\u0000\u0099\u009a\u0005M\u0000\u0000\u009a\u009b\u0003h4\u0000\u009b"+
 		"\t\u0001\u0000\u0000\u0000\u009c\u009d\u0005\u0004\u0000\u0000\u009d\u009e"+
 		"\u0005_\u0000\u0000\u009e\u00a0\u0005Y\u0000\u0000\u009f\u00a1\u0003\f"+

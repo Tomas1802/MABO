@@ -1,6 +1,7 @@
 param(
     [string]$InstallDir = "$env:LOCALAPPDATA\MABO",
-    [switch]$SkipPath
+    [switch]$SkipPath,
+    [switch]$StopRunning
 )
 
 $ErrorActionPreference = "Stop"
@@ -9,8 +10,53 @@ $ProjectRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $InstallPath = [System.IO.Path]::GetFullPath($InstallDir)
 $BinPath = Join-Path $InstallPath "bin"
 
+function Get-MaboInstallProcesses {
+    param([string]$Path)
+
+    $escapedPath = $Path.Replace('\', '\\')
+    Get-CimInstance Win32_Process |
+        Where-Object {
+            $_.CommandLine -and (
+                $_.CommandLine -like "*$Path*" -or
+                $_.CommandLine -like "*$escapedPath*" -or
+                $_.CommandLine -like "*mabo.bat*"
+            )
+        } |
+        Select-Object ProcessId,Name,CommandLine
+}
+
+function Stop-Or-ReportMaboProcesses {
+    param(
+        [string]$Path,
+        [bool]$ShouldStop
+    )
+
+    $processes = @(Get-MaboInstallProcesses -Path $Path)
+    if ($processes.Count -eq 0) {
+        return
+    }
+
+    if ($ShouldStop) {
+        foreach ($process in $processes) {
+            Stop-Process -Id $process.ProcessId -Force
+        }
+        Start-Sleep -Milliseconds 500
+        return
+    }
+
+    Write-Host "MABO is currently running from the install directory:"
+    foreach ($process in $processes) {
+        Write-Host "  PID $($process.ProcessId): $($process.Name)"
+    }
+    throw "Close all terminals running mabo and retry, or run this installer with -StopRunning."
+}
+
 Push-Location $ProjectRoot
 try {
+    if (Test-Path $InstallPath) {
+        Stop-Or-ReportMaboProcesses -Path $InstallPath -ShouldStop $StopRunning.IsPresent
+    }
+
     gradle clean installDist
 
     $Distribution = Join-Path $ProjectRoot "build\install\mabo"

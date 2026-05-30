@@ -48,7 +48,7 @@ importar
    ========================================================================= */
 
 declaracionVariable
-    : GUARDAR expresion EN ID
+    : VARIABLE ID IGUAL expresion
     ;
 
 asignacionVariable
@@ -459,7 +459,7 @@ booleano
 
 IMPORTAR           : 'Importar';
 
-GUARDAR            : 'Guardar';
+VARIABLE           : 'Variable';
 EN                  : 'En';
 
 FUNCION            : 'Funcion';

@@ -5,8 +5,8 @@
 #        intentar/capturar, backup y scheduler
 # =============================================================
 
-Guardar "%USERPROFILE%/Documents/DSLDemo/Pruebas" En base
-Mostrar "Ruta de trabajo: " Mas base
+Variable base = "%USERPROFILE%/Documents/DSLDemo/Pruebas"
+Mostrar "Ruta de trabajo: " + base
 
 
 # =============================================================
@@ -14,14 +14,13 @@ Mostrar "Ruta de trabajo: " Mas base
 # =============================================================
 Mostrar "=== BLOQUE 1: Variables y aritmetica ==="
 
-Guardar 10 En a
-Guardar 3 En b
-
-Mostrar "10 + 3 = " Mas (a Mas b)
-Mostrar "10 - 3 = " Mas (a Menos b)
-Mostrar "10 * 3 = " Mas (a Por b)
-Mostrar "10 / 3 = " Mas (a Entre b)
-Mostrar "10 % 3 = " Mas (a Modulo b)
+Variable a = 10
+Variable b = 3
+Mostrar "10 + 3 = " + (a + b)
+Mostrar "10 - 3 = " + (a Menos b)
+Mostrar "10 * 3 = " + (a Por b)
+Mostrar "10 / 3 = " + (a Entre b)
+Mostrar "10 % 3 = " + (a Modulo b)
 
 
 # =============================================================
@@ -29,13 +28,13 @@ Mostrar "10 % 3 = " Mas (a Modulo b)
 # =============================================================
 Mostrar "=== BLOQUE 2: Comparaciones y logica ==="
 
-Mostrar "10 > 3  = " Mas (a > b)
-Mostrar "10 < 3  = " Mas (a < b)
-Mostrar "10 == 10 = " Mas (a == 10)
-Mostrar "10 != 3  = " Mas (a != b)
-Mostrar "V Y V   = " Mas (Verdadero Y Verdadero)
-Mostrar "V O F   = " Mas (Verdadero O Falso)
-Mostrar "No V    = " Mas (No Verdadero)
+Mostrar "10 > 3  = " + (a > b)
+Mostrar "10 < 3  = " + (a < b)
+Mostrar "10 == 10 = " + (a == 10)
+Mostrar "10 != 3  = " + (a != b)
+Mostrar "V Y V   = " + (Verdadero Y Verdadero)
+Mostrar "V O F   = " + (Verdadero O Falso)
+Mostrar "No V    = " + (No Verdadero)
 
 
 # =============================================================
@@ -44,11 +43,11 @@ Mostrar "No V    = " Mas (No Verdadero)
 Mostrar "=== BLOQUE 3: Funciones ==="
 
 Funcion Sumar(x, y)
-    Retornar x Mas y
+    Retornar x + y
 FinFuncion
 
 Funcion Saludar(nombre)
-    Mostrar "Hola, " Mas nombre Mas "!"
+    Mostrar "Hola, " + nombre + "!"
 FinFuncion
 
 Funcion EsPositivo(n)
@@ -69,14 +68,14 @@ FinFuncion
 
 Saludar("Mundo")
 
-Guardar Sumar(15, 27) En total
-Mostrar "15 + 27 = " Mas total
+Variable total = Sumar(15, 27)
+Mostrar "15 + 27 = " + total
 
-Mostrar "EsPositivo(5)  = " Mas EsPositivo(5)
-Mostrar "EsPositivo(-3) = " Mas EsPositivo(-3)
+Mostrar "EsPositivo(5)  = " + EsPositivo(5)
+Mostrar "EsPositivo(-3) = " + EsPositivo(-3)
 
-Guardar Factorial(5) En fact
-Mostrar "Factorial(5) = " Mas fact
+Variable fact = Factorial(5)
+Mostrar "Factorial(5) = " + fact
 
 
 # =============================================================
@@ -84,8 +83,7 @@ Mostrar "Factorial(5) = " Mas fact
 # =============================================================
 Mostrar "=== BLOQUE 4: Condiciones ==="
 
-Guardar 8 En nota
-
+Variable nota = 8
 Si nota >= 9 Entonces
     Mostrar "Calificacion: Excelente"
 Sino
@@ -107,10 +105,10 @@ FinSi
 Mostrar "=== BLOQUE 5: Ciclos ==="
 
 Mostrar "Conteo del 1 al 4:"
-Guardar 1 En i
+Variable i = 1
 Mientras i <= 4
     Mostrar i
-    i = i Mas 1   # Mas = suma, funciona igual con +
+    i = i + 1
 FinMientras
 
 Mostrar "Colores:"
@@ -216,13 +214,13 @@ Si ultimoResultado Entonces
 FinSi
 
 Obtener Tamano Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
-Mostrar "Tamano informe.txt (bytes): " Mas ultimoResultado
+Mostrar "Tamano informe.txt (bytes): " + ultimoResultado
 
 Obtener Cantidad Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas"
-Mostrar "Total archivos en Pruebas/: " Mas ultimoResultado
+Mostrar "Total archivos en Pruebas/: " + ultimoResultado
 
 Obtener Propiedad nombre De "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
-Mostrar "Nombre del archivo: " Mas ultimoResultado
+Mostrar "Nombre del archivo: " + ultimoResultado
 
 
 # =============================================================
@@ -233,7 +231,7 @@ Mostrar "=== BLOQUE 10: Para Cada sobre busqueda ==="
 Mostrar "Archivos .tmp encontrados:"
 Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp" Con Extension ".tmp"
 Para Cada archivo En ultimoResultado
-    Mostrar "  -> " Mas archivo
+    Mostrar "  -> " + archivo
 FinPara
 
 
@@ -283,11 +281,11 @@ Funcion ContarArchivos(ruta)
     Retornar ultimoResultado
 FinFuncion
 
-Guardar ContarArchivos("%USERPROFILE%/Documents/DSLDemo/Pruebas/docs") En cantDocs
-Mostrar "Archivos en docs/: " Mas cantDocs
+Variable cantDocs = ContarArchivos("%USERPROFILE%/Documents/DSLDemo/Pruebas/docs")
+Mostrar "Archivos en docs/: " + cantDocs
 
-Guardar ContarArchivos("%USERPROFILE%/Documents/DSLDemo/Pruebas/temp") En cantTemp
-Mostrar "Archivos en temp/: " Mas cantTemp
+Variable cantTemp = ContarArchivos("%USERPROFILE%/Documents/DSLDemo/Pruebas/temp")
+Mostrar "Archivos en temp/: " + cantTemp
 
 Si cantDocs > cantTemp Entonces
     Mostrar "docs/ tiene mas archivos que temp/"
@@ -340,11 +338,11 @@ Descomprimir "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_comprimido.z
 Mostrar "ZIP extraido en respaldo/docs_descomprimido/"
 
 Obtener Cantidad Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_descomprimido"
-Mostrar "Archivos descomprimidos: " Mas ultimoResultado
+Mostrar "Archivos descomprimidos: " + ultimoResultado
 
 Simular Comprimir "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/fotos_sim"
 Mostrar "Simulacion de compresion ejecutada (no creo ZIP)"
 
 
 Mostrar "=== TODAS LAS PRUEBAS EJECUTADAS ==="
-Mostrar "Revisa los logs en: " Mas "%USERPROFILE%/Documents/DSLDemo/logs/app.log"
+Mostrar "Revisa los logs en: " + "%USERPROFILE%/Documents/DSLDemo/logs/app.log"

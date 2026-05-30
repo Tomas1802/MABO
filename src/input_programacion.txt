@@ -1,7 +1,7 @@
 Tarea Respaldo:
-    Guardar "testdata/Descargas" En origen
+    Variable origen = "testdata/Descargas"
     Buscar Archivos En origen Con Nombre "reporte"
     Copiar Archivo "testdata/Descargas/reporte.txt" A "testdata/Respaldo/reporte.txt"
 Fin
 
-Ejecutar Tarea Respaldo Cada 24 Horas
+Ejecutar Respaldo Cada 24 Horas

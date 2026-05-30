@@ -1,5 +1,5 @@
 IMPORTAR=1
-GUARDAR=2
+VARIABLE=2
 EN=3
 FUNCION=4
 FINFUNCION=5
@@ -99,7 +99,7 @@ STRING=98
 WS=99
 COMENTARIO=100
 'Importar'=1
-'Guardar'=2
+'Variable'=2
 'En'=3
 'Funcion'=4
 'FinFuncion'=5

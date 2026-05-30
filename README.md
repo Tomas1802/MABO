@@ -115,8 +115,26 @@ Desde PowerShell, en la raíz del proyecto:
 Esto compila la distribución con Gradle, la instala en `%LOCALAPPDATA%\MABO` y agrega `%LOCALAPPDATA%\MABO\bin` al `PATH` de usuario. Después de abrir una nueva terminal se puede ejecutar:
 
 ```powershell
+mabo
 mabo src/input_prueba_completa.txt
 mabo examples/automatizacion_combinada.dsl
+```
+
+`mabo` sin argumentos abre el modo interactivo para escribir comandos directamente:
+
+```text
+mabo> Variable base = "%USERPROFILE%/Documents/DSLDemo"
+mabo> Crear Carpeta base + "/prueba"
+mabo> Listar Contenido En base
+mabo> salir
+```
+
+En este ejemplo, `base` es una variable que guarda la ruta principal de trabajo. El operador `+` une esa ruta con otro texto, por ejemplo `base + "/prueba"`.
+
+También se puede ejecutar una instrucción corta con `-c`. En Windows es mejor reservarlo para comandos sin comillas internas; para rutas y textos usa el modo interactivo.
+
+```powershell
+mabo -c "Mostrar 123"
 ```
 
 Para desinstalar:
@@ -160,28 +178,30 @@ proyectoLexer  →  proyectoParser  →  ParseTree
 ### Variables
 
 ```
-Guardar 10 En numero
-Guardar "Hola mundo" En mensaje
-Guardar "%USERPROFILE%/Documents/MiCarpeta" En ruta
+Variable numero = 10
+Variable mensaje = "Hola mundo"
+Variable ruta = "%USERPROFILE%/Documents/MiCarpeta"
 ```
 
 ### Operadores Aritméticos
 
 | Palabra DSL | Símbolo equivalente | Operación |
 |-------------|---------------------|-----------|
-| `Mas` | `+` | Suma / concatenación |
+| `+` (`Mas`) | `+` | Suma / concatenación |
 | `Menos` | `-` | Resta |
 | `Por` | `*` | Multiplicación |
 | `Entre` | `/` | División |
 | `Modulo` | `%` | Módulo |
 
 ```
-Mostrar "10 + 3 = " Mas (a Mas b)
-Mostrar "10 - 3 = " Mas (a Menos b)
-Mostrar "10 * 3 = " Mas (a Por b)
-Mostrar "10 / 3 = " Mas (a Entre b)
-Mostrar "10 % 3 = " Mas (a Modulo b)
+Mostrar "10 + 3 = " + (a + b)
+Mostrar "10 - 3 = " + (a Menos b)
+Mostrar "10 * 3 = " + (a Por b)
+Mostrar "10 / 3 = " + (a Entre b)
+Mostrar "10 % 3 = " + (a Modulo b)
 ```
+
+La guia recomienda usar `+` porque es mas familiar. La palabra `Mas` sigue funcionando como alias del operador, y tambien aparece en filtros como `Mas Antiguos Que 30 Dias`, donde forma parte de la frase del filtro.
 
 ### Operadores de Comparación y Lógicos
 
@@ -198,8 +218,8 @@ No Verdadero
 
 ```
 Mostrar "Hola, mundo!"
-Mostrar "Resultado: " Mas (a Mas b)
-Mostrar "Ruta: " Mas ruta
+Mostrar "Resultado: " + (a + b)
+Mostrar "Ruta: " + ruta
 ```
 
 ### Condiciones
@@ -220,10 +240,10 @@ FinSi
 
 ```
 # Ciclo Mientras
-Guardar 1 En i
+Variable i = 1
 Mientras i <= 5
     Mostrar i
-    i = i Mas 1
+    i = i + 1
 FinMientras
 
 # Ciclo Para Cada (sobre lista literal)
@@ -234,7 +254,7 @@ FinPara
 # Ciclo Para Cada (sobre resultado de búsqueda)
 Buscar Archivos En "%USERPROFILE%/Documents" Con Extension ".txt"
 Para Cada archivo En ultimoResultado
-    Mostrar "Encontrado: " Mas archivo
+    Mostrar "Encontrado: " + archivo
 FinPara
 ```
 
@@ -242,7 +262,7 @@ FinPara
 
 ```
 Funcion Sumar(x, y)
-    Retornar x Mas y
+    Retornar x + y
 FinFuncion
 
 Funcion Factorial(n)
@@ -253,8 +273,8 @@ Funcion Factorial(n)
     FinSi
 FinFuncion
 
-Guardar Sumar(10, 5) En resultado
-Mostrar "Factorial de 5: " Mas Factorial(5)
+Variable resultado = Sumar(10, 5)
+Mostrar "Factorial de 5: " + Factorial(5)
 ```
 
 Las funciones soportan:
@@ -389,11 +409,11 @@ FinSi
 
 # Tamaño en bytes
 Obtener Tamano Archivo "ruta/archivo.txt"
-Mostrar "Tamaño: " Mas ultimoResultado
+Mostrar "Tamaño: " + ultimoResultado
 
 # Cantidad de archivos (recursivo)
 Obtener Cantidad Archivos En "ruta/"
-Mostrar "Total: " Mas ultimoResultado
+Mostrar "Total: " + ultimoResultado
 
 # Propiedades de un archivo
 Obtener Propiedad nombre De "ruta/archivo.txt"
@@ -480,12 +500,11 @@ Las rutas soportan expansión de variables de entorno en formato Windows y Unix:
 
 ```
 # Windows
-Guardar "%USERPROFILE%/Documents/MiProyecto" En base
-Guardar "%APPDATA%/MiApp" En config
-
+Variable base = "%USERPROFILE%/Documents/MiProyecto"
+Variable config = "%APPDATA%/MiApp"
 # Unix / cross-platform
-Guardar "${HOME}/documentos" En base2
-Guardar "~/documentos" En base3
+Variable base2 = "${HOME}/documentos"
+Variable base3 = "~/documentos"
 ```
 
 ---
@@ -506,14 +525,14 @@ Si ultimoResultado Entonces
 FinSi
 
 Obtener Cantidad Archivos En "ruta/"
-Mostrar "Total archivos: " Mas ultimoResultado
+Mostrar "Total archivos: " + ultimoResultado
 ```
 
 ---
 
 ## Seguridad
 
-El DSL implementa una lista blanca de rutas permitidas (`SecurityValidator`). Solo se pueden operar rutas que hayan sido registradas como raíces válidas, lo cual ocurre automáticamente al usar `Guardar <ruta> En variable`. Las rutas críticas del sistema operativo (System32, Program Files, raíces del disco) están bloqueadas.
+El DSL implementa una lista blanca de rutas permitidas (`SecurityValidator`). Por defecto se permite trabajar dentro del perfil del usuario y dentro de la carpeta actual del proyecto. Tambien se registran como raices validas las rutas guardadas con `Variable nombre = <ruta>`. Las rutas criticas del sistema operativo (System32, Program Files, raices del disco) estan bloqueadas.
 
 Los comandos nativos agregan una segunda capa de seguridad: validación de shell por plataforma, bloqueo de patrones peligrosos, confirmación para comandos potencialmente destructivos, soporte de simulación y auditoría de salida/código de retorno.
 
@@ -529,33 +548,33 @@ Los comandos nativos agregan una segunda capa de seguridad: validación de shell
 ## Ejemplo Completo
 
 ```
-Guardar "%USERPROFILE%/Documents/MiProyecto" En base
-Mostrar "Trabajando en: " Mas base
+Variable base = "%USERPROFILE%/Documents/MiProyecto"
+Mostrar "Trabajando en: " + base
 
 # Crear estructura
 Crear Carpeta base
-Crear Archivo base Mas "\datos.txt"
-Escribir "Linea 1" En Archivo base Mas "\datos.txt"
-Anexar "\nLinea 2" En Archivo base Mas "\datos.txt"
+Crear Archivo base + "\datos.txt"
+Escribir "Linea 1" En Archivo base + "\datos.txt"
+Anexar "\nLinea 2" En Archivo base + "\datos.txt"
 
 # Leer
-Leer Archivo base Mas "\datos.txt"
+Leer Archivo base + "\datos.txt"
 
 # Buscar y recorrer
 Buscar Archivos En base Con Extension ".txt"
 Para Cada archivo En ultimoResultado
-    Mostrar "Encontrado: " Mas archivo
+    Mostrar "Encontrado: " + archivo
 FinPara
 
 # Manejo de errores
 Intentar
-    Leer Archivo base Mas "\no_existe.txt"
+    Leer Archivo base + "\no_existe.txt"
 Capturar
     Mostrar "Archivo no encontrado, continuando..."
 FinIntentar
 
 # Comprimir todo
-Comprimir base A base Mas "\respaldo"
+Comprimir base A base + "\respaldo"
 Mostrar "Backup comprimido creado"
 
 # Tarea programada
