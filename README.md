@@ -58,7 +58,8 @@ src/
 │   └── ScheduleStore.java           # Persistencia de tareas programadas
 ├── logs/
 │   ├── LoggerService.java           # Log de ejecución (app.log)
-│   └── AuditService.java            # Log de auditoría NDJSON
+│   ├── AuditService.java            # Log de auditoría NDJSON
+│   └── TaskLogService.java          # Logs detallados por tarea
 ├── model/
 │   └── Task.java                    # Modelo de tarea DSL
 ├── utils/
@@ -132,6 +133,12 @@ mabo> salir
 ```
 
 En este ejemplo, `base` es una variable que guarda la ruta principal de trabajo. `Ir A base` cambia la carpeta actual de MABO, `Mostrar Ruta` muestra esa carpeta y el operador `+` une esa ruta con otro texto, por ejemplo `base + "/prueba"`.
+
+Al iniciar, MABO muestra tambien la carpeta de logs de tareas. En Windows queda normalmente en:
+
+```text
+%LOCALAPPDATA%\MABO\logs\tasks
+```
 
 También se puede ejecutar una instrucción corta con `-c`. En Windows es mejor reservarlo para comandos sin comillas internas; para rutas y textos usa el modo interactivo.
 
@@ -511,15 +518,42 @@ Fin
 Ejecutar VerificacionPeriodica Cada 1 Minutos
 Ejecutar VerificacionPeriodica Cada 2 Horas
 Ejecutar VerificacionPeriodica Cada 1 Dias
+Ejecutar Tarea VerificacionPeriodica Cada 2 Horas
 
 # Ejecutar al iniciar el sistema
 Ejecutar VerificacionPeriodica Al Iniciar Sistema
 
-# Ejecutar todos los días a una hora específica
+# Ejecutar una sola vez a una hora específica
 Ejecutar VerificacionPeriodica A Las "23:00"
+Ejecutar Tarea VerificacionPeriodica A Las "23:00"
 ```
 
-> El proceso permanece activo mientras haya tareas programadas en memoria. `Al Iniciar Sistema` intenta registrar una tarea nativa del sistema operativo: Task Scheduler en Windows y autostart de usuario en Linux. Si el registro nativo falla, se conserva el registro del DSL y se informa en logs.
+La palabra `Tarea` es opcional al ejecutar o programar tareas. Estas dos instrucciones son equivalentes: `Ejecutar VerificacionPeriodica A Las "23:00"` y `Ejecutar Tarea VerificacionPeriodica A Las "23:00"`.
+
+Las tareas programadas se guardan en:
+
+```text
+%USERPROFILE%/Documents/DSLDemo/schedules.ndjson
+```
+
+`A Las "HH:mm"` crea una programación de una sola ejecución. Cuando la tarea se ejecuta correctamente, MABO la elimina de `schedules.ndjson`. `Cada X Minutos/Horas/Dias` y `Al Iniciar Sistema` permanecen guardadas hasta que las elimines.
+
+> El proceso permanece activo mientras haya tareas programadas en memoria. `Al Iniciar Sistema` intenta registrar una tarea nativa del sistema operativo: Task Scheduler en Windows y autostart de usuario en Linux. Si el registro nativo falla, se conserva el registro del DSL y se informa en logs. MABO guarda la programación, pero la definición de la tarea debe existir en el script o sesión actual.
+
+### Administrar tareas programadas
+
+```
+Listar Tareas Programadas
+Eliminar Tarea Programada VerificacionPeriodica
+Cambiar Programacion De Tarea VerificacionPeriodica Cada 2 Horas
+Cambiar Programacion De Tarea VerificacionPeriodica A Las "23:30"
+```
+
+`Listar Tareas Programadas` muestra las programaciones guardadas. `Eliminar Tarea Programada` cancela la programación en memoria, la borra del archivo y elimina el registro nativo de inicio si aplica. `Cambiar Programacion De Tarea` reemplaza la programación anterior de esa tarea.
+
+Cada ejecución de una tarea genera un log propio en `%LOCALAPPDATA%\MABO\logs\tasks` en Windows. El archivo se llama con el nombre de la tarea y la fecha, por ejemplo `LimpiarArchivosXML-2026-05-31.log`. Allí se registran inicio, fin, errores, búsquedas, listados y operaciones de archivos como crear, mover, copiar, escribir, eliminar, comprimir y ejecutar comandos nativos.
+
+También existe `scheduler.log` en esa misma carpeta para ver cuándo se programó o restauró una tarea y si una ejecución programada falló. Si una tarea programada falla, el scheduler conserva la programación y escribe el error en el log.
 
 ---
 
@@ -571,6 +605,8 @@ Los comandos nativos agregan una segunda capa de seguridad: validación de shell
 
 - **`logs/app.log`** — log de ejecución en texto plano con timestamp. Registra inicio, acciones, variables, errores y fin.
 - **Auditoría NDJSON** — cada operación de archivo genera una entrada con: operación, origen, destino, éxito/fallo y detalle.
+- **Logs de tareas** — en Windows se guardan en `%LOCALAPPDATA%\MABO\logs\tasks`. Cada tarea tiene un archivo por día, por ejemplo `BackupDiario-2026-05-31.log`, y el scheduler usa `scheduler.log`.
+- **Programaciones guardadas** — se guardan en `%USERPROFILE%/Documents/DSLDemo/schedules.ndjson`.
 
 ---
 

@@ -150,6 +150,36 @@ public interface proyectoListener extends ParseTreeListener {
 	 */
 	void exitEjecutarTarea(proyectoParser.EjecutarTareaContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link proyectoParser#listarTareasProgramadas}.
+	 * @param ctx the parse tree
+	 */
+	void enterListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#listarTareasProgramadas}.
+	 * @param ctx the parse tree
+	 */
+	void exitListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#eliminarTareaProgramada}.
+	 * @param ctx the parse tree
+	 */
+	void enterEliminarTareaProgramada(proyectoParser.EliminarTareaProgramadaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#eliminarTareaProgramada}.
+	 * @param ctx the parse tree
+	 */
+	void exitEliminarTareaProgramada(proyectoParser.EliminarTareaProgramadaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#cambiarTareaProgramada}.
+	 * @param ctx the parse tree
+	 */
+	void enterCambiarTareaProgramada(proyectoParser.CambiarTareaProgramadaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#cambiarTareaProgramada}.
+	 * @param ctx the parse tree
+	 */
+	void exitCambiarTareaProgramada(proyectoParser.CambiarTareaProgramadaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link proyectoParser#programacion}.
 	 * @param ctx the parse tree
 	 */

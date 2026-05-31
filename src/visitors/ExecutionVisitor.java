@@ -6,6 +6,7 @@ import gen.proyectoBaseVisitor;
 import gen.proyectoLexer;
 import gen.proyectoParser;
 import logs.LoggerService;
+import logs.TaskLogService;
 import model.Task;
 import scheduler.SchedulerService;
 import scheduler.ScheduleStore;
@@ -26,18 +27,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     private final ExecutionContext ctx;
     private final FileSystemService fs;
     private final LoggerService logger;
+    private final TaskLogService taskLogger;
     private final ShellCommandService shell;
     private final StartupRegistrationService startupRegistration;
     private final SchedulerService scheduler = new SchedulerService();
     private final ScheduleStore scheduleStore = new ScheduleStore();
     private final java.util.Set<String> scheduledTasks = new java.util.HashSet<>();
+    private final Map<String, ScheduledFuture<?>> scheduledFutures = new HashMap<>();
     private final java.util.Set<String> importedFiles = new java.util.HashSet<>();
+    private final ThreadLocal<String> runningTask = new ThreadLocal<>();
     private final Path scriptPath;
 
     public boolean hayTareasProgramadas() {
@@ -46,6 +51,10 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
 
     public Path getCurrentDirectory() {
         return fs.getWorkingDirectory();
+    }
+
+    public Path getTaskLogDirectory() {
+        return taskLogger.getLogDirectory();
     }
 
     public ExecutionVisitor(ExecutionContext ctx, LoggerService logger) {
@@ -64,6 +73,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         this.ctx = ctx;
         this.fs = fs == null ? new FileSystemService() : fs;
         this.logger = logger;
+        this.taskLogger = new TaskLogService();
         this.shell = new ShellCommandService(logger);
         this.startupRegistration = new StartupRegistrationService(logger);
         this.scriptPath = scriptPath == null ? null : scriptPath.toAbsolutePath().normalize();
@@ -137,6 +147,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         String display = formatValue(value);
         System.out.println(display);
         logger.info("Mostrar: " + display);
+        taskEvent("Mostrar: " + display);
         return value;
     }
 
@@ -169,42 +180,89 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     @Override
     public Object visitEjecutarTarea(proyectoParser.EjecutarTareaContext node) {
         String name = node.ID().getText();
-        executeTask(name);
+        if (node.programacion() == null) {
+            executeTask(name);
+            return null;
+        }
+
+        scheduleTask(name, node.programacion());
         return null;
     }
 
     @Override
-    public Object visitProgramacion(proyectoParser.ProgramacionContext node) {
-        String taskName = node.ID().getText();
+    public Object visitListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext node) {
+        List<ScheduleStore.ScheduleEntry> schedules = scheduleStore.loadSchedules();
+        setLast(schedules);
+        if (schedules.isEmpty()) {
+            System.out.println("No hay tareas programadas.");
+            return schedules;
+        }
+        for (ScheduleStore.ScheduleEntry schedule : schedules) {
+            String line = formatSchedule(schedule);
+            System.out.println(line);
+        }
+        return schedules;
+    }
+
+    @Override
+    public Object visitEliminarTareaProgramada(proyectoParser.EliminarTareaProgramadaContext node) {
+        String name = node.ID().getText();
+        boolean removed = cancelScheduledTask(name, true);
+        System.out.println(removed ? "Tarea programada eliminada: " + name : "No existe tarea programada: " + name);
+        return removed;
+    }
+
+    @Override
+    public Object visitCambiarTareaProgramada(proyectoParser.CambiarTareaProgramadaContext node) {
+        String name = node.ID().getText();
+        scheduleTask(name, node.programacion());
+        System.out.println("Programación actualizada: " + name);
+        return null;
+    }
+
+    private void scheduleTask(String taskName, proyectoParser.ProgramacionContext node) {
+        if (!ctx.tareas.containsKey(taskName)) {
+            logger.error("No se pudo programar tarea no definida: " + taskName);
+            taskLogger.scheduler("No se pudo programar tarea no definida: " + taskName);
+            return;
+        }
+        cancelScheduledTask(taskName, true);
         if (node.CADA() != null) {
             long amount = parseNumero(node.numero());
             TimeUnit unit = toTimeUnit(node.tiempo().getText());
             if (amount <= 0) {
                 logger.info("Programación ignorada para " + taskName + ": periodo inválido " + amount);
-                return null;
+                return;
             }
-            scheduler.scheduleAtFixedRate(() -> executeTask(taskName), 0, amount, unit);
+            ScheduledFuture<?> future = scheduler.scheduleAtFixedRateWithHandle(() -> runScheduledTask(taskName), 0, amount, unit);
+            scheduledFutures.put(taskName, future);
             scheduledTasks.add(taskName);
-            // persist schedule in seconds
             long seconds = unit.toSeconds(amount);
-            scheduleStore.saveSchedule(taskName, seconds);
+            scheduleStore.saveIntervalSchedule(taskName, seconds);
             logger.info("Programada tarea " + taskName + " cada " + amount + " " + unit);
+            taskLogger.scheduler("Programada tarea " + taskName + " cada " + amount + " " + node.tiempo().getText());
+            System.out.println("Tarea programada: " + taskName + " cada " + amount + " " + node.tiempo().getText());
             executeTask(taskName);
         } else if (node.LAS() != null) {
             LocalTime time = parseTime(stripQuotes(node.cadena().getText()));
-            long initialDelay = secondsUntil(time);
-            scheduler.scheduleAtFixedRate(() -> executeTask(taskName), initialDelay, 1, TimeUnit.DAYS);
+            LocalDateTime nextRun = nextRunAt(time);
+            long initialDelay = secondsUntil(nextRun);
+            ScheduledFuture<?> future = scheduler.scheduleOnce(() -> runOneTimeScheduledTask(taskName), initialDelay, TimeUnit.SECONDS);
+            scheduledFutures.put(taskName, future);
             scheduledTasks.add(taskName);
-            scheduleStore.saveDailyTime(taskName, time.toString());
-            logger.info("Programada tarea " + taskName + " a las " + time);
+            scheduleStore.saveOneTimeSchedule(taskName, nextRun);
+            logger.info("Programada tarea " + taskName + " a las " + time + "; próxima ejecución=" + nextRun + "; espera=" + initialDelay + "s");
+            taskLogger.scheduler("Programada tarea " + taskName + " a las " + time + "; próxima ejecución=" + nextRun + "; espera=" + initialDelay + "s");
+            System.out.println("Tarea programada: " + taskName + " a las " + time + " (proxima ejecucion: " + nextRun + ")");
         } else {
             boolean registered = startupRegistration.register(taskName, scriptPath);
             scheduleStore.saveStartupSchedule(taskName);
             scheduledTasks.add(taskName);
             logger.info("Ejecución al iniciar sistema de tarea: " + taskName + " registrada=" + registered);
+            taskLogger.scheduler("Programada tarea al iniciar sistema: " + taskName + " registrada=" + registered);
+            System.out.println("Tarea programada al iniciar sistema: " + taskName);
             executeTask(taskName);
         }
-        return null;
     }
 
     public void restoreSchedules() {
@@ -215,26 +273,36 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
                 logger.info("No existe tarea para reprogramar: " + se.task);
                 continue;
             }
-            if ("daily".equalsIgnoreCase(se.kind)) {
-                LocalTime time = parseTime(se.time);
-                scheduler.scheduleAtFixedRate(() -> executeTask(se.task), secondsUntil(time), 1, TimeUnit.DAYS);
+            if ("once".equalsIgnoreCase(se.kind)) {
+                LocalDateTime fireAt = parseFireAt(se.fireAt);
+                if (!fireAt.isAfter(LocalDateTime.now())) {
+                    scheduleStore.deleteSchedule(se.task);
+                    taskLogger.scheduler("Tarea de una sola ejecución expirada y eliminada: " + se.task + " fireAt=" + se.fireAt);
+                    continue;
+                }
+                ScheduledFuture<?> future = scheduler.scheduleOnce(() -> runOneTimeScheduledTask(se.task), secondsUntil(fireAt), TimeUnit.SECONDS);
+                scheduledFutures.put(se.task, future);
                 scheduledTasks.add(se.task);
-                logger.info("Restaurada tarea diaria: " + se.task + " a las " + time);
+                logger.info("Restaurada tarea de una sola ejecución: " + se.task + " en " + fireAt);
+                taskLogger.scheduler("Restaurada tarea de una sola ejecución: " + se.task + " en " + fireAt);
                 continue;
             }
             if ("startup".equalsIgnoreCase(se.kind)) {
                 startupRegistration.register(se.task, scriptPath);
                 scheduledTasks.add(se.task);
                 logger.info("Restaurada tarea de inicio del sistema: " + se.task);
+                taskLogger.scheduler("Restaurada tarea de inicio del sistema: " + se.task);
                 continue;
             }
             if (se.periodSeconds <= 0) {
                 logger.info("Entrada de schedule inválida ignorada para " + se.task + ": " + se.periodSeconds + "s");
                 continue;
             }
-            scheduler.scheduleAtFixedRate(() -> executeTask(se.task), 0, se.periodSeconds, java.util.concurrent.TimeUnit.SECONDS);
+            ScheduledFuture<?> future = scheduler.scheduleAtFixedRateWithHandle(() -> runScheduledTask(se.task), 0, se.periodSeconds, java.util.concurrent.TimeUnit.SECONDS);
+            scheduledFutures.put(se.task, future);
             scheduledTasks.add(se.task);
             logger.info("Restaurada tarea programada: " + se.task + " cada " + se.periodSeconds + "s");
+            taskLogger.scheduler("Restaurada tarea programada: " + se.task + " cada " + se.periodSeconds + "s");
         }
     }
 
@@ -247,12 +315,31 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     }
 
     private long secondsUntil(LocalTime time) {
+        return secondsUntil(nextRunAt(time));
+    }
+
+    private long secondsUntil(LocalDateTime next) {
+        return Math.max(1L, Duration.between(LocalDateTime.now(), next).toSeconds());
+    }
+
+    private LocalDateTime nextRunAt(LocalTime time) {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime next = now.withHour(time.getHour()).withMinute(time.getMinute()).withSecond(0).withNano(0);
         if (!next.isAfter(now)) {
             next = next.plusDays(1);
         }
-        return Math.max(1L, Duration.between(now, next).toSeconds());
+        return next;
+    }
+
+    private LocalDateTime parseFireAt(String text) {
+        if (text == null || text.isBlank()) {
+            return LocalDateTime.now().minusSeconds(1);
+        }
+        try {
+            return LocalDateTime.parse(text);
+        } catch (Exception ignored) {
+            return nextRunAt(parseTime(text));
+        }
     }
 
     private long parseNumero(proyectoParser.NumeroContext numero) {
@@ -354,6 +441,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         Object result = shell.execute("powershell", stringify(visit(node.expresion())), this.ctx.modoSimulacion);
         setLast(result);
         System.out.println(result);
+        taskEvent("PowerShell: " + result);
         return result;
     }
 
@@ -362,18 +450,23 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         Object result = shell.execute("linux", stringify(visit(node.expresion())), this.ctx.modoSimulacion);
         setLast(result);
         System.out.println(result);
+        taskEvent("Linux: " + result);
         return result;
     }
 
     @Override
     public Object visitCrearArchivo(proyectoParser.CrearArchivoContext node) {
-        fs.createFile(toPath(visit(node.expresion())), this.ctx.modoSimulacion);
+        Path path = toPath(visit(node.expresion()));
+        taskEvent((ctx.modoSimulacion ? "Simular crear archivo: " : "Crear archivo: ") + path);
+        fs.createFile(path, this.ctx.modoSimulacion);
         return null;
     }
 
     @Override
     public Object visitCrearCarpeta(proyectoParser.CrearCarpetaContext node) {
-        fs.createDirectories(toPath(visit(node.expresion())), this.ctx.modoSimulacion);
+        Path path = toPath(visit(node.expresion()));
+        taskEvent((ctx.modoSimulacion ? "Simular crear carpeta: " : "Crear carpeta: ") + path);
+        fs.createDirectories(path, this.ctx.modoSimulacion);
         return null;
     }
 
@@ -383,6 +476,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         setLast(content);
         System.out.println(content);
         logger.info("LeerArchivo ejecutado");
+        taskEvent("Leer archivo: " + node.expresion().getText() + " (" + content.length() + " caracteres)");
         return content;
     }
 
@@ -390,6 +484,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     public Object visitEscribirArchivo(proyectoParser.EscribirArchivoContext node) {
         String content = stringify(visit(node.expresion(0)));
         Path path = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular escribir: " : "Escribir: ") + path + " (" + content.length() + " caracteres)");
         fs.writeText(path, content, false, this.ctx.modoSimulacion);
         setLast(content);
         return content;
@@ -399,6 +494,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     public Object visitAnexarArchivo(proyectoParser.AnexarArchivoContext node) {
         String content = stringify(visit(node.expresion(0)));
         Path path = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular anexar: " : "Anexar: ") + path + " (" + content.length() + " caracteres)");
         fs.writeText(path, content, true, this.ctx.modoSimulacion);
         setLast(content);
         return content;
@@ -406,49 +502,73 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
 
     @Override
     public Object visitEliminarArchivo(proyectoParser.EliminarArchivoContext node) {
-        fs.delete(toPath(visit(node.expresion())), this.ctx.modoSimulacion, node.sinConfirmar() != null);
+        Path path = toPath(visit(node.expresion()));
+        taskEvent((ctx.modoSimulacion ? "Simular eliminar archivo: " : "Eliminar archivo: ") + path
+                + (node.sinConfirmar() != null ? " (sin confirmar)" : " (con confirmación)"));
+        fs.delete(path, this.ctx.modoSimulacion, node.sinConfirmar() != null);
         return null;
     }
 
     @Override
     public Object visitEliminarCarpeta(proyectoParser.EliminarCarpetaContext node) {
-        fs.delete(toPath(visit(node.expresion())), this.ctx.modoSimulacion, node.sinConfirmar() != null);
+        Path path = toPath(visit(node.expresion()));
+        taskEvent((ctx.modoSimulacion ? "Simular eliminar carpeta: " : "Eliminar carpeta: ") + path
+                + (node.sinConfirmar() != null ? " (sin confirmar)" : " (con confirmación)"));
+        fs.delete(path, this.ctx.modoSimulacion, node.sinConfirmar() != null);
         return null;
     }
 
     @Override
     public Object visitCopiarArchivo(proyectoParser.CopiarArchivoContext node) {
-        fs.copy(toPath(visit(node.expresion(0))), toPath(visit(node.expresion(1))), this.ctx.modoSimulacion);
+        Path source = toPath(visit(node.expresion(0)));
+        Path target = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular copiar archivo: " : "Copiar archivo: ") + source + " -> " + target);
+        fs.copy(source, target, this.ctx.modoSimulacion);
         return null;
     }
 
     @Override
     public Object visitCopiarCarpeta(proyectoParser.CopiarCarpetaContext node) {
-        fs.copy(toPath(visit(node.expresion(0))), toPath(visit(node.expresion(1))), this.ctx.modoSimulacion);
+        Path source = toPath(visit(node.expresion(0)));
+        Path target = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular copiar carpeta: " : "Copiar carpeta: ") + source + " -> " + target);
+        fs.copy(source, target, this.ctx.modoSimulacion);
         return null;
     }
 
     @Override
     public Object visitMoverArchivo(proyectoParser.MoverArchivoContext node) {
-        fs.move(toPath(visit(node.expresion(0))), toPath(visit(node.expresion(1))), this.ctx.modoSimulacion);
+        Path source = toPath(visit(node.expresion(0)));
+        Path target = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular mover archivo: " : "Mover archivo: ") + source + " -> " + target);
+        fs.move(source, target, this.ctx.modoSimulacion);
         return null;
     }
 
     @Override
     public Object visitMoverCarpeta(proyectoParser.MoverCarpetaContext node) {
-        fs.move(toPath(visit(node.expresion(0))), toPath(visit(node.expresion(1))), this.ctx.modoSimulacion);
+        Path source = toPath(visit(node.expresion(0)));
+        Path target = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular mover carpeta: " : "Mover carpeta: ") + source + " -> " + target);
+        fs.move(source, target, this.ctx.modoSimulacion);
         return null;
     }
 
     @Override
     public Object visitRenombrarArchivo(proyectoParser.RenombrarArchivoContext node) {
-        fs.move(toPath(visit(node.expresion(0))), toPath(visit(node.expresion(1))), this.ctx.modoSimulacion);
+        Path source = toPath(visit(node.expresion(0)));
+        Path target = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular renombrar archivo: " : "Renombrar archivo: ") + source + " -> " + target);
+        fs.move(source, target, this.ctx.modoSimulacion);
         return null;
     }
 
     @Override
     public Object visitRenombrarCarpeta(proyectoParser.RenombrarCarpetaContext node) {
-        fs.move(toPath(visit(node.expresion(0))), toPath(visit(node.expresion(1))), this.ctx.modoSimulacion);
+        Path source = toPath(visit(node.expresion(0)));
+        Path target = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular renombrar carpeta: " : "Renombrar carpeta: ") + source + " -> " + target);
+        fs.move(source, target, this.ctx.modoSimulacion);
         return null;
     }
 
@@ -460,6 +580,8 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         this.ctx.archivosEncontrados.addAll(results);
         setLast(results);
         results.forEach(System.out::println);
+        taskEvent("Buscar archivos en " + root + ": " + results.size() + " resultado(s)");
+        results.forEach(path -> taskEvent("  " + path));
         return results;
     }
 
@@ -471,6 +593,8 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         this.ctx.archivosEncontrados.addAll(results);
         setLast(results);
         results.forEach(System.out::println);
+        taskEvent("Buscar carpetas en " + root + ": " + results.size() + " resultado(s)");
+        results.forEach(path -> taskEvent("  " + path));
         return results;
     }
 
@@ -480,6 +604,8 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         List<Path> children = fs.listChildren(target);
         setLast(children);
         children.forEach(System.out::println);
+        taskEvent("Listar contenido en " + target + ": " + children.size() + " elemento(s)");
+        children.forEach(path -> taskEvent("  " + path));
         return children;
     }
 
@@ -529,6 +655,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     public Object visitComprimir(proyectoParser.ComprimirContext node) {
         Path source = toPath(visit(node.expresion(0)));
         Path target = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular comprimir: " : "Comprimir: ") + source + " -> " + target);
         fs.compress(source, target, ctx.modoSimulacion);
         if (!ctx.modoSimulacion) System.out.println("Comprimido: " + source + " -> " + target);
         return null;
@@ -538,6 +665,7 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     public Object visitDescomprimir(proyectoParser.DescomprimirContext node) {
         Path source = toPath(visit(node.expresion(0)));
         Path target = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular descomprimir: " : "Descomprimir: ") + source + " -> " + target);
         fs.decompress(source, target, ctx.modoSimulacion);
         if (!ctx.modoSimulacion) System.out.println("Descomprimido: " + source + " -> " + target);
         return null;
@@ -547,13 +675,17 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     public Object visitCambiarPermisos(proyectoParser.CambiarPermisosContext node) {
         Path path = toPath(visit(node.expresion(0)));
         String permissions = stringify(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular cambiar permisos: " : "Cambiar permisos: ") + path + " -> " + permissions);
         fs.changePermissions(path, permissions, ctx.modoSimulacion);
         return null;
     }
 
     @Override
     public Object visitCrearBackup(proyectoParser.CrearBackupContext node) {
-        fs.copy(toPath(visit(node.expresion(0))), toPath(visit(node.expresion(1))), this.ctx.modoSimulacion);
+        Path source = toPath(visit(node.expresion(0)));
+        Path target = toPath(visit(node.expresion(1)));
+        taskEvent((ctx.modoSimulacion ? "Simular backup: " : "Crear backup: ") + source + " -> " + target);
+        fs.copy(source, target, this.ctx.modoSimulacion);
         return null;
     }
 
@@ -695,9 +827,89 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         Task task = ctx.tareas.get(name);
         if (task == null) {
             logger.error("Tarea no encontrada: " + name);
+            taskLogger.scheduler("Tarea no encontrada: " + name);
             return;
         }
-        visit(task.getBody());
+        long startedAt = System.currentTimeMillis();
+        runningTask.set(name);
+        logger.info("Iniciando tarea: " + name);
+        taskLogger.start(name, fs.getWorkingDirectory());
+        try {
+            visit(task.getBody());
+            long duration = System.currentTimeMillis() - startedAt;
+            taskLogger.end(name, duration);
+            logger.info("Tarea finalizada: " + name + " en " + duration + " ms");
+        } catch (RuntimeException ex) {
+            taskLogger.error(name, ex);
+            logger.error("Error ejecutando tarea: " + name, ex);
+            throw ex;
+        } finally {
+            runningTask.remove();
+        }
+    }
+
+    private void runScheduledTask(String name) {
+        taskLogger.scheduler("Intentando ejecutar tarea programada: " + name);
+        try {
+            executeTask(name);
+            taskLogger.scheduler("Ejecución programada finalizada: " + name);
+        } catch (RuntimeException ex) {
+            taskLogger.scheduler("La tarea " + name + " falló y se mantendrá programada: " + ex.getMessage());
+        }
+    }
+
+    private void runOneTimeScheduledTask(String name) {
+        taskLogger.scheduler("Intentando ejecutar tarea programada una sola vez: " + name);
+        try {
+            executeTask(name);
+            scheduleStore.deleteSchedule(name);
+            scheduledTasks.remove(name);
+            scheduledFutures.remove(name);
+            if (scheduledTasks.isEmpty()) {
+                scheduler.shutdown();
+            }
+            taskLogger.scheduler("Ejecución única finalizada y eliminada: " + name);
+        } catch (RuntimeException ex) {
+            taskLogger.scheduler("La tarea única " + name + " falló y se mantiene registrada para diagnóstico: " + ex.getMessage());
+        }
+    }
+
+    private boolean cancelScheduledTask(String name, boolean deleteFromStore) {
+        boolean changed = false;
+        ScheduledFuture<?> future = scheduledFutures.remove(name);
+        if (future != null) {
+            future.cancel(false);
+            changed = true;
+        }
+        if (scheduledTasks.remove(name)) {
+            changed = true;
+        }
+        if (deleteFromStore && scheduleStore.deleteSchedule(name)) {
+            startupRegistration.unregister(name);
+            taskLogger.scheduler("Programación eliminada: " + name);
+            changed = true;
+        }
+        if (changed && scheduledTasks.isEmpty()) {
+            scheduler.shutdown();
+        }
+        return changed;
+    }
+
+    private String formatSchedule(ScheduleStore.ScheduleEntry schedule) {
+        if ("once".equalsIgnoreCase(schedule.kind)) {
+            return schedule.task + " | una vez | " + schedule.fireAt;
+        }
+        if ("startup".equalsIgnoreCase(schedule.kind)) {
+            return schedule.task + " | al iniciar sistema";
+        }
+        return schedule.task + " | cada " + schedule.periodSeconds + " segundos";
+    }
+
+    private void taskEvent(String message) {
+        String taskName = runningTask.get();
+        if (taskName != null) {
+            taskLogger.event(taskName, message);
+        }
     }
 
     private Path toPath(Object value) {

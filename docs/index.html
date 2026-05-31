@@ -41,6 +41,7 @@
       <a href="#funciones">Funciones</a>
       <a href="#tareas">Tareas</a>
       <a href="#programacion">Programacion</a>
+      <a href="#logs">Logs</a>
       <a href="#simulacion">Simulacion</a>
       <a href="#errores">Errores</a>
       <a href="#comandos-nativos">PowerShell y Linux</a>
@@ -95,6 +96,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-windows.ps
       </div>
       <div class="note">
         <strong>Ubicacion instalada:</strong> <code>%LOCALAPPDATA%\MABO</code>. El ejecutable queda en <code>%LOCALAPPDATA%\MABO\bin\mabo.bat</code>.
+      </div>
+      <div class="note">
+        <strong>Logs de tareas:</strong> MABO muestra la ruta al iniciar. En Windows normalmente es <code>%LOCALAPPDATA%\MABO\logs\tasks</code>.
       </div>
     </section>
 
@@ -426,18 +430,41 @@ Ejecutar Tarea PrepararProyecto</code></pre>
 
     <section class="doc-section" id="programacion" data-search="programar tareas cada minutos horas dias iniciar sistema a las scheduler">
       <h2>16. Programacion de tareas</h2>
-      <p>Las tareas pueden ejecutarse inmediatamente, cada cierto tiempo, al iniciar el sistema o todos los dias a una hora.</p>
+      <p>Las tareas pueden ejecutarse inmediatamente, cada cierto tiempo, al iniciar el sistema o una sola vez a una hora especifica.</p>
       <pre><code>Ejecutar Tarea Limpieza
+Ejecutar Limpieza
 Ejecutar Limpieza Cada 30 Minutos
+Ejecutar Tarea Limpieza Cada 30 Minutos
 Ejecutar Respaldo Cada 24 Horas
 Ejecutar Respaldo Cada 1 Dias
 Ejecutar Limpieza Al Iniciar Sistema
-Ejecutar Respaldo A Las "23:00"</code></pre>
+Ejecutar Respaldo A Las "23:00"
+Ejecutar Tarea Respaldo A Las "23:00"</code></pre>
+      <p>La palabra <code>Tarea</code> es opcional al ejecutar o programar tareas.</p>
+      <p>Las programaciones se guardan en <code>%USERPROFILE%/Documents/DSLDemo/schedules.ndjson</code>. <code>A Las "HH:mm"</code> se ejecuta una vez y despues se elimina. <code>Cada</code> y <code>Al Iniciar Sistema</code> quedan guardadas hasta que las elimines.</p>
+      <h3>Administrar programaciones</h3>
+      <pre><code>Listar Tareas Programadas
+Eliminar Tarea Programada Limpieza
+Cambiar Programacion De Tarea Limpieza Cada 2 Horas
+Cambiar Programacion De Tarea Limpieza A Las "23:30"</code></pre>
+      <p><code>Listar</code> muestra lo guardado. <code>Eliminar</code> cancela y borra la programacion. <code>Cambiar Programacion</code> reemplaza la programacion anterior de esa tarea.</p>
       <div class="warning">Las tareas programadas mantienen el proceso activo cuando usan el scheduler interno. Para detenerlo, usa Ctrl+C en la terminal.</div>
     </section>
 
+    <section class="doc-section" id="logs" data-search="logs tareas scheduler auditoria localappdata errores diagnostico">
+      <h2>17. Logs de tareas</h2>
+      <p>Las tareas manuales y programadas escriben logs para que puedas revisar que hicieron cuando no estabas viendo la terminal.</p>
+      <pre><code>%LOCALAPPDATA%\MABO\logs\tasks</code></pre>
+      <p>Cada tarea crea un archivo por dia con este formato:</p>
+      <pre><code>LimpiarArchivosXML-2026-05-31.log</code></pre>
+      <p>Ese archivo incluye inicio, fin, errores, mensajes de <code>Mostrar</code>, busquedas, listados y operaciones como crear, escribir, copiar, mover, eliminar, comprimir y comandos nativos.</p>
+      <p>La misma carpeta contiene <code>scheduler.log</code>, que registra cuando se programa o restaura una tarea y si una ejecucion programada falla.</p>
+      <p>Las programaciones activas se guardan aparte en <code>%USERPROFILE%/Documents/DSLDemo/schedules.ndjson</code>.</p>
+      <div class="note">Si una tarea programada falla, MABO guarda el error. Las tareas de intervalo siguen programadas; las tareas de una sola ejecucion quedan registradas para diagnostico hasta que las elimines o cambies.</div>
+    </section>
+
     <section class="doc-section" id="simulacion" data-search="simular modo seguro previsualizar eliminar copiar mover comandos nativos">
-      <h2>17. Modo simulacion</h2>
+      <h2>18. Modo simulacion</h2>
       <p><code>Simular</code> ejecuta la validacion y auditoria, pero no modifica archivos ni ejecuta comandos nativos reales.</p>
       <pre><code>Simular Eliminar Archivo base + "/temp/cache.tmp"
 Simular Copiar Carpeta base + "/datos" A base + "/backup"
@@ -447,7 +474,7 @@ Simular Ejecutar PowerShell "Write-Output 'prueba'"</code></pre>
     </section>
 
     <section class="doc-section" id="errores" data-search="errores intentar capturar manejo excepciones archivo no existe">
-      <h2>18. Manejo de errores</h2>
+      <h2>19. Manejo de errores</h2>
       <p>Usa <code>Intentar</code> y <code>Capturar</code> para continuar cuando algo falle.</p>
       <pre><code>Intentar
     Leer Archivo base + "/no_existe.txt"
@@ -458,7 +485,7 @@ FinIntentar</code></pre>
     </section>
 
     <section class="doc-section" id="comandos-nativos" data-search="powershell linux comandos nativos ejecutar shell seguridad stdout stderr">
-      <h2>19. PowerShell y Linux</h2>
+      <h2>20. PowerShell y Linux</h2>
       <p>Cuando MABO no tenga un comando propio para algo, puedes delegar a PowerShell en Windows o a un shell Linux en Linux/Unix.</p>
       <pre><code>Ejecutar PowerShell "Get-ChildItem"
 Ejecutar Linux "ls -la"</code></pre>
@@ -475,7 +502,7 @@ Ejecutar Linux "ls -la"</code></pre>
     </section>
 
     <section class="doc-section" id="backup" data-search="backup comprimir descomprimir zip respaldo">
-      <h2>20. Backup y compresion</h2>
+      <h2>21. Backup y compresion</h2>
       <pre><code>Crear Backup De base + "/datos" En base + "/respaldo/datos"
 Comprimir base + "/datos" A base + "/respaldo/datos_zip"
 Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pre>
@@ -483,7 +510,7 @@ Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pr
     </section>
 
     <section class="doc-section" id="permisos" data-search="permisos chmod posix linux windows cambiar permisos">
-      <h2>21. Permisos</h2>
+      <h2>22. Permisos</h2>
       <p>En sistemas POSIX puedes cambiar permisos con formato octal o simbolico.</p>
       <pre><code>Cambiar Permisos "scripts/run.sh" A "755"
 Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
@@ -491,7 +518,7 @@ Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
     </section>
 
     <section class="doc-section" id="recetas" data-search="recetas ejemplos pdf limpieza respaldo descargas documentos">
-      <h2>22. Recetas completas</h2>
+      <h2>23. Recetas completas</h2>
       <article class="recipe">
         <h3>Organizar PDF desde Descargas</h3>
         <pre><code>Variable base = "%USERPROFILE%/Documents/DSLDemo"
@@ -524,7 +551,7 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
     </section>
 
     <section class="doc-section" id="referencia" data-search="referencia rapida comandos sintaxis tabla">
-      <h2>23. Referencia rapida de comandos</h2>
+      <h2>24. Referencia rapida de comandos</h2>
       <table class="reference-table">
         <thead><tr><th>Accion</th><th>Sintaxis</th></tr></thead>
         <tbody>
@@ -561,16 +588,19 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
           <tr><td>PowerShell</td><td><code>Ejecutar PowerShell comando</code></td></tr>
           <tr><td>Linux</td><td><code>Ejecutar Linux comando</code></td></tr>
           <tr><td>Tarea</td><td><code>Tarea Nombre: ... Fin</code></td></tr>
-          <tr><td>Ejecutar tarea</td><td><code>Ejecutar Tarea Nombre</code></td></tr>
-          <tr><td>Programar intervalo</td><td><code>Ejecutar Nombre Cada 1 Horas</code></td></tr>
-          <tr><td>Programar hora</td><td><code>Ejecutar Nombre A Las "23:00"</code></td></tr>
+          <tr><td>Ejecutar tarea</td><td><code>Ejecutar Nombre</code> o <code>Ejecutar Tarea Nombre</code></td></tr>
+          <tr><td>Programar intervalo</td><td><code>Ejecutar Nombre Cada 1 Horas</code> o <code>Ejecutar Tarea Nombre Cada 1 Horas</code></td></tr>
+          <tr><td>Programar hora</td><td><code>Ejecutar Nombre A Las "23:00"</code> o <code>Ejecutar Tarea Nombre A Las "23:00"</code></td></tr>
           <tr><td>Al iniciar</td><td><code>Ejecutar Nombre Al Iniciar Sistema</code></td></tr>
+          <tr><td>Listar programaciones</td><td><code>Listar Tareas Programadas</code></td></tr>
+          <tr><td>Eliminar programacion</td><td><code>Eliminar Tarea Programada Nombre</code></td></tr>
+          <tr><td>Cambiar programacion</td><td><code>Cambiar Programacion De Tarea Nombre Cada 2 Horas</code></td></tr>
         </tbody>
       </table>
     </section>
 
     <section class="doc-section" id="problemas" data-search="problemas errores comunes reservado backup comillas ruta seguridad">
-      <h2>24. Problemas comunes</h2>
+      <h2>25. Problemas comunes</h2>
       <div class="faq">
         <article>
           <h3>El nombre de mi tarea no funciona</h3>
@@ -587,6 +617,10 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
         <article>
           <h3>Una tarea programada deja la terminal abierta</h3>
           <p>Es normal cuando usa el scheduler interno. Presiona Ctrl+C para detenerlo.</p>
+        </article>
+        <article>
+          <h3>No se que hizo una tarea programada</h3>
+          <p>Revisa <code>%LOCALAPPDATA%\MABO\logs\tasks</code>. Cada tarea tiene un archivo por dia y el scheduler usa <code>scheduler.log</code>.</p>
         </article>
       </div>
     </section>

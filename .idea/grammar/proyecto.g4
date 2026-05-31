@@ -26,7 +26,9 @@ sentencia
     | retornar
     | tarea
     | ejecutarTarea
-    | programacion
+    | listarTareasProgramadas
+    | eliminarTareaProgramada
+    | cambiarTareaProgramada
     | comandoSistema
     | simulacion
     | intentarCapturar
@@ -110,7 +112,19 @@ tarea
     ;
 
 ejecutarTarea
-    : EJECUTAR TAREA ID
+    : EJECUTAR TAREA? ID programacion?
+    ;
+
+listarTareasProgramadas
+    : LISTAR TAREAS PROGRAMADAS
+    ;
+
+eliminarTareaProgramada
+    : ELIMINAR TAREA PROGRAMADA ID
+    ;
+
+cambiarTareaProgramada
+    : CAMBIAR PROGRAMACION DE TAREA ID programacion
     ;
 
 
@@ -119,9 +133,9 @@ ejecutarTarea
    ========================================================================= */
 
 programacion
-    : EJECUTAR ID CADA numero tiempo
-    | EJECUTAR ID AL INICIAR SISTEMA
-    | EJECUTAR ID A LAS cadena
+    : CADA numero tiempo
+    | AL INICIAR SISTEMA
+    | A LAS cadena
     ;
 
 tiempo
@@ -494,6 +508,10 @@ RETORNAR           : 'Retornar';
 FIN                : 'Fin';
 
 TAREA              : 'Tarea';
+TAREAS             : 'Tareas';
+PROGRAMADA         : 'Programada';
+PROGRAMADAS        : 'Programadas';
+PROGRAMACION       : 'Programacion';
 EJECUTAR           : 'Ejecutar';
 
 SI                  : 'Si';

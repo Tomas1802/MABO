@@ -31,6 +31,25 @@ public class StartupRegistrationService {
         }
     }
 
+    public boolean unregister(String taskName) {
+        String os = System.getProperty("os.name", "").toLowerCase(Locale.ROOT);
+        try {
+            if (os.contains("win")) {
+                Process p = new ProcessBuilder("schtasks", "/Delete", "/F", "/TN", "MABO_" + taskName).start();
+                boolean ok = p.waitFor() == 0;
+                logger.info("Eliminación Windows startup " + taskName + ": " + ok);
+                return ok;
+            }
+            Path desktopFile = Path.of(System.getProperty("user.home"), ".config", "autostart", "mabo-" + taskName + ".desktop");
+            Files.deleteIfExists(desktopFile);
+            logger.info("Eliminación Linux startup: " + desktopFile);
+            return true;
+        } catch (Exception ex) {
+            logger.info("No se pudo eliminar inicio del sistema para " + taskName + ": " + ex.getMessage());
+            return false;
+        }
+    }
+
     private boolean registerWindows(String taskName, Path scriptPath) throws IOException, InterruptedException {
         String javaExe = Path.of(System.getProperty("java.home"), "bin", "java.exe").toString();
         String classPath = System.getProperty("java.class.path");

@@ -61,6 +61,7 @@ public class Main {
 
         logger.info("Ejecución finalizada");
         System.out.println("Logs guardados en logs/app.log");
+        System.out.println("Logs de tareas: " + exec.getTaskLogDirectory());
 
         if (exec.hayTareasProgramadas()) {
             System.out.println("-----------------------------------------------");
@@ -80,6 +81,7 @@ public class Main {
     private static void runInteractive(ExecutionContext ctx, ExecutionVisitor exec, LoggerService logger) {
         System.out.println("=== MABO interactivo ===");
         System.out.println("Escribe comandos DSL. Usa 'salir' para terminar y 'ayuda' para ver ejemplos.");
+        System.out.println("Logs de tareas: " + exec.getTaskLogDirectory());
 
         Scanner scanner = new Scanner(System.in);
         StringBuilder buffer = new StringBuilder();

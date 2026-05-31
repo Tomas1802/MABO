@@ -55,6 +55,13 @@ class ParserFeatureTest {
                 Buscar Archivos En base Con Tamano Mayor Que 1 GB
                 Eliminar Archivo base + "/notas.txt" Sin Confirmar
                 Eliminar Carpeta base + "/tmp" Recursivamente Sin Confirmar
+                Ejecutar LimpiarArchivosXML
+                Ejecutar Tarea LimpiarArchivosXML
+                Ejecutar LimpiarArchivosXML A Las "19:50"
+                Ejecutar Tarea LimpiarArchivosXML A Las "19:50"
+                Listar Tareas Programadas
+                Eliminar Tarea Programada LimpiarArchivosXML
+                Cambiar Programacion De Tarea LimpiarArchivosXML Cada 2 Horas
                 """;
 
         proyectoLexer lexer = new proyectoLexer(CharStreams.fromString(script));

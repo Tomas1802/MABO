@@ -9,6 +9,7 @@ $ErrorActionPreference = "Stop"
 $ProjectRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $InstallPath = [System.IO.Path]::GetFullPath($InstallDir)
 $BinPath = Join-Path $InstallPath "bin"
+$BuildInstallPath = Join-Path $ProjectRoot "build\install\mabo"
 
 function Get-MaboInstallProcesses {
     param([string]$Path)
@@ -44,7 +45,7 @@ function Stop-Or-ReportMaboProcesses {
         return
     }
 
-    Write-Host "MABO is currently running from the install directory:"
+    Write-Host "MABO is currently running and is using files needed by this installer:"
     foreach ($process in $processes) {
         Write-Host "  PID $($process.ProcessId): $($process.Name)"
     }
@@ -53,11 +54,13 @@ function Stop-Or-ReportMaboProcesses {
 
 Push-Location $ProjectRoot
 try {
-    if (Test-Path $InstallPath) {
-        Stop-Or-ReportMaboProcesses -Path $InstallPath -ShouldStop $StopRunning.IsPresent
-    }
+    Stop-Or-ReportMaboProcesses -Path $InstallPath -ShouldStop $StopRunning.IsPresent
+    Stop-Or-ReportMaboProcesses -Path $BuildInstallPath -ShouldStop $StopRunning.IsPresent
 
-    gradle clean installDist
+    & gradle clean installDist
+    if ($LASTEXITCODE -ne 0) {
+        throw "Gradle build failed with exit code $LASTEXITCODE. MABO was not installed."
+    }
 
     $Distribution = Join-Path $ProjectRoot "build\install\mabo"
     if (-not (Test-Path $Distribution)) {
