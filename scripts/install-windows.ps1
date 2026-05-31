@@ -111,7 +111,14 @@ function Get-JavaMajorVersion {
         return $null
     }
 
-    $versionOutput = & java -version 2>&1
+    $previousErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = "Continue"
+    try {
+        $versionOutput = & java -version 2>&1
+    }
+    finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
     $versionLine = $versionOutput | Where-Object { $_ -match 'version' } | Select-Object -First 1
     if (-not $versionLine) {
         return $null

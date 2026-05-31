@@ -29,6 +29,7 @@
       <a href="#instalacion">Instalacion</a>
       <a href="#formas-de-uso">Formas de uso</a>
       <a href="#mabo-files">Archivos .mabo</a>
+      <a href="#vscode-extension">VS Code</a>
       <a href="#rutas">Rutas y seguridad</a>
       <a href="#navegacion">Navegacion</a>
       <a href="#variables">Variables</a>
@@ -145,13 +146,38 @@ mabo validar "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"</code></pre>
       <p>Usa validacion cuando estes editando un archivo y quieras detectar errores sin mover, borrar o crear nada.</p>
       <h3>Extension simple para VS Code</h3>
       <p>El proyecto incluye una extension basica en <code>vscode/mabo-language</code> con resaltado de sintaxis, comentarios, pares de simbolos y comandos para ejecutar o validar el archivo actual.</p>
+      <p>Consulta la seccion de VS Code para instalarla o probarla en modo desarrollo.</p>
+    </section>
+
+    <section class="doc-section" id="vscode-extension" data-search="vscode visual studio code extension instalar vsix desarrollo f5 mabo executable">
+      <h2>4. Extension de VS Code</h2>
+      <p>La extension permite trabajar con archivos <code>.mabo</code> desde VS Code con resaltado de sintaxis y comandos para ejecutar o validar el archivo actual.</p>
+      <h3>Requisitos</h3>
+      <ul>
+        <li>MABO instalado y disponible como <code>mabo</code> en PATH.</li>
+        <li>Visual Studio Code instalado.</li>
+      </ul>
+      <h3>Probar desde el codigo fuente</h3>
       <pre><code>cd vscode/mabo-language
 code .</code></pre>
-      <p>Desde VS Code puedes abrir esa carpeta y presionar F5 para probar la extension en una ventana de desarrollo. La extension espera que el comando <code>mabo</code> este instalado en PATH.</p>
+      <p>En VS Code presiona F5. Se abre una ventana llamada Extension Development Host. Desde esa ventana abre un archivo <code>.mabo</code> y usa la paleta de comandos.</p>
+      <h3>Comandos incluidos</h3>
+      <pre><code>MABO: Run Current File
+MABO: Check Current File</code></pre>
+      <p><code>Run Current File</code> ejecuta el archivo con MABO. <code>Check Current File</code> ejecuta <code>mabo --check</code> para validar sin modificar archivos.</p>
+      <h3>Instalar desde un archivo .vsix</h3>
+      <p>Cuando empaquetes la extension, puedes instalarla desde un archivo <code>.vsix</code> con VS Code.</p>
+      <pre><code>code --install-extension mabo-language-0.1.0.vsix</code></pre>
+      <p>Tambien puedes abrir VS Code, entrar a Extensions, seleccionar Install from VSIX y elegir el archivo.</p>
+      <h3>Si MABO no esta en PATH</h3>
+      <p>Configura la ruta del ejecutable en los ajustes de VS Code con <code>mabo.executable</code>.</p>
+      <pre><code>{
+  "mabo.executable": "C:\\Users\\tu_usuario\\AppData\\Local\\MABO\\bin\\mabo.bat"
+}</code></pre>
     </section>
 
     <section class="doc-section" id="primeros-comandos" data-search="primeros comandos crear listar escribir leer eliminar">
-      <h2>4. Tus primeros comandos</h2>
+      <h2>5. Tus primeros comandos</h2>
       <p>Estos comandos crean una carpeta segura, crean un archivo, escriben texto, leen el archivo y listan el contenido.</p>
       <pre><code>Variable base = "%USERPROFILE%/Documents/MABO"
 Ir A base
@@ -164,7 +190,7 @@ Listar Contenido</code></pre>
     </section>
 
     <section class="doc-section" id="rutas" data-search="rutas seguridad userprofile documents MABO variables entorno windows unix">
-      <h2>5. Rutas y seguridad</h2>
+      <h2>6. Rutas y seguridad</h2>
       <p>MABO trabaja con rutas del sistema de archivos. Por seguridad, valida que las rutas esten dentro de raices permitidas y bloquea rutas criticas del sistema.</p>
       <h3>Rutas recomendadas</h3>
       <pre><code>Variable base = "%USERPROFILE%/Documents/MABO"
@@ -187,7 +213,7 @@ Variable descargas = base + "/Descargas"</code></pre>
     </section>
 
     <section class="doc-section" id="navegacion" data-search="navegacion ruta actual directorio carpeta actual ir a mostrar ruta cd pwd">
-      <h2>6. Navegacion</h2>
+      <h2>7. Navegacion</h2>
       <p>MABO tiene una carpeta actual. Las rutas relativas se resuelven desde esa carpeta y el modo interactivo la muestra en el prompt.</p>
 <pre><code>Mostrar Ruta
 Ir A "%USERPROFILE%/Documents"
@@ -200,7 +226,7 @@ Listar Contenido</code></pre>
     </section>
 
     <section class="doc-section" id="variables" data-search="variables guardar asignacion tipos numeros texto booleanos listas">
-      <h2>7. Variables</h2>
+      <h2>8. Variables</h2>
       <p>Las variables guardan valores para reutilizarlos. Se crean con <code>Variable nombre = valor</code> y se modifican con <code>=</code>.</p>
       <pre><code>Variable cantidad = 10
 Variable nombre = "reporte.txt"
@@ -221,7 +247,7 @@ Mostrar cantidad</code></pre>
     </section>
 
     <section class="doc-section" id="salida" data-search="mostrar imprimir resultado consola concatenar">
-      <h2>8. Mostrar resultados</h2>
+      <h2>9. Mostrar resultados</h2>
       <p>Usa <code>Mostrar</code> para imprimir texto o valores en la consola.</p>
       <pre><code>Mostrar "Hola"
 Mostrar 10
@@ -234,7 +260,7 @@ Mostrar base + "/archivo.txt"</code></pre>
     </section>
 
     <section class="doc-section" id="archivos" data-search="archivos crear leer escribir anexar copiar mover renombrar eliminar">
-      <h2>9. Comandos para archivos</h2>
+      <h2>10. Comandos para archivos</h2>
       <div class="command-list">
         <article>
           <h3>Crear Archivo</h3>
@@ -281,7 +307,7 @@ Eliminar Archivo "ruta/archivo.txt" Sin Confirmar</code></pre>
     </section>
 
     <section class="doc-section" id="carpetas" data-search="carpetas crear copiar mover renombrar eliminar recursivamente listar contenido">
-      <h2>10. Comandos para carpetas</h2>
+      <h2>11. Comandos para carpetas</h2>
       <div class="command-list">
         <article>
           <h3>Crear Carpeta</h3>
@@ -320,7 +346,7 @@ Eliminar Carpeta "ruta/carpeta" Recursivamente Sin Confirmar</code></pre>
     </section>
 
     <section class="doc-section" id="busqueda" data-search="buscar archivos carpetas filtros extension nombre prefijo sufijo tamano antiguedad">
-      <h2>11. Busqueda y filtros</h2>
+      <h2>12. Busqueda y filtros</h2>
       <p>Los comandos de busqueda recorren una carpeta y devuelven rutas que coinciden con filtros. El resultado queda en <code>ultimoResultado</code>.</p>
       <h3>Buscar archivos</h3>
       <pre><code>Buscar Archivos En "ruta" Con Extension ".pdf"
@@ -340,7 +366,7 @@ Buscar Archivos En "ruta" Mas Recientes Que 7 Dias</code></pre>
     </section>
 
     <section class="doc-section" id="consultas" data-search="existe obtener tamano cantidad propiedad nombre extension ruta existe esarchivo escarpeta">
-      <h2>12. Consultas sobre archivos y carpetas</h2>
+      <h2>13. Consultas sobre archivos y carpetas</h2>
       <pre><code>Existe Archivo "ruta/archivo.txt"
 Existe Carpeta "ruta/carpeta"
 Obtener Tamano Archivo "ruta/archivo.txt"
@@ -362,7 +388,7 @@ FinSi</code></pre>
     </section>
 
     <section class="doc-section" id="control" data-search="condiciones si sino finsi mientras finmientras para cada finpara operadores logicos">
-      <h2>13. Condiciones y ciclos</h2>
+      <h2>14. Condiciones y ciclos</h2>
       <h3>Condiciones</h3>
       <pre><code>Si cantidad > 0 Entonces
     Mostrar "Hay archivos"
@@ -392,7 +418,7 @@ FinPara</code></pre>
     </section>
 
     <section class="doc-section" id="funciones" data-search="funciones parametros retornar recursividad reutilizar">
-      <h2>14. Funciones</h2>
+      <h2>15. Funciones</h2>
       <p>Una funcion calcula o ejecuta algo reutilizable. Puede recibir parametros y devolver un valor con <code>Retornar</code>.</p>
       <pre><code>Funcion NombreCompleto(nombre, apellido)
     Retornar nombre + " " + apellido
@@ -409,7 +435,7 @@ FinFuncion</code></pre>
     </section>
 
     <section class="doc-section" id="tareas" data-search="tareas rutina ejecutar tarea bloque automatizacion">
-      <h2>15. Tareas</h2>
+      <h2>16. Tareas</h2>
       <p>Una tarea es una rutina con nombre. No devuelve valor; sirve para agrupar pasos de automatizacion.</p>
       <pre><code>Tarea PrepararProyecto:
     Crear Carpeta base + "/entrada"
@@ -422,7 +448,7 @@ Ejecutar Tarea PrepararProyecto</code></pre>
     </section>
 
     <section class="doc-section" id="programacion" data-search="programar tareas cada minutos horas dias iniciar sistema a las scheduler">
-      <h2>16. Programacion de tareas</h2>
+      <h2>17. Programacion de tareas</h2>
       <p>Las tareas y los archivos <code>.mabo</code> pueden ejecutarse inmediatamente, cada cierto tiempo, al iniciar el sistema o una sola vez a una hora especifica.</p>
       <h3>Programar tareas con nombre</h3>
       <pre><code>Ejecutar Tarea Limpieza
@@ -463,7 +489,7 @@ Cambiar Programacion De Tarea Limpieza A Las "23:30"</code></pre>
     </section>
 
     <section class="doc-section" id="logs" data-search="logs tareas scheduler auditoria localappdata errores diagnostico">
-      <h2>17. Logs de tareas</h2>
+      <h2>18. Logs de tareas</h2>
       <p>Las tareas manuales y programadas escriben logs para que puedas revisar que hicieron cuando no estabas viendo la terminal.</p>
       <pre><code>%LOCALAPPDATA%\MABO\logs\tasks</code></pre>
       <p>Cada tarea crea un archivo por dia con este formato:</p>
@@ -479,7 +505,7 @@ Cambiar Programacion De Tarea Limpieza A Las "23:30"</code></pre>
     </section>
 
     <section class="doc-section" id="simulacion" data-search="simular modo seguro previsualizar eliminar copiar mover comandos nativos">
-      <h2>18. Modo simulacion</h2>
+      <h2>19. Modo simulacion</h2>
       <p><code>Simular</code> ejecuta la validacion y auditoria, pero no modifica archivos ni ejecuta comandos nativos reales.</p>
       <pre><code>Simular Eliminar Archivo base + "/temp/cache.tmp"
 Simular Copiar Carpeta base + "/datos" A base + "/backup"
@@ -489,7 +515,7 @@ Simular Ejecutar PowerShell "Write-Output 'prueba'"</code></pre>
     </section>
 
     <section class="doc-section" id="errores" data-search="errores intentar capturar manejo excepciones archivo no existe">
-      <h2>19. Manejo de errores</h2>
+      <h2>20. Manejo de errores</h2>
       <p>Usa <code>Intentar</code> y <code>Capturar</code> para continuar cuando algo falle.</p>
       <pre><code>Intentar
     Leer Archivo base + "/no_existe.txt"
@@ -500,7 +526,7 @@ FinIntentar</code></pre>
     </section>
 
     <section class="doc-section" id="comandos-nativos" data-search="powershell linux comandos nativos ejecutar shell seguridad stdout stderr">
-      <h2>20. PowerShell y Linux</h2>
+      <h2>21. PowerShell y Linux</h2>
       <p>Cuando MABO no tenga un comando propio para algo, puedes delegar a PowerShell en Windows o a un shell Linux en Linux/Unix.</p>
       <pre><code>Ejecutar PowerShell "Get-ChildItem"
 Ejecutar Linux "ls -la"</code></pre>
@@ -517,7 +543,7 @@ Ejecutar Linux "ls -la"</code></pre>
     </section>
 
     <section class="doc-section" id="backup" data-search="backup comprimir descomprimir zip respaldo">
-      <h2>21. Backup y compresion</h2>
+      <h2>22. Backup y compresion</h2>
       <pre><code>Crear Backup De base + "/datos" En base + "/respaldo/datos"
 Comprimir base + "/datos" A base + "/respaldo/datos_zip"
 Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pre>
@@ -525,7 +551,7 @@ Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pr
     </section>
 
     <section class="doc-section" id="permisos" data-search="permisos chmod posix linux windows cambiar permisos">
-      <h2>22. Permisos</h2>
+      <h2>23. Permisos</h2>
       <p>En sistemas POSIX puedes cambiar permisos con formato octal o simbolico.</p>
       <pre><code>Cambiar Permisos "scripts/run.sh" A "755"
 Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
@@ -533,7 +559,7 @@ Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
     </section>
 
     <section class="doc-section" id="recetas" data-search="recetas ejemplos pdf limpieza respaldo descargas documentos">
-      <h2>23. Ejemplos practicos</h2>
+      <h2>24. Ejemplos practicos</h2>
       <article class="recipe">
         <h3>Organizar PDF desde Descargas</h3>
         <pre><code>Variable base = "%USERPROFILE%/Documents/MABO"
@@ -566,7 +592,7 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
     </section>
 
     <section class="doc-section" id="referencia" data-search="referencia rapida comandos sintaxis tabla">
-      <h2>24. Referencia rapida de comandos</h2>
+      <h2>25. Referencia rapida de comandos</h2>
       <table class="reference-table">
         <thead><tr><th>Accion</th><th>Sintaxis</th></tr></thead>
         <tbody>
@@ -618,7 +644,7 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
     </section>
 
     <section class="doc-section" id="problemas" data-search="problemas errores comunes reservado backup comillas ruta seguridad">
-      <h2>25. Problemas comunes</h2>
+      <h2>26. Problemas comunes</h2>
       <div class="faq">
         <article>
           <h3>El nombre de mi tarea no funciona</h3>

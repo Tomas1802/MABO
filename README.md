@@ -195,6 +195,27 @@ code .
 
 Presiona F5 desde VS Code para abrir una ventana de desarrollo con la extensión cargada. La extensión espera que `mabo` esté instalado en PATH.
 
+Para instalar una versión empaquetada de la extensión, usa un archivo `.vsix`:
+
+```powershell
+code --install-extension mabo-language-0.1.0.vsix
+```
+
+También puedes abrir VS Code, entrar a Extensions, elegir Install from VSIX y seleccionar el archivo. La extensión agrega estos comandos:
+
+```text
+MABO: Run Current File
+MABO: Check Current File
+```
+
+Si `mabo` no está en PATH, configura la ruta en VS Code:
+
+```json
+{
+  "mabo.executable": "C:\\Users\\tu_usuario\\AppData\\Local\\MABO\\bin\\mabo.bat"
+}
+```
+
 Para desinstalar:
 
 ```powershell
