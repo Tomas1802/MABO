@@ -97,6 +97,12 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitEjecutarTarea(proyectoParser.EjecutarTareaContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link proyectoParser#ejecutarArchivo}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link proyectoParser#listarTareasProgramadas}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

@@ -12,7 +12,7 @@ class ParserFeatureTest {
     @Test
     void parsesNativeCommandsAndSpecificTimeSchedules() {
         String script = """
-                Variable base = "%USERPROFILE%/Documents/DSLDemo"
+                Variable base = "%USERPROFILE%/Documents/MABO"
                 Tarea RespaldoProgramado:
                     Mostrar "ok"
                 Fin
@@ -42,7 +42,7 @@ class ParserFeatureTest {
     @Test
     void parsesSimplifiedFileWriteListAndExplicitSizeFilters() {
         String script = """
-                Variable base = "%USERPROFILE%/Documents/DSLDemo"
+                Variable base = "%USERPROFILE%/Documents/MABO"
                 Ir A base
                 Mostrar Ruta
                 Escribir "Mi primera nota" En base + "/notas.txt"
@@ -50,6 +50,8 @@ class ParserFeatureTest {
                 Listar Contenido
                 Listar Contenido base
                 Buscar Archivos En base Con Tamano Menor Que 5 MB
+                Buscar Archivos En base Con Tamaño Menor Que 5 MB
+                Buscar Archivos En base Con Extensión ".xml"
                 Buscar Archivos En base Con Tamano Mayor Que 100 KB
                 Buscar Archivos En base Con Tamano Menor Que 1024 Bytes
                 Buscar Archivos En base Con Tamano Mayor Que 1 GB
@@ -59,6 +61,10 @@ class ParserFeatureTest {
                 Ejecutar Tarea LimpiarArchivosXML
                 Ejecutar LimpiarArchivosXML A Las "19:50"
                 Ejecutar Tarea LimpiarArchivosXML A Las "19:50"
+                Ejecutar Archivo "C:/Users/tparr/Documents/TAREAS/LimpiarXML.mabo"
+                Ejecutar Archivo "C:/Users/tparr/Documents/TAREAS/LimpiarXML.mabo" A Las "19:50"
+                Ejecutar Archivo "C:/Users/tparr/Documents/TAREAS/LimpiarXML.mabo" Cada 2 Horas
+                Ejecutar Archivo "C:/Users/tparr/Documents/TAREAS/LimpiarXML.mabo" Al Iniciar Sistema
                 Listar Tareas Programadas
                 Eliminar Tarea Programada LimpiarArchivosXML
                 Eliminar Tareas Programadas

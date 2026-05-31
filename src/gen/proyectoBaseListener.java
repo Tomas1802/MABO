@@ -187,6 +187,18 @@ public class proyectoBaseListener implements proyectoListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext ctx) { }
 	/**
 	 * {@inheritDoc}

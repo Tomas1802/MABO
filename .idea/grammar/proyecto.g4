@@ -25,6 +25,7 @@ sentencia
     | llamadaFuncion
     | retornar
     | tarea
+    | ejecutarArchivo
     | ejecutarTarea
     | listarTareasProgramadas
     | eliminarTareasProgramadas
@@ -114,6 +115,10 @@ tarea
 
 ejecutarTarea
     : EJECUTAR TAREA? ID programacion?
+    ;
+
+ejecutarArchivo
+    : EJECUTAR ARCHIVO expresion programacion?
     ;
 
 listarTareasProgramadas
@@ -506,7 +511,7 @@ IMPORTAR           : 'Importar';
 VARIABLE           : 'Variable';
 EN                  : 'En';
 
-FUNCION            : 'Funcion';
+FUNCION            : 'Funcion' | 'Función';
 FINFUNCION         : 'FinFuncion';
 RETORNAR           : 'Retornar';
 
@@ -516,7 +521,7 @@ TAREA              : 'Tarea';
 TAREAS             : 'Tareas';
 PROGRAMADA         : 'Programada';
 PROGRAMADAS        : 'Programadas';
-PROGRAMACION       : 'Programacion';
+PROGRAMACION       : 'Programacion' | 'Programación';
 EJECUTAR           : 'Ejecutar';
 
 SI                  : 'Si';
@@ -551,7 +556,7 @@ OBTENER            : 'Obtener';
 EXISTE             : 'Existe';
 CAMBIAR            : 'Cambiar';
 
-TAMANO             : 'Tamano';
+TAMANO             : 'Tamano' | 'Tamaño';
 CANTIDAD           : 'Cantidad';
 
 ARCHIVO            : 'Archivo';
@@ -564,7 +569,7 @@ CONTENIDO          : 'Contenido';
 
 BACKUP             : 'Backup';
 
-COMPRESION         : 'Compresion';
+COMPRESION         : 'Compresion' | 'Compresión';
 COMPRIMIR          : 'Comprimir';
 DESCOMPRIMIR       : 'Descomprimir';
 
@@ -575,7 +580,7 @@ CON                : 'Con';
 DE                  : 'De';
 A                   : 'A';
 
-EXTENSION          : 'Extension';
+EXTENSION          : 'Extension' | 'Extensión';
 NOMBRE             : 'Nombre';
 PREFIJO            : 'Prefijo';
 SUFIJO             : 'Sufijo';
@@ -600,7 +605,7 @@ RUTA               : 'Ruta';
 
 HORAS              : 'Horas';
 MINUTOS            : 'Minutos';
-DIAS               : 'Dias';
+DIAS               : 'Dias' | 'Días';
 BYTES              : 'Bytes';
 KB                 : 'KB';
 MB                 : 'MB';
@@ -632,7 +637,7 @@ MENOR_QUE          : '<';
 MAYOR_IGUAL        : '>=';
 MENOR_IGUAL        : '<=';
 
-MAS                : 'Mas' | '+';
+MAS                : 'Mas' | 'Más' | '+';
 MENOS              : 'Menos' | '-';
 MULT               : 'Por' | '*';
 DIV                : 'Entre' | '/';

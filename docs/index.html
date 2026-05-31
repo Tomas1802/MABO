@@ -28,6 +28,7 @@
       <a href="#inicio">Inicio rapido</a>
       <a href="#instalacion">Instalacion</a>
       <a href="#formas-de-uso">Formas de uso</a>
+      <a href="#mabo-files">Archivos .mabo</a>
       <a href="#rutas">Rutas y seguridad</a>
       <a href="#navegacion">Navegacion</a>
       <a href="#variables">Variables</a>
@@ -103,8 +104,8 @@ mabo&gt; salir</code></pre>
         </article>
         <article>
           <h3>Ejecutar un archivo</h3>
-          <p>Guarda comandos en un archivo <code>.dsl</code> y ejecutalos como rutina.</p>
-          <pre><code>mabo scripts\limpieza.dsl</code></pre>
+          <p>Guarda comandos en un archivo <code>.mabo</code> y ejecutalos como rutina.</p>
+          <pre><code>mabo scripts\limpieza.mabo</code></pre>
         </article>
         <article>
           <h3>Comando corto</h3>
@@ -119,10 +120,34 @@ mabo&gt; salir</code></pre>
       </div>
     </section>
 
+    <section class="doc-section" id="mabo-files" data-search="mabo extension archivos vscode validar check sintaxis semantica">
+      <h2>3. Archivos .mabo</h2>
+      <p>Los scripts propios de MABO usan la extension <code>.mabo</code>. Un archivo puede contener comandos sueltos, ciclos, condiciones, tareas o llamadas a PowerShell/Linux.</p>
+      <pre><code>mabo examples/limpieza.mabo
+mabo --check examples/limpieza.mabo</code></pre>
+      <p><code>mabo archivo.mabo</code> ejecuta el archivo. <code>mabo --check archivo.mabo</code> analiza sintaxis y semantica con ANTLR y <code>SemanticVisitor</code>, pero no ejecuta acciones.</p>
+      <h3>Ejecutar archivos desde MABO</h3>
+      <pre><code>Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"</code></pre>
+      <p>Esta instruccion ejecuta el archivo inmediatamente. Para programarlo, agrega una programacion al final.</p>
+      <pre><code>Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" A Las "23:00"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Cada 24 Horas
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Al Iniciar Sistema</code></pre>
+      <div class="note"><code>Al Iniciar Sistema</code> solo registra el arranque; no ejecuta el archivo en ese momento. <code>A Las</code> y <code>Cada</code> si quedan activos en el proceso actual.</div>
+      <h3>Validar antes de ejecutar</h3>
+      <pre><code>mabo --check "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"
+mabo validar "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"</code></pre>
+      <p>Usa validacion cuando estes editando un archivo y quieras detectar errores sin mover, borrar o crear nada.</p>
+      <h3>Extension simple para VS Code</h3>
+      <p>El proyecto incluye una extension basica en <code>vscode/mabo-language</code> con resaltado de sintaxis, comentarios, pares de simbolos y comandos para ejecutar o validar el archivo actual.</p>
+      <pre><code>cd vscode/mabo-language
+code .</code></pre>
+      <p>Desde VS Code puedes abrir esa carpeta y presionar F5 para probar la extension en una ventana de desarrollo. La extension espera que el comando <code>mabo</code> este instalado en PATH.</p>
+    </section>
+
     <section class="doc-section" id="primeros-comandos" data-search="primeros comandos crear listar escribir leer eliminar">
-      <h2>3. Tus primeros comandos</h2>
+      <h2>4. Tus primeros comandos</h2>
       <p>Estos comandos crean una carpeta segura, crean un archivo, escriben texto, leen el archivo y listan el contenido.</p>
-      <pre><code>Variable base = "%USERPROFILE%/Documents/DSLDemo"
+      <pre><code>Variable base = "%USERPROFILE%/Documents/MABO"
 Ir A base
 Crear Carpeta base + "/prueba"
 Crear Archivo base + "/prueba/notas.txt"
@@ -132,11 +157,11 @@ Ir A base + "/prueba"
 Listar Contenido</code></pre>
     </section>
 
-    <section class="doc-section" id="rutas" data-search="rutas seguridad userprofile documents dsldemo variables entorno windows unix">
-      <h2>4. Rutas y seguridad</h2>
+    <section class="doc-section" id="rutas" data-search="rutas seguridad userprofile documents MABO variables entorno windows unix">
+      <h2>5. Rutas y seguridad</h2>
       <p>MABO trabaja con rutas del sistema de archivos. Por seguridad, valida que las rutas esten dentro de raices permitidas y bloquea rutas criticas del sistema.</p>
       <h3>Rutas recomendadas</h3>
-      <pre><code>Variable base = "%USERPROFILE%/Documents/DSLDemo"
+      <pre><code>Variable base = "%USERPROFILE%/Documents/MABO"
 Variable documentos = base + "/Documentos"
 Variable descargas = base + "/Descargas"</code></pre>
       <p>En los ejemplos usamos <code>base</code> como carpeta principal de trabajo. Puedes usar otro nombre, como <code>proyecto</code> o <code>raiz</code>, siempre que lo hayas creado con <code>Variable nombre = valor</code>.</p>
@@ -156,7 +181,7 @@ Variable descargas = base + "/Descargas"</code></pre>
     </section>
 
     <section class="doc-section" id="navegacion" data-search="navegacion ruta actual directorio carpeta actual ir a mostrar ruta cd pwd">
-      <h2>5. Navegacion</h2>
+      <h2>6. Navegacion</h2>
       <p>MABO tiene una carpeta actual. Las rutas relativas se resuelven desde esa carpeta y el modo interactivo la muestra en el prompt.</p>
 <pre><code>Mostrar Ruta
 Ir A "%USERPROFILE%/Documents"
@@ -169,7 +194,7 @@ Listar Contenido</code></pre>
     </section>
 
     <section class="doc-section" id="variables" data-search="variables guardar asignacion tipos numeros texto booleanos listas">
-      <h2>6. Variables</h2>
+      <h2>7. Variables</h2>
       <p>Las variables guardan valores para reutilizarlos. Se crean con <code>Variable nombre = valor</code> y se modifican con <code>=</code>.</p>
       <pre><code>Variable cantidad = 10
 Variable nombre = "reporte.txt"
@@ -190,7 +215,7 @@ Mostrar cantidad</code></pre>
     </section>
 
     <section class="doc-section" id="salida" data-search="mostrar imprimir resultado consola concatenar">
-      <h2>7. Mostrar resultados</h2>
+      <h2>8. Mostrar resultados</h2>
       <p>Usa <code>Mostrar</code> para imprimir texto o valores en la consola.</p>
       <pre><code>Mostrar "Hola"
 Mostrar 10
@@ -203,7 +228,7 @@ Mostrar base + "/archivo.txt"</code></pre>
     </section>
 
     <section class="doc-section" id="archivos" data-search="archivos crear leer escribir anexar copiar mover renombrar eliminar">
-      <h2>8. Comandos para archivos</h2>
+      <h2>9. Comandos para archivos</h2>
       <div class="command-list">
         <article>
           <h3>Crear Archivo</h3>
@@ -250,7 +275,7 @@ Eliminar Archivo "ruta/archivo.txt" Sin Confirmar</code></pre>
     </section>
 
     <section class="doc-section" id="carpetas" data-search="carpetas crear copiar mover renombrar eliminar recursivamente listar contenido">
-      <h2>9. Comandos para carpetas</h2>
+      <h2>10. Comandos para carpetas</h2>
       <div class="command-list">
         <article>
           <h3>Crear Carpeta</h3>
@@ -289,7 +314,7 @@ Eliminar Carpeta "ruta/carpeta" Recursivamente Sin Confirmar</code></pre>
     </section>
 
     <section class="doc-section" id="busqueda" data-search="buscar archivos carpetas filtros extension nombre prefijo sufijo tamano antiguedad">
-      <h2>10. Busqueda y filtros</h2>
+      <h2>11. Busqueda y filtros</h2>
       <p>Los comandos de busqueda recorren una carpeta y devuelven rutas que coinciden con filtros. El resultado queda en <code>ultimoResultado</code>.</p>
       <h3>Buscar archivos</h3>
       <pre><code>Buscar Archivos En "ruta" Con Extension ".pdf"
@@ -309,7 +334,7 @@ Buscar Archivos En "ruta" Mas Recientes Que 7 Dias</code></pre>
     </section>
 
     <section class="doc-section" id="consultas" data-search="existe obtener tamano cantidad propiedad nombre extension ruta existe esarchivo escarpeta">
-      <h2>11. Consultas sobre archivos y carpetas</h2>
+      <h2>12. Consultas sobre archivos y carpetas</h2>
       <pre><code>Existe Archivo "ruta/archivo.txt"
 Existe Carpeta "ruta/carpeta"
 Obtener Tamano Archivo "ruta/archivo.txt"
@@ -331,7 +356,7 @@ FinSi</code></pre>
     </section>
 
     <section class="doc-section" id="control" data-search="condiciones si sino finsi mientras finmientras para cada finpara operadores logicos">
-      <h2>12. Condiciones y ciclos</h2>
+      <h2>13. Condiciones y ciclos</h2>
       <h3>Condiciones</h3>
       <pre><code>Si cantidad > 0 Entonces
     Mostrar "Hay archivos"
@@ -361,7 +386,7 @@ FinPara</code></pre>
     </section>
 
     <section class="doc-section" id="funciones" data-search="funciones parametros retornar recursividad reutilizar">
-      <h2>13. Funciones</h2>
+      <h2>14. Funciones</h2>
       <p>Una funcion calcula o ejecuta algo reutilizable. Puede recibir parametros y devolver un valor con <code>Retornar</code>.</p>
       <pre><code>Funcion NombreCompleto(nombre, apellido)
     Retornar nombre + " " + apellido
@@ -378,7 +403,7 @@ FinFuncion</code></pre>
     </section>
 
     <section class="doc-section" id="tareas" data-search="tareas rutina ejecutar tarea bloque automatizacion">
-      <h2>14. Tareas</h2>
+      <h2>15. Tareas</h2>
       <p>Una tarea es una rutina con nombre. No devuelve valor; sirve para agrupar pasos de automatizacion.</p>
       <pre><code>Tarea PrepararProyecto:
     Crear Carpeta base + "/entrada"
@@ -391,8 +416,9 @@ Ejecutar Tarea PrepararProyecto</code></pre>
     </section>
 
     <section class="doc-section" id="programacion" data-search="programar tareas cada minutos horas dias iniciar sistema a las scheduler">
-      <h2>15. Programacion de tareas</h2>
-      <p>Las tareas pueden ejecutarse inmediatamente, cada cierto tiempo, al iniciar el sistema o una sola vez a una hora especifica.</p>
+      <h2>16. Programacion de tareas</h2>
+      <p>Las tareas y los archivos <code>.mabo</code> pueden ejecutarse inmediatamente, cada cierto tiempo, al iniciar el sistema o una sola vez a una hora especifica.</p>
+      <h3>Programar tareas con nombre</h3>
       <pre><code>Ejecutar Tarea Limpieza
 Ejecutar Limpieza
 Ejecutar Limpieza Cada 30 Minutos
@@ -403,31 +429,51 @@ Ejecutar Limpieza Al Iniciar Sistema
 Ejecutar Respaldo A Las "23:00"
 Ejecutar Tarea Respaldo A Las "23:00"</code></pre>
       <p>La palabra <code>Tarea</code> es opcional al ejecutar o programar tareas.</p>
-      <p>Las programaciones se guardan en <code>%USERPROFILE%/Documents/DSLDemo/schedules.ndjson</code>. <code>A Las "HH:mm"</code> se ejecuta una vez y despues se elimina. <code>Cada</code> y <code>Al Iniciar Sistema</code> quedan guardadas hasta que las elimines.</p>
+      <h3>Programar archivos .mabo</h3>
+      <pre><code>Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" A Las "23:00"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Cada 24 Horas
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Al Iniciar Sistema</code></pre>
+      <p>Programar el archivo completo suele ser la forma mas practica para rutinas de arranque, porque MABO guarda la ruta del <code>.mabo</code> y puede ejecutarlo despues de reiniciar.</p>
+      <h3>Como se comporta cada programacion</h3>
+      <table>
+        <thead><tr><th>Programacion</th><th>Comportamiento</th></tr></thead>
+        <tbody>
+          <tr><td><code>A Las "HH:mm"</code></td><td>Ejecuta una vez a la proxima ocurrencia de esa hora. Si termina correctamente, MABO la elimina.</td></tr>
+          <tr><td><code>Cada X Minutos/Horas/Dias</code></td><td>Ejecuta inmediatamente y luego repite mientras el proceso siga activo. La programacion queda guardada para restaurarla.</td></tr>
+          <tr><td><code>Al Iniciar Sistema</code></td><td>Registra el arranque del sistema. No ejecuta inmediatamente.</td></tr>
+        </tbody>
+      </table>
+      <p>Las programaciones se guardan en <code>%USERPROFILE%/Documents/MABO/schedules.ndjson</code>.</p>
+      <p>Si vienes de una version anterior, MABO puede copiar programaciones antiguas a la nueva carpeta cuando la nueva ruta todavia no existe.</p>
       <h3>Administrar programaciones</h3>
       <pre><code>Listar Tareas Programadas
 Eliminar Tarea Programada Limpieza
 Eliminar Tareas Programadas
 Cambiar Programacion De Tarea Limpieza Cada 2 Horas
 Cambiar Programacion De Tarea Limpieza A Las "23:30"</code></pre>
-      <p><code>Listar</code> muestra lo guardado. <code>Eliminar Tarea Programada</code> cancela y borra una programacion. <code>Eliminar Tareas Programadas</code> borra todas. <code>Cambiar Programacion</code> reemplaza la programacion anterior de esa tarea.</p>
+      <p><code>Listar Tareas Programadas</code> muestra tareas y archivos programados. <code>Eliminar Tarea Programada Nombre</code> borra una programacion de tarea por nombre. <code>Eliminar Tareas Programadas</code> borra todas las programaciones, incluidas las de archivos <code>.mabo</code> y entradas de arranque creadas por MABO. <code>Cambiar Programacion De Tarea</code> reemplaza la programacion anterior de una tarea con nombre.</p>
       <div class="warning">Las tareas programadas mantienen el proceso activo cuando usan el scheduler interno. Para detenerlo, usa Ctrl+C en la terminal.</div>
     </section>
 
     <section class="doc-section" id="logs" data-search="logs tareas scheduler auditoria localappdata errores diagnostico">
-      <h2>16. Logs de tareas</h2>
+      <h2>17. Logs de tareas</h2>
       <p>Las tareas manuales y programadas escriben logs para que puedas revisar que hicieron cuando no estabas viendo la terminal.</p>
       <pre><code>%LOCALAPPDATA%\MABO\logs\tasks</code></pre>
       <p>Cada tarea crea un archivo por dia con este formato:</p>
       <pre><code>LimpiarArchivosXML-2026-05-31.log</code></pre>
       <p>Ese archivo incluye inicio, fin, errores, mensajes de <code>Mostrar</code>, busquedas, listados y operaciones como crear, escribir, copiar, mover, eliminar, comprimir y comandos nativos.</p>
       <p>La misma carpeta contiene <code>scheduler.log</code>, que registra cuando se programa o restaura una tarea y si una ejecucion programada falla.</p>
-      <p>Las programaciones activas se guardan aparte en <code>%USERPROFILE%/Documents/DSLDemo/schedules.ndjson</code>.</p>
+      <p>Las programaciones activas se guardan aparte en <code>%USERPROFILE%/Documents/MABO/schedules.ndjson</code>.</p>
+      <p>En Windows, <code>Al Iniciar Sistema</code> intenta usar Task Scheduler. Si Windows responde <code>Acceso denegado</code>, usa la carpeta Startup del usuario como respaldo. En ambos casos crea un wrapper en <code>%LOCALAPPDATA%\MABO\startup</code> y guarda su salida en <code>%LOCALAPPDATA%\MABO\logs\startup</code>.</p>
+      <pre><code>%LOCALAPPDATA%\MABO\startup
+%LOCALAPPDATA%\MABO\logs\startup
+%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup</code></pre>
       <div class="note">Si una tarea programada falla, MABO guarda el error. Las tareas de intervalo siguen programadas; las tareas de una sola ejecucion quedan registradas para diagnostico hasta que las elimines o cambies.</div>
     </section>
 
     <section class="doc-section" id="simulacion" data-search="simular modo seguro previsualizar eliminar copiar mover comandos nativos">
-      <h2>17. Modo simulacion</h2>
+      <h2>18. Modo simulacion</h2>
       <p><code>Simular</code> ejecuta la validacion y auditoria, pero no modifica archivos ni ejecuta comandos nativos reales.</p>
       <pre><code>Simular Eliminar Archivo base + "/temp/cache.tmp"
 Simular Copiar Carpeta base + "/datos" A base + "/backup"
@@ -437,7 +483,7 @@ Simular Ejecutar PowerShell "Write-Output 'prueba'"</code></pre>
     </section>
 
     <section class="doc-section" id="errores" data-search="errores intentar capturar manejo excepciones archivo no existe">
-      <h2>18. Manejo de errores</h2>
+      <h2>19. Manejo de errores</h2>
       <p>Usa <code>Intentar</code> y <code>Capturar</code> para continuar cuando algo falle.</p>
       <pre><code>Intentar
     Leer Archivo base + "/no_existe.txt"
@@ -448,7 +494,7 @@ FinIntentar</code></pre>
     </section>
 
     <section class="doc-section" id="comandos-nativos" data-search="powershell linux comandos nativos ejecutar shell seguridad stdout stderr">
-      <h2>19. PowerShell y Linux</h2>
+      <h2>20. PowerShell y Linux</h2>
       <p>Cuando MABO no tenga un comando propio para algo, puedes delegar a PowerShell en Windows o a un shell Linux en Linux/Unix.</p>
       <pre><code>Ejecutar PowerShell "Get-ChildItem"
 Ejecutar Linux "ls -la"</code></pre>
@@ -465,7 +511,7 @@ Ejecutar Linux "ls -la"</code></pre>
     </section>
 
     <section class="doc-section" id="backup" data-search="backup comprimir descomprimir zip respaldo">
-      <h2>20. Backup y compresion</h2>
+      <h2>21. Backup y compresion</h2>
       <pre><code>Crear Backup De base + "/datos" En base + "/respaldo/datos"
 Comprimir base + "/datos" A base + "/respaldo/datos_zip"
 Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pre>
@@ -473,7 +519,7 @@ Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pr
     </section>
 
     <section class="doc-section" id="permisos" data-search="permisos chmod posix linux windows cambiar permisos">
-      <h2>21. Permisos</h2>
+      <h2>22. Permisos</h2>
       <p>En sistemas POSIX puedes cambiar permisos con formato octal o simbolico.</p>
       <pre><code>Cambiar Permisos "scripts/run.sh" A "755"
 Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
@@ -481,10 +527,10 @@ Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
     </section>
 
     <section class="doc-section" id="recetas" data-search="recetas ejemplos pdf limpieza respaldo descargas documentos">
-      <h2>22. Ejemplos practicos</h2>
+      <h2>23. Ejemplos practicos</h2>
       <article class="recipe">
         <h3>Organizar PDF desde Descargas</h3>
-        <pre><code>Variable base = "%USERPROFILE%/Documents/DSLDemo"
+        <pre><code>Variable base = "%USERPROFILE%/Documents/MABO"
 Variable descargas = base + "/Descargas"
 Variable pdfs = base + "/Documentos/PDF"
 Crear Carpeta pdfs
@@ -496,7 +542,7 @@ FinPara</code></pre>
       </article>
       <article class="recipe">
         <h3>Simular limpieza de temporales antiguos</h3>
-        <pre><code>Variable temp = "%USERPROFILE%/Documents/DSLDemo/Temp"
+        <pre><code>Variable temp = "%USERPROFILE%/Documents/MABO/Temp"
 Buscar Archivos En temp Con Extension ".tmp" Mas Antiguos Que 30 Dias
 Para Cada archivo En ultimoResultado
     Eliminar Archivo archivo Sin Confirmar
@@ -514,7 +560,7 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
     </section>
 
     <section class="doc-section" id="referencia" data-search="referencia rapida comandos sintaxis tabla">
-      <h2>23. Referencia rapida de comandos</h2>
+      <h2>24. Referencia rapida de comandos</h2>
       <table class="reference-table">
         <thead><tr><th>Accion</th><th>Sintaxis</th></tr></thead>
         <tbody>
@@ -552,9 +598,11 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
           <tr><td>Linux</td><td><code>Ejecutar Linux comando</code></td></tr>
           <tr><td>Tarea</td><td><code>Tarea Nombre: ... Fin</code></td></tr>
           <tr><td>Ejecutar tarea</td><td><code>Ejecutar Nombre</code> o <code>Ejecutar Tarea Nombre</code></td></tr>
+          <tr><td>Ejecutar archivo</td><td><code>Ejecutar Archivo "C:\ruta\script.mabo"</code></td></tr>
           <tr><td>Programar intervalo</td><td><code>Ejecutar Nombre Cada 1 Horas</code> o <code>Ejecutar Tarea Nombre Cada 1 Horas</code></td></tr>
+          <tr><td>Programar archivo</td><td><code>Ejecutar Archivo "C:\ruta\script.mabo" Cada 1 Horas</code></td></tr>
           <tr><td>Programar hora</td><td><code>Ejecutar Nombre A Las "23:00"</code> o <code>Ejecutar Tarea Nombre A Las "23:00"</code></td></tr>
-          <tr><td>Al iniciar</td><td><code>Ejecutar Nombre Al Iniciar Sistema</code></td></tr>
+          <tr><td>Al iniciar</td><td><code>Ejecutar Nombre Al Iniciar Sistema</code> o <code>Ejecutar Archivo "C:\ruta\script.mabo" Al Iniciar Sistema</code></td></tr>
           <tr><td>Listar programaciones</td><td><code>Listar Tareas Programadas</code></td></tr>
           <tr><td>Eliminar programacion</td><td><code>Eliminar Tarea Programada Nombre</code></td></tr>
           <tr><td>Eliminar todas</td><td><code>Eliminar Tareas Programadas</code></td></tr>
@@ -564,7 +612,7 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
     </section>
 
     <section class="doc-section" id="problemas" data-search="problemas errores comunes reservado backup comillas ruta seguridad">
-      <h2>24. Problemas comunes</h2>
+      <h2>25. Problemas comunes</h2>
       <div class="faq">
         <article>
           <h3>El nombre de mi tarea no funciona</h3>

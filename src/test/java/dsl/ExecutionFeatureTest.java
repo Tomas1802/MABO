@@ -194,4 +194,60 @@ class ExecutionFeatureTest {
             Files.deleteIfExists(scheduleFile);
         }
     }
+
+    @Test
+    void canExecuteMaboFileFromCommand() throws Exception {
+        Path base = Files.createTempDirectory(Path.of(System.getProperty("user.home")), "mabo-file-exec-");
+        Path target = base.resolve("salida.txt");
+        Path child = Files.writeString(base.resolve("child.mabo"), """
+                Escribir "ok" En "%s"
+                """.formatted(target.toString()));
+        try {
+            String script = """
+                    Ejecutar Archivo "%s"
+                    """.formatted(child.toString());
+
+            proyectoLexer lexer = new proyectoLexer(CharStreams.fromString(script));
+            proyectoParser parser = new proyectoParser(new CommonTokenStream(lexer));
+            ExecutionVisitor visitor = new ExecutionVisitor(
+                    new ExecutionContext(),
+                    new LoggerService(Files.createTempFile("mabo-test", ".log").toString())
+            );
+
+            visitor.visit(parser.programa());
+
+            assertEquals("ok", Files.readString(target));
+        } finally {
+            Files.deleteIfExists(child);
+            Files.deleteIfExists(target);
+            Files.deleteIfExists(base);
+        }
+    }
+
+    @Test
+    void canPersistFileSchedules() throws Exception {
+        Path scheduleFile = Files.createTempFile("mabo-file-schedules", ".ndjson");
+        Path script = Files.createTempFile(Path.of(System.getProperty("user.home")), "mabo-scheduled-", ".mabo");
+        String previousScheduleFile = System.getProperty("mabo.schedule.file");
+        System.setProperty("mabo.schedule.file", scheduleFile.toString());
+
+        try {
+            ScheduleStore store = new ScheduleStore();
+            store.saveFileIntervalSchedule(script, 3600);
+            store.saveFileOneTimeSchedule(script, LocalDateTime.now().plusHours(1));
+
+            var schedules = store.loadSchedules();
+            assertEquals(1, schedules.size());
+            assertTrue(schedules.get(0).isFileSchedule());
+            assertEquals(script.toAbsolutePath().normalize().toString(), schedules.get(0).file);
+        } finally {
+            if (previousScheduleFile == null) {
+                System.clearProperty("mabo.schedule.file");
+            } else {
+                System.setProperty("mabo.schedule.file", previousScheduleFile);
+            }
+            Files.deleteIfExists(scheduleFile);
+            Files.deleteIfExists(script);
+        }
+    }
 }

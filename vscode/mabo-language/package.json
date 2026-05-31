@@ -1,0 +1,61 @@
+{
+  "name": "mabo-language",
+  "displayName": "MABO Language",
+  "description": "Simple language support for .mabo files.",
+  "version": "0.1.0",
+  "publisher": "mabo",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "activationEvents": [
+    "onLanguage:mabo",
+    "onCommand:mabo.runFile",
+    "onCommand:mabo.checkFile"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "mabo",
+        "aliases": [
+          "MABO",
+          "mabo"
+        ],
+        "extensions": [
+          ".mabo"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mabo",
+        "scopeName": "source.mabo",
+        "path": "./syntaxes/mabo.tmLanguage.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "mabo.runFile",
+        "title": "MABO: Run Current File"
+      },
+      {
+        "command": "mabo.checkFile",
+        "title": "MABO: Check Current File"
+      }
+    ],
+    "configuration": {
+      "title": "MABO",
+      "properties": {
+        "mabo.executable": {
+          "type": "string",
+          "default": "mabo",
+          "description": "Path to the MABO executable."
+        }
+      }
+    }
+  }
+}

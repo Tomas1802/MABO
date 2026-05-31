@@ -5,7 +5,7 @@
 #        intentar/capturar, backup y scheduler
 # =============================================================
 
-Variable base = "%USERPROFILE%/Documents/DSLDemo/Pruebas"
+Variable base = "%USERPROFILE%/Documents/MABO/Pruebas"
 Mostrar "Ruta de trabajo: " + base
 
 
@@ -123,28 +123,28 @@ FinPara
 Mostrar "=== BLOQUE 6: Crear archivos y carpetas ==="
 
 Tarea PrepararEstructura:
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas"
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs"
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos"
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp"
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/Pruebas"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/Pruebas/docs"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/Pruebas/fotos"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/Pruebas/temp"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/Pruebas/respaldo"
 
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
-    Escribir "Contenido del informe principal" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/informe.txt"
+    Escribir "Contenido del informe principal" En "%USERPROFILE%/Documents/MABO/Pruebas/docs/informe.txt"
 
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
-    Escribir "Nota 1" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
-    Anexar "\nNota 2" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
-    Anexar "\nNota 3" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/notas.txt"
+    Escribir "Nota 1" En "%USERPROFILE%/Documents/MABO/Pruebas/docs/notas.txt"
+    Anexar "\nNota 2" En "%USERPROFILE%/Documents/MABO/Pruebas/docs/notas.txt"
+    Anexar "\nNota 3" En "%USERPROFILE%/Documents/MABO/Pruebas/docs/notas.txt"
 
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/reporte.pdf"
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/backup_informe.txt"
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/backup_notas.txt"
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos/imagen1.jpg"
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos/imagen2.jpg"
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/cache1.tmp"
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/cache2.tmp"
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/cache3.tmp"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/reporte.pdf"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/backup_informe.txt"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/backup_notas.txt"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/fotos/imagen1.jpg"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/fotos/imagen2.jpg"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/temp/cache1.tmp"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/temp/cache2.tmp"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/Pruebas/temp/cache3.tmp"
     Mostrar "Estructura creada correctamente"
 Fin
 
@@ -157,15 +157,15 @@ Ejecutar Tarea PrepararEstructura
 Mostrar "=== BLOQUE 7: Leer, Copiar, Mover, Renombrar ==="
 
 Mostrar "--- Contenido de notas.txt ---"
-Leer Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/notas.txt"
+Leer Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/notas.txt"
 
-Copiar Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/informe_copia.txt"
+Copiar Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/informe.txt" A "%USERPROFILE%/Documents/MABO/Pruebas/temp/informe_copia.txt"
 Mostrar "Copia creada en temp/"
 
-Mover Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp/informe_copia.txt" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/informe_movido.txt"
+Mover Archivo "%USERPROFILE%/Documents/MABO/Pruebas/temp/informe_copia.txt" A "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/informe_movido.txt"
 Mostrar "Archivo movido a respaldo/"
 
-Renombrar Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/informe_movido.txt" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/informe_final.txt"
+Renombrar Archivo "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/informe_movido.txt" A "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/informe_final.txt"
 Mostrar "Archivo renombrado a informe_final.txt"
 
 
@@ -175,22 +175,22 @@ Mostrar "Archivo renombrado a informe_final.txt"
 Mostrar "=== BLOQUE 8: Busqueda con filtros ==="
 
 Mostrar "--- Con Extension .txt ---"
-Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" Con Extension ".txt"
+Buscar Archivos En "%USERPROFILE%/Documents/MABO/Pruebas/docs" Con Extension ".txt"
 
 Mostrar "--- Con Nombre 'informe' ---"
-Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" Con Nombre "informe"
+Buscar Archivos En "%USERPROFILE%/Documents/MABO/Pruebas/docs" Con Nombre "informe"
 
 Mostrar "--- Con Prefijo 'backup' ---"
-Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" Con Prefijo "backup"
+Buscar Archivos En "%USERPROFILE%/Documents/MABO/Pruebas/docs" Con Prefijo "backup"
 
 Mostrar "--- Con Extension .tmp ---"
-Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp" Con Extension ".tmp"
+Buscar Archivos En "%USERPROFILE%/Documents/MABO/Pruebas/temp" Con Extension ".tmp"
 
 Mostrar "--- Menores a 1 MB ---"
-Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas" Con Tamano Menor Que 1 MB
+Buscar Archivos En "%USERPROFILE%/Documents/MABO/Pruebas" Con Tamano Menor Que 1 MB
 
 Mostrar "--- Carpetas en Pruebas ---"
-Buscar Carpetas En "%USERPROFILE%/Documents/DSLDemo/Pruebas" Con Nombre "docs"
+Buscar Carpetas En "%USERPROFILE%/Documents/MABO/Pruebas" Con Nombre "docs"
 
 
 # =============================================================
@@ -199,27 +199,27 @@ Buscar Carpetas En "%USERPROFILE%/Documents/DSLDemo/Pruebas" Con Nombre "docs"
 Mostrar "=== BLOQUE 9: Consultas sobre archivos ==="
 
 Mostrar "--- Contenido de docs/ ---"
-Listar Contenido "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs"
+Listar Contenido "%USERPROFILE%/Documents/MABO/Pruebas/docs"
 
-Existe Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Existe Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/informe.txt"
 Si ultimoResultado Entonces
     Mostrar "OK: informe.txt existe"
 Sino
     Mostrar "ERROR: informe.txt no encontrado"
 FinSi
 
-Existe Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos"
+Existe Carpeta "%USERPROFILE%/Documents/MABO/Pruebas/fotos"
 Si ultimoResultado Entonces
     Mostrar "OK: carpeta fotos existe"
 FinSi
 
-Obtener Tamano Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Obtener Tamano Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/informe.txt"
 Mostrar "Tamano informe.txt (bytes): " + ultimoResultado
 
-Obtener Cantidad Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas"
+Obtener Cantidad Archivos En "%USERPROFILE%/Documents/MABO/Pruebas"
 Mostrar "Total archivos en Pruebas/: " + ultimoResultado
 
-Obtener Propiedad nombre De "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Obtener Propiedad nombre De "%USERPROFILE%/Documents/MABO/Pruebas/docs/informe.txt"
 Mostrar "Nombre del archivo: " + ultimoResultado
 
 
@@ -229,7 +229,7 @@ Mostrar "Nombre del archivo: " + ultimoResultado
 Mostrar "=== BLOQUE 10: Para Cada sobre busqueda ==="
 
 Mostrar "Archivos .tmp encontrados:"
-Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/temp" Con Extension ".tmp"
+Buscar Archivos En "%USERPROFILE%/Documents/MABO/Pruebas/temp" Con Extension ".tmp"
 Para Cada archivo En ultimoResultado
     Mostrar "  -> " + archivo
 FinPara
@@ -240,10 +240,10 @@ FinPara
 # =============================================================
 Mostrar "=== BLOQUE 11: Modo simulacion ==="
 
-Simular Eliminar Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Simular Eliminar Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/informe.txt"
 Mostrar "Simulacion ejecutada (no elimino nada)"
 
-Existe Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/informe.txt"
+Existe Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/informe.txt"
 Si ultimoResultado Entonces
     Mostrar "OK: el archivo sigue existiendo tras la simulacion"
 FinSi
@@ -255,7 +255,7 @@ FinSi
 Mostrar "=== BLOQUE 12: Intentar / Capturar ==="
 
 Intentar
-    Leer Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs/no_existe.txt"
+    Leer Archivo "%USERPROFILE%/Documents/MABO/Pruebas/docs/no_existe.txt"
     Mostrar "ERROR: no deberia llegar aqui"
 Capturar
     Mostrar "OK: error capturado correctamente"
@@ -267,7 +267,7 @@ FinIntentar
 # =============================================================
 Mostrar "=== BLOQUE 13: Backup ==="
 
-Crear Backup De "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_backup"
+Crear Backup De "%USERPROFILE%/Documents/MABO/Pruebas/docs" En "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/docs_backup"
 Mostrar "Backup de docs/ creado en respaldo/"
 
 
@@ -281,10 +281,10 @@ Funcion ContarArchivos(ruta)
     Retornar ultimoResultado
 FinFuncion
 
-Variable cantDocs = ContarArchivos("%USERPROFILE%/Documents/DSLDemo/Pruebas/docs")
+Variable cantDocs = ContarArchivos("%USERPROFILE%/Documents/MABO/Pruebas/docs")
 Mostrar "Archivos en docs/: " + cantDocs
 
-Variable cantTemp = ContarArchivos("%USERPROFILE%/Documents/DSLDemo/Pruebas/temp")
+Variable cantTemp = ContarArchivos("%USERPROFILE%/Documents/MABO/Pruebas/temp")
 Mostrar "Archivos en temp/: " + cantTemp
 
 Si cantDocs > cantTemp Entonces
@@ -300,7 +300,7 @@ FinSi
 Mostrar "=== BLOQUE 15: Tarea programada ==="
 
 Tarea VerificacionPeriodica:
-    Existe Carpeta "%USERPROFILE%/Documents/DSLDemo/Pruebas"
+    Existe Carpeta "%USERPROFILE%/Documents/MABO/Pruebas"
     Si ultimoResultado Entonces
         Mostrar "[Scheduler] Carpeta Pruebas activa"
     Sino
@@ -326,23 +326,23 @@ Simular Ejecutar Linux "echo Hola desde Linux"
 # =============================================================
 Mostrar "=== BLOQUE 16: Compresion ==="
 
-Comprimir "%USERPROFILE%/Documents/DSLDemo/Pruebas/docs" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_comprimido"
+Comprimir "%USERPROFILE%/Documents/MABO/Pruebas/docs" A "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/docs_comprimido"
 Mostrar "ZIP creado en respaldo/"
 
-Existe Archivo "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_comprimido.zip"
+Existe Archivo "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/docs_comprimido.zip"
 Si ultimoResultado Entonces
     Mostrar "OK: docs_comprimido.zip existe"
 FinSi
 
-Descomprimir "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_comprimido.zip" En "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_descomprimido"
+Descomprimir "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/docs_comprimido.zip" En "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/docs_descomprimido"
 Mostrar "ZIP extraido en respaldo/docs_descomprimido/"
 
-Obtener Cantidad Archivos En "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/docs_descomprimido"
+Obtener Cantidad Archivos En "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/docs_descomprimido"
 Mostrar "Archivos descomprimidos: " + ultimoResultado
 
-Simular Comprimir "%USERPROFILE%/Documents/DSLDemo/Pruebas/fotos" A "%USERPROFILE%/Documents/DSLDemo/Pruebas/respaldo/fotos_sim"
+Simular Comprimir "%USERPROFILE%/Documents/MABO/Pruebas/fotos" A "%USERPROFILE%/Documents/MABO/Pruebas/respaldo/fotos_sim"
 Mostrar "Simulacion de compresion ejecutada (no creo ZIP)"
 
 
 Mostrar "=== TODAS LAS PRUEBAS EJECUTADAS ==="
-Mostrar "Revisa los logs en: " + "%USERPROFILE%/Documents/DSLDemo/logs/app.log"
+Mostrar "Revisa los logs en: " + "%USERPROFILE%/Documents/MABO/logs/app.log"

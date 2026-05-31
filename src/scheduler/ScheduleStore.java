@@ -19,8 +19,9 @@ public class ScheduleStore {
         if (configured != null && !configured.isBlank()) {
             this.storeFile = Paths.get(configured).toAbsolutePath().normalize();
         } else {
-            Path root = Paths.get(System.getProperty("user.home"), "Documents", "DSLDemo");
+            Path root = Paths.get(System.getProperty("user.home"), "Documents", "MABO");
             this.storeFile = root.resolve("schedules.ndjson").toAbsolutePath().normalize();
+            migrateLegacyStoreIfNeeded();
         }
         try {
             if (storeFile.getParent() != null) {
@@ -34,24 +35,65 @@ public class ScheduleStore {
         return storeFile;
     }
 
+    private void migrateLegacyStoreIfNeeded() {
+        Path legacy = Paths.get(System.getProperty("user.home"), "Documents", "DSLDemo", "schedules.ndjson")
+                .toAbsolutePath()
+                .normalize();
+        if (Files.exists(storeFile) || !Files.exists(legacy)) {
+            return;
+        }
+        try {
+            if (storeFile.getParent() != null) {
+                Files.createDirectories(storeFile.getParent());
+            }
+            Files.copy(legacy, storeFile);
+        } catch (IOException ignored) {
+        }
+    }
+
     public void saveIntervalSchedule(String taskName, long periodSeconds) {
-        ScheduleEntry entry = new ScheduleEntry(taskName, "interval", periodSeconds, null, null, Instant.now().toString());
+        ScheduleEntry entry = new ScheduleEntry(taskName, null, "interval", periodSeconds, null, null, Instant.now().toString());
         saveOrReplace(entry);
     }
 
     public void saveOneTimeSchedule(String taskName, LocalDateTime fireAt) {
-        ScheduleEntry entry = new ScheduleEntry(taskName, "once", 0L, null, fireAt.toString(), Instant.now().toString());
+        ScheduleEntry entry = new ScheduleEntry(taskName, null, "once", 0L, null, fireAt.toString(), Instant.now().toString());
         saveOrReplace(entry);
     }
 
     public void saveStartupSchedule(String taskName) {
-        ScheduleEntry entry = new ScheduleEntry(taskName, "startup", 0L, null, null, Instant.now().toString());
+        ScheduleEntry entry = new ScheduleEntry(taskName, null, "startup", 0L, null, null, Instant.now().toString());
+        saveOrReplace(entry);
+    }
+
+    public void saveFileIntervalSchedule(Path file, long periodSeconds) {
+        ScheduleEntry entry = new ScheduleEntry(null, normalizeFile(file), "interval", periodSeconds, null, null, Instant.now().toString());
+        saveOrReplace(entry);
+    }
+
+    public void saveFileOneTimeSchedule(Path file, LocalDateTime fireAt) {
+        ScheduleEntry entry = new ScheduleEntry(null, normalizeFile(file), "once", 0L, null, fireAt.toString(), Instant.now().toString());
+        saveOrReplace(entry);
+    }
+
+    public void saveFileStartupSchedule(Path file) {
+        ScheduleEntry entry = new ScheduleEntry(null, normalizeFile(file), "startup", 0L, null, null, Instant.now().toString());
         saveOrReplace(entry);
     }
 
     public boolean deleteSchedule(String taskName) {
         List<ScheduleEntry> schedules = loadSchedules();
-        boolean removed = schedules.removeIf(entry -> entry.task.equals(taskName));
+        boolean removed = schedules.removeIf(entry -> taskName.equals(entry.task));
+        if (removed) {
+            writeAll(schedules);
+        }
+        return removed;
+    }
+
+    public boolean deleteFileSchedule(Path file) {
+        String normalized = normalizeFile(file);
+        List<ScheduleEntry> schedules = loadSchedules();
+        boolean removed = schedules.removeIf(entry -> normalized.equals(entry.file));
         if (removed) {
             writeAll(schedules);
         }
@@ -68,7 +110,7 @@ public class ScheduleStore {
     }
 
     public List<ScheduleEntry> loadSchedules() {
-        Map<String, ScheduleEntry> byTask = new LinkedHashMap<>();
+        Map<String, ScheduleEntry> byKey = new LinkedHashMap<>();
         if (!Files.exists(storeFile)) {
             return new ArrayList<>();
         }
@@ -77,17 +119,18 @@ public class ScheduleStore {
             for (String line : lines) {
                 ScheduleEntry entry = parseEntry(line);
                 if (entry != null) {
-                    byTask.put(entry.task, entry);
+                    byKey.put(entry.key(), entry);
                 }
             }
         } catch (IOException ignored) {
         }
-        return new ArrayList<>(byTask.values());
+        return new ArrayList<>(byKey.values());
     }
 
     private ScheduleEntry parseEntry(String line) {
         String task = extract(line, "\"task\"");
-        if (task == null || task.isBlank()) {
+        String file = extract(line, "\"file\"");
+        if ((task == null || task.isBlank()) && (file == null || file.isBlank())) {
             return null;
         }
         String kind = extract(line, "\"kind\"");
@@ -111,12 +154,12 @@ public class ScheduleStore {
             }
         }
 
-        return new ScheduleEntry(task, kind == null ? "interval" : kind, periodSeconds, time, fireAt, createdAt);
+        return new ScheduleEntry(task, file, kind == null ? "interval" : kind, periodSeconds, time, fireAt, createdAt);
     }
 
     private void saveOrReplace(ScheduleEntry entry) {
         List<ScheduleEntry> schedules = loadSchedules();
-        schedules.removeIf(existing -> existing.task.equals(entry.task));
+        schedules.removeIf(existing -> existing.key().equals(entry.key()));
         schedules.add(entry);
         writeAll(schedules);
     }
@@ -175,7 +218,8 @@ public class ScheduleStore {
         Map<String, Object> fields = new LinkedHashMap<>();
         fields.put("createdAt", entry.createdAt != null ? entry.createdAt : Instant.now().toString());
         fields.put("kind", entry.kind);
-        fields.put("task", entry.task);
+        if (entry.task != null) fields.put("task", entry.task);
+        if (entry.file != null) fields.put("file", entry.file);
         if (entry.periodSeconds > 0) fields.put("period", entry.periodSeconds);
         if (entry.time != null) fields.put("time", entry.time);
         if (entry.fireAt != null) fields.put("fireAt", entry.fireAt);
@@ -202,8 +246,13 @@ public class ScheduleStore {
         return value.replace("\\", "\\\\").replace("\"", "\\\"");
     }
 
+    private String normalizeFile(Path file) {
+        return file.toAbsolutePath().normalize().toString();
+    }
+
     public static class ScheduleEntry {
         public final String task;
+        public final String file;
         public final String kind;
         public final long periodSeconds;
         public final String time;
@@ -211,12 +260,29 @@ public class ScheduleStore {
         public final String createdAt;
 
         public ScheduleEntry(String task, String kind, long periodSeconds, String time, String fireAt, String createdAt) {
+            this(task, null, kind, periodSeconds, time, fireAt, createdAt);
+        }
+
+        public ScheduleEntry(String task, String file, String kind, long periodSeconds, String time, String fireAt, String createdAt) {
             this.task = task;
+            this.file = file;
             this.kind = kind;
             this.periodSeconds = periodSeconds;
             this.time = time;
             this.fireAt = fireAt;
             this.createdAt = createdAt;
+        }
+
+        public boolean isFileSchedule() {
+            return file != null && !file.isBlank();
+        }
+
+        public String key() {
+            return isFileSchedule() ? "file:" + file : "task:" + task;
+        }
+
+        public String label() {
+            return isFileSchedule() ? "Archivo " + file : task;
         }
     }
 }

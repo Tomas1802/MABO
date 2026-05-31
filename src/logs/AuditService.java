@@ -13,7 +13,7 @@ public class AuditService {
 
     public AuditService() {
         Path configured = Paths.get("audit.log");
-        Path evidenceRoot = Paths.get(System.getProperty("user.home"), "Documents", "DSLDemo");
+        Path evidenceRoot = Paths.get(System.getProperty("user.home"), "Documents", "MABO");
         this.auditFile = evidenceRoot.resolve(configured).normalize();
         try {
             if (auditFile.getParent() != null) Files.createDirectories(auditFile.getParent());

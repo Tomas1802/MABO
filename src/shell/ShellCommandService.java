@@ -87,7 +87,7 @@ public class ShellCommandService {
     }
 
     private Path defaultWorkingDirectory() {
-        Path root = Paths.get(System.getProperty("user.home"), "Documents", "DSLDemo").toAbsolutePath().normalize();
+        Path root = Paths.get(System.getProperty("user.home"), "Documents", "MABO").toAbsolutePath().normalize();
         try {
             Files.createDirectories(root);
         } catch (IOException e) {

@@ -46,7 +46,11 @@ public class Main {
                 System.err.println("Uso: mabo --check archivo.mabo");
                 return;
             }
-            checkScript(Paths.get(args[1]), ctx);
+            try {
+                checkScript(Paths.get(args[1]), ctx);
+            } catch (RuntimeException ex) {
+                System.err.println("Error: " + ex.getMessage());
+            }
             return;
         }
 
@@ -95,7 +99,7 @@ public class Main {
             System.out.println("-----------------------------------------------");
         }
 
-        Path summaryFile = Paths.get(System.getProperty("user.home"), "Documents", "DSLDemo", "evidencia-ejecucion.txt");
+        Path summaryFile = Paths.get(System.getProperty("user.home"), "Documents", "MABO", "evidencia-ejecucion.txt");
         Files.createDirectories(summaryFile.getParent());
         String summary = String.format("%s | script=%s | log=%s%n",
             LocalDateTime.now(), p.toAbsolutePath(), logger.getLogFile().toAbsolutePath());
@@ -189,7 +193,7 @@ public class Main {
 
     private static void printHelp() {
         System.out.println("Ejemplos:");
-        System.out.println("  Variable base = \"%USERPROFILE%/Documents/DSLDemo\"");
+        System.out.println("  Variable base = \"%USERPROFILE%/Documents/MABO\"");
         System.out.println("  Ir A base");
         System.out.println("  Mostrar Ruta");
         System.out.println("  Crear Carpeta base + \"/prueba\"");

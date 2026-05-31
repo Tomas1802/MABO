@@ -150,6 +150,16 @@ public interface proyectoListener extends ParseTreeListener {
 	 */
 	void exitEjecutarTarea(proyectoParser.EjecutarTareaContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link proyectoParser#ejecutarArchivo}.
+	 * @param ctx the parse tree
+	 */
+	void enterEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#ejecutarArchivo}.
+	 * @param ctx the parse tree
+	 */
+	void exitEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link proyectoParser#listarTareasProgramadas}.
 	 * @param ctx the parse tree
 	 */

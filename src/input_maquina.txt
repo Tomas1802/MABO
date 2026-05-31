@@ -1,19 +1,19 @@
 Tarea PrepararMaquina:
-    Variable dsl = "%USERPROFILE%/Documents/DSLDemo"
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Salida"
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/reporte.txt"
-    Escribir "Reporte de prueba desde DSL" En "%USERPROFILE%/Documents/DSLDemo/reporte.txt"
-    Copiar Archivo "%USERPROFILE%/Documents/DSLDemo/reporte.txt" A "%USERPROFILE%/Documents/DSLDemo/Respaldos/reporte_backup.txt"
-    Renombrar Archivo "%USERPROFILE%/Documents/DSLDemo/reporte.txt" A "%USERPROFILE%/Documents/DSLDemo/reporte_antiguo.txt"
-    Eliminar Archivo "%USERPROFILE%/Documents/DSLDemo/reporte_antiguo.txt"
+    Variable dsl = "%USERPROFILE%/Documents/MABO"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/Salida"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/reporte.txt"
+    Escribir "Reporte de prueba desde DSL" En "%USERPROFILE%/Documents/MABO/reporte.txt"
+    Copiar Archivo "%USERPROFILE%/Documents/MABO/reporte.txt" A "%USERPROFILE%/Documents/MABO/Respaldos/reporte_backup.txt"
+    Renombrar Archivo "%USERPROFILE%/Documents/MABO/reporte.txt" A "%USERPROFILE%/Documents/MABO/reporte_antiguo.txt"
+    Eliminar Archivo "%USERPROFILE%/Documents/MABO/reporte_antiguo.txt"
 Fin
 
 Ejecutar Tarea PrepararMaquina
 
-Variable raizDsl = "%USERPROFILE%/Documents/DSLDemo"
+Variable raizDsl = "%USERPROFILE%/Documents/MABO"
 Buscar Archivos En raizDsl Con Extension ".txt"
-Crear Archivo "%USERPROFILE%/Documents/DSLDemo/README.txt"
-Mover Archivo "%USERPROFILE%/Documents/DSLDemo/README.txt" A "%USERPROFILE%/Documents/DSLDemo/Salida/README.txt"
+Crear Archivo "%USERPROFILE%/Documents/MABO/README.txt"
+Mover Archivo "%USERPROFILE%/Documents/MABO/README.txt" A "%USERPROFILE%/Documents/MABO/Salida/README.txt"
 
 Si VERDADERO Entonces
     Mostrar "Demo completado"
@@ -22,77 +22,77 @@ Sino
 FinSi
 
 Tarea PruebasCompletas:
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/TestArea"
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub1"
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub2"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/TestArea"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/TestArea/Sub1"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/TestArea/Sub2"
 
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
-    Escribir "Contenido A" En "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/TestArea/a.txt"
+    Escribir "Contenido A" En "%USERPROFILE%/Documents/MABO/TestArea/a.txt"
 
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/b.log"
-    Escribir "Log inicial" En "%USERPROFILE%/Documents/DSLDemo/TestArea/b.log"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/TestArea/b.log"
+    Escribir "Log inicial" En "%USERPROFILE%/Documents/MABO/TestArea/b.log"
 
-    Crear Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub1/c.txt"
-    Escribir "C dentro Sub1" En "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub1/c.txt"
+    Crear Archivo "%USERPROFILE%/Documents/MABO/TestArea/Sub1/c.txt"
+    Escribir "C dentro Sub1" En "%USERPROFILE%/Documents/MABO/TestArea/Sub1/c.txt"
 
-    Copiar Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt" A "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub2/a_copy.txt"
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/TestArea/Backups"
-    Copiar Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/b.log" A "%USERPROFILE%/Documents/DSLDemo/TestArea/Backups/b_backup.log"
+    Copiar Archivo "%USERPROFILE%/Documents/MABO/TestArea/a.txt" A "%USERPROFILE%/Documents/MABO/TestArea/Sub2/a_copy.txt"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/TestArea/Backups"
+    Copiar Archivo "%USERPROFILE%/Documents/MABO/TestArea/b.log" A "%USERPROFILE%/Documents/MABO/TestArea/Backups/b_backup.log"
 
-    Anexar "\nLinea adicional" En "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
-    Leer Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/a.txt"
+    Anexar "\nLinea adicional" En "%USERPROFILE%/Documents/MABO/TestArea/a.txt"
+    Leer Archivo "%USERPROFILE%/Documents/MABO/TestArea/a.txt"
 
-    Renombrar Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub2/a_copy.txt" A "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub2/a_renombrado.txt"
-    Mover Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/Sub2/a_renombrado.txt" A "%USERPROFILE%/Documents/DSLDemo/Salida/a_renombrado.txt"
+    Renombrar Archivo "%USERPROFILE%/Documents/MABO/TestArea/Sub2/a_copy.txt" A "%USERPROFILE%/Documents/MABO/TestArea/Sub2/a_renombrado.txt"
+    Mover Archivo "%USERPROFILE%/Documents/MABO/TestArea/Sub2/a_renombrado.txt" A "%USERPROFILE%/Documents/MABO/Salida/a_renombrado.txt"
 
-    Eliminar Archivo "%USERPROFILE%/Documents/DSLDemo/TestArea/b.log"
+    Eliminar Archivo "%USERPROFILE%/Documents/MABO/TestArea/b.log"
 
-    Listar Contenido "%USERPROFILE%/Documents/DSLDemo/TestArea"
-    Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/TestArea" Con Extension ".txt"
+    Listar Contenido "%USERPROFILE%/Documents/MABO/TestArea"
+    Buscar Archivos En "%USERPROFILE%/Documents/MABO/TestArea" Con Extension ".txt"
 
-    Existe Archivo "%USERPROFILE%/Documents/DSLDemo/Salida/a_renombrado.txt"
+    Existe Archivo "%USERPROFILE%/Documents/MABO/Salida/a_renombrado.txt"
     Si ultimoResultado Entonces
         Mostrar "a_renombrado existe"
     Sino
         Mostrar "a_renombrado no existe"
     FinSi
 
-    Obtener Tamano Archivo "%USERPROFILE%/Documents/DSLDemo/Salida/a_renombrado.txt"
-    Obtener Cantidad Archivos En "%USERPROFILE%/Documents/DSLDemo/TestArea"
+    Obtener Tamano Archivo "%USERPROFILE%/Documents/MABO/Salida/a_renombrado.txt"
+    Obtener Cantidad Archivos En "%USERPROFILE%/Documents/MABO/TestArea"
 
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/BackupsGlobal"
-    Copiar Carpeta "%USERPROFILE%/Documents/DSLDemo/TestArea" A "%USERPROFILE%/Documents/DSLDemo/BackupsGlobal/TestArea_backup"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/BackupsGlobal"
+    Copiar Carpeta "%USERPROFILE%/Documents/MABO/TestArea" A "%USERPROFILE%/Documents/MABO/BackupsGlobal/TestArea_backup"
 
 Fin
 
 Ejecutar Tarea PruebasCompletas
 
-Crear Archivo "%USERPROFILE%/Documents/DSLDemo/filters/x1.txt"
-Crear Archivo "%USERPROFILE%/Documents/DSLDemo/filters/x2.log"
-Crear Archivo "%USERPROFILE%/Documents/DSLDemo/filters/y_name.txt"
-Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/filters" Con Extension ".txt"
+Crear Archivo "%USERPROFILE%/Documents/MABO/filters/x1.txt"
+Crear Archivo "%USERPROFILE%/Documents/MABO/filters/x2.log"
+Crear Archivo "%USERPROFILE%/Documents/MABO/filters/y_name.txt"
+Buscar Archivos En "%USERPROFILE%/Documents/MABO/filters" Con Extension ".txt"
 
 
 
 Tarea RespaldoDiario:
 
-    Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/Respaldo"
-    Buscar Archivos En "%USERPROFILE%/Documents/DSLDemo/TestArea" Con Extension ".txt"
-    Copiar Carpeta "%USERPROFILE%/Documents/DSLDemo/TestArea" A "%USERPROFILE%/Documents/DSLDemo/Respaldo/TestArea_backup"
+    Crear Carpeta "%USERPROFILE%/Documents/MABO/Respaldo"
+    Buscar Archivos En "%USERPROFILE%/Documents/MABO/TestArea" Con Extension ".txt"
+    Copiar Carpeta "%USERPROFILE%/Documents/MABO/TestArea" A "%USERPROFILE%/Documents/MABO/Respaldo/TestArea_backup"
 Fin
 
 Ejecutar RespaldoDiario Cada 24 Horas
 
 
-Crear Carpeta "%USERPROFILE%/Documents/DSLDemo/scripts"
-Crear Archivo "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
-Escribir "Tarea BackupManual:" En "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
-Anexar "    Buscar Archivos En \"%USERPROFILE%/Documents/DSLDemo/TestArea\" Con Extension \".txt\"" En "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
-Anexar "    Copiar Carpeta \"%USERPROFILE%/Documents/DSLDemo/TestArea\" A \"%USERPROFILE%/Documents/DSLDemo/Respaldo/TestArea_manual\"" En "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
-Anexar "Fin" En "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
+Crear Carpeta "%USERPROFILE%/Documents/MABO/scripts"
+Crear Archivo "%USERPROFILE%/Documents/MABO/scripts/backup_manual.dsl"
+Escribir "Tarea BackupManual:" En "%USERPROFILE%/Documents/MABO/scripts/backup_manual.dsl"
+Anexar "    Buscar Archivos En \"%USERPROFILE%/Documents/MABO/TestArea\" Con Extension \".txt\"" En "%USERPROFILE%/Documents/MABO/scripts/backup_manual.dsl"
+Anexar "    Copiar Carpeta \"%USERPROFILE%/Documents/MABO/TestArea\" A \"%USERPROFILE%/Documents/MABO/Respaldo/TestArea_manual\"" En "%USERPROFILE%/Documents/MABO/scripts/backup_manual.dsl"
+Anexar "Fin" En "%USERPROFILE%/Documents/MABO/scripts/backup_manual.dsl"
 
 
-Importar "%USERPROFILE%/Documents/DSLDemo/scripts/backup_manual.dsl"
+Importar "%USERPROFILE%/Documents/MABO/scripts/backup_manual.dsl"
 Ejecutar Tarea BackupManual
 
 

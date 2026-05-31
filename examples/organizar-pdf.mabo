@@ -1,4 +1,4 @@
-Variable base = "%USERPROFILE%/Documents/DSLDemo"
+Variable base = "%USERPROFILE%/Documents/MABO"
 Variable descargas = base + "/Descargas"
 Variable pdfs = base + "/Documentos/PDF"
 

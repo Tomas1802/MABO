@@ -136,13 +136,14 @@ Cuando se ejecuta desde el repositorio, el instalador compila la distribución c
 ```powershell
 mabo
 mabo src/input_prueba_completa.txt
-mabo examples/automatizacion_combinada.dsl
+mabo examples/limpieza.mabo
+mabo --check examples/limpieza.mabo
 ```
 
 `mabo` sin argumentos abre el modo interactivo para escribir comandos directamente:
 
 ```text
-mabo> Variable base = "%USERPROFILE%/Documents/DSLDemo"
+mabo> Variable base = "%USERPROFILE%/Documents/MABO"
 mabo> Ir A base
 mabo> Mostrar Ruta
 mabo> Crear Carpeta base + "/prueba"
@@ -163,6 +164,17 @@ También se puede ejecutar una instrucción corta con `-c`. En Windows es mejor 
 ```powershell
 mabo -c "Mostrar 123"
 ```
+
+Los archivos propios de MABO usan la extensión `.mabo`. `mabo archivo.mabo` ejecuta el archivo. `mabo --check archivo.mabo` o `mabo validar archivo.mabo` valida sintaxis y semántica sin ejecutar acciones.
+
+La extensión simple de VS Code está en `vscode/mabo-language`. Incluye resaltado de sintaxis, comentarios, pares de símbolos y comandos para ejecutar o validar el archivo actual. Para probarla:
+
+```powershell
+cd vscode/mabo-language
+code .
+```
+
+Presiona F5 desde VS Code para abrir una ventana de desarrollo con la extensión cargada. La extensión espera que `mabo` esté instalado en PATH.
 
 Para desinstalar:
 
@@ -355,7 +367,7 @@ Importar "otro_script.txt"
 
 ### Comandos Nativos PowerShell / Linux
 
-El DSL puede delegar acciones no soportadas a PowerShell o a un shell Linux. Los comandos se ejecutan desde un directorio seguro (`%USERPROFILE%/Documents/DSLDemo`), se auditan y se bloquean patrones peligrosos.
+El DSL puede delegar acciones no soportadas a PowerShell o a un shell Linux. Los comandos se ejecutan desde un directorio seguro (`%USERPROFILE%/Documents/MABO`), se auditan y se bloquean patrones peligrosos.
 
 ```
 Ejecutar PowerShell "Get-ChildItem | Select-Object Name"
@@ -559,19 +571,47 @@ Ejecutar VerificacionPeriodica Al Iniciar Sistema
 # Ejecutar una sola vez a una hora específica
 Ejecutar VerificacionPeriodica A Las "23:00"
 Ejecutar Tarea VerificacionPeriodica A Las "23:00"
+
+# Ejecutar y programar archivos .mabo
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" A Las "23:00"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Cada 24 Horas
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Al Iniciar Sistema
 ```
 
 La palabra `Tarea` es opcional al ejecutar o programar tareas. Estas dos instrucciones son equivalentes: `Ejecutar VerificacionPeriodica A Las "23:00"` y `Ejecutar Tarea VerificacionPeriodica A Las "23:00"`.
 
+Para rutinas persistentes suele ser más simple programar el archivo `.mabo` completo. Por ejemplo, un archivo de limpieza puede contener solo las acciones:
+
+```mabo
+Buscar Archivos En "C:\Users\tparr\Downloads" Con Extension ".xml"
+
+Para Cada archivo En ultimoResultado
+    Eliminar Archivo archivo Sin Confirmar
+FinPara
+```
+
+Y luego se programa desde el modo interactivo:
+
+```mabo
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Al Iniciar Sistema
+```
+
 Las tareas programadas se guardan en:
 
 ```text
-%USERPROFILE%/Documents/DSLDemo/schedules.ndjson
+%USERPROFILE%/Documents/MABO/schedules.ndjson
 ```
 
-`A Las "HH:mm"` crea una programación de una sola ejecución. Cuando la tarea se ejecuta correctamente, MABO la elimina de `schedules.ndjson`. `Cada X Minutos/Horas/Dias` y `Al Iniciar Sistema` permanecen guardadas hasta que las elimines.
+Si vienes de una version anterior, MABO intenta copiar las programaciones antiguas a la nueva carpeta la primera vez que necesita leerlas y la nueva ruta aun no existe.
 
-> El proceso permanece activo mientras haya tareas programadas en memoria. `Al Iniciar Sistema` intenta registrar una tarea nativa del sistema operativo: Task Scheduler en Windows y autostart de usuario en Linux. Si el registro nativo falla, se conserva el registro del DSL y se informa en logs. MABO guarda la programación, pero la definición de la tarea debe existir en el script o sesión actual.
+`A Las "HH:mm"` crea una programación de una sola ejecución. Cuando la tarea o archivo se ejecuta correctamente, MABO la elimina de `schedules.ndjson`.
+
+`Cada X Minutos/Horas/Dias` ejecuta inmediatamente y luego repite mientras el proceso siga activo. La programación queda guardada para restaurarla.
+
+`Al Iniciar Sistema` solo registra el arranque; no ejecuta inmediatamente. Permanece guardada hasta que la elimines.
+
+> El proceso permanece activo mientras haya tareas programadas en memoria. `Al Iniciar Sistema` intenta registrar una tarea nativa del sistema operativo: Task Scheduler en Windows y autostart de usuario en Linux. Si el registro nativo falla, se conserva el registro del DSL y se informa en logs. Para tareas por nombre, la definición debe existir en el script o sesión actual. Para archivos, MABO guarda la ruta del `.mabo` y lo ejecuta directamente.
 
 ### Administrar tareas programadas
 
@@ -583,11 +623,32 @@ Cambiar Programacion De Tarea VerificacionPeriodica Cada 2 Horas
 Cambiar Programacion De Tarea VerificacionPeriodica A Las "23:30"
 ```
 
-`Listar Tareas Programadas` muestra las programaciones guardadas. `Eliminar Tarea Programada` cancela una programación en memoria, la borra del archivo y elimina el registro nativo de inicio si aplica. `Eliminar Tareas Programadas` elimina todas las programaciones guardadas. `Cambiar Programacion De Tarea` reemplaza la programación anterior de esa tarea.
+`Listar Tareas Programadas` muestra las programaciones guardadas, incluidas las de archivos `.mabo`.
+
+`Eliminar Tarea Programada Nombre` cancela una programación de tarea por nombre, la borra del archivo y elimina el registro nativo de inicio si aplica.
+
+`Eliminar Tareas Programadas` elimina todas las programaciones guardadas, incluidas las de archivos `.mabo` y las entradas de arranque creadas por MABO.
+
+`Cambiar Programacion De Tarea` reemplaza la programación anterior de una tarea con nombre.
 
 Cada ejecución de una tarea genera un log propio en `%LOCALAPPDATA%\MABO\logs\tasks` en Windows. El archivo se llama con el nombre de la tarea y la fecha, por ejemplo `LimpiarArchivosXML-2026-05-31.log`. Allí se registran inicio, fin, errores, búsquedas, listados y operaciones de archivos como crear, mover, copiar, escribir, eliminar, comprimir y ejecutar comandos nativos.
 
 También existe `scheduler.log` en esa misma carpeta para ver cuándo se programó o restauró una tarea y si una ejecución programada falló. Si una tarea programada falla, el scheduler conserva la programación y escribe el error en el log.
+
+En Windows, las programaciones `Al Iniciar Sistema` intentan usar Task Scheduler. Si Windows responde `Acceso denegado`, MABO usa como respaldo la carpeta Startup del usuario: `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`. En ambos casos crea un wrapper en `%LOCALAPPDATA%\MABO\startup` y escribe salida de arranque en `%LOCALAPPDATA%\MABO\logs\startup`. Esto permite diagnosticar errores que ocurren antes de que MABO alcance a crear logs de tarea.
+
+Para verificar una programación de arranque en Windows:
+
+```powershell
+Get-ChildItem "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup" | Where-Object Name -like "MABO_*"
+Get-ChildItem "$env:LOCALAPPDATA\MABO\startup" | Where-Object Name -like "MABO_*"
+```
+
+Si Windows permitió Task Scheduler, también puede aparecer como `MABO_<nombre>`:
+
+```powershell
+schtasks /Query /FO LIST /V | findstr MABO
+```
 
 ---
 
@@ -640,7 +701,8 @@ Los comandos nativos agregan una segunda capa de seguridad: validación de shell
 - **`logs/app.log`** — log de ejecución en texto plano con timestamp. Registra inicio, acciones, variables, errores y fin.
 - **Auditoría NDJSON** — cada operación de archivo genera una entrada con: operación, origen, destino, éxito/fallo y detalle.
 - **Logs de tareas** — en Windows se guardan en `%LOCALAPPDATA%\MABO\logs\tasks`. Cada tarea tiene un archivo por día, por ejemplo `BackupDiario-2026-05-31.log`, y el scheduler usa `scheduler.log`.
-- **Programaciones guardadas** — se guardan en `%USERPROFILE%/Documents/DSLDemo/schedules.ndjson`.
+- **Logs de arranque** — en Windows se guardan en `%LOCALAPPDATA%\MABO\logs\startup` cuando se usa `Al Iniciar Sistema`.
+- **Programaciones guardadas** — se guardan en `%USERPROFILE%/Documents/MABO/schedules.ndjson`.
 
 ---
 

@@ -15,6 +15,7 @@ import semantic.ExecutionContext;
 import shell.ShellCommandService;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import utils.FilterUtils;
 
@@ -25,6 +26,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ScheduledFuture;
@@ -190,6 +192,18 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitEjecutarArchivo(proyectoParser.EjecutarArchivoContext node) {
+        Path file = toPath(visit(node.expresion()));
+        if (node.programacion() == null) {
+            executeFile(file);
+            return null;
+        }
+
+        scheduleFile(file, node.programacion());
+        return null;
+    }
+
+    @Override
     public Object visitListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext node) {
         List<ScheduleStore.ScheduleEntry> schedules = scheduleStore.loadSchedules();
         setLast(schedules);
@@ -265,18 +279,115 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
             System.out.println("Tarea programada: " + taskName + " a las " + time + " (proxima ejecucion: " + nextRun + ")");
         } else {
             boolean registered = startupRegistration.register(taskName, scriptPath);
+            if (!registered) {
+                String message = "No se pudo registrar la tarea en el inicio del sistema: " + taskName;
+                logger.error(message);
+                taskLogger.scheduler(message);
+                throw new exceptions.ExecutionException(message + ". Revisa logs/app.log.");
+            }
             scheduleStore.saveStartupSchedule(taskName);
             scheduledTasks.add(taskName);
             logger.info("Ejecución al iniciar sistema de tarea: " + taskName + " registrada=" + registered);
             taskLogger.scheduler("Programada tarea al iniciar sistema: " + taskName + " registrada=" + registered);
             System.out.println("Tarea programada al iniciar sistema: " + taskName);
-            executeTask(taskName);
+        }
+    }
+
+    private void scheduleFile(Path file, proyectoParser.ProgramacionContext node) {
+        Path target = file.toAbsolutePath().normalize();
+        if (!java.nio.file.Files.exists(target)) {
+            throw new exceptions.ExecutionException("Archivo no encontrado para programar: " + target);
+        }
+        String key = fileScheduleKey(target);
+        cancelScheduledFile(target, true);
+        if (node.CADA() != null) {
+            long amount = parseNumero(node.numero());
+            TimeUnit unit = toTimeUnit(node.tiempo().getText());
+            if (amount <= 0) {
+                logger.info("Programación ignorada para archivo " + target + ": periodo inválido " + amount);
+                return;
+            }
+            ScheduledFuture<?> future = scheduler.scheduleAtFixedRateWithHandle(() -> runScheduledFile(target), 0, amount, unit);
+            scheduledFutures.put(key, future);
+            scheduledTasks.add(key);
+            long seconds = unit.toSeconds(amount);
+            scheduleStore.saveFileIntervalSchedule(target, seconds);
+            logger.info("Programado archivo " + target + " cada " + amount + " " + unit);
+            taskLogger.scheduler("Programado archivo " + target + " cada " + amount + " " + node.tiempo().getText());
+            System.out.println("Archivo programado: " + target + " cada " + amount + " " + node.tiempo().getText());
+            executeFile(target);
+        } else if (node.LAS() != null) {
+            LocalTime time = parseTime(stripQuotes(node.cadena().getText()));
+            LocalDateTime nextRun = nextRunAt(time);
+            long initialDelay = secondsUntil(nextRun);
+            ScheduledFuture<?> future = scheduler.scheduleOnce(() -> runOneTimeScheduledFile(target), initialDelay, TimeUnit.SECONDS);
+            scheduledFutures.put(key, future);
+            scheduledTasks.add(key);
+            scheduleStore.saveFileOneTimeSchedule(target, nextRun);
+            logger.info("Programado archivo " + target + " a las " + time + "; próxima ejecución=" + nextRun + "; espera=" + initialDelay + "s");
+            taskLogger.scheduler("Programado archivo " + target + " a las " + time + "; próxima ejecución=" + nextRun + "; espera=" + initialDelay + "s");
+            System.out.println("Archivo programado: " + target + " a las " + time + " (proxima ejecucion: " + nextRun + ")");
+        } else {
+            String registrationName = startupNameForFile(target);
+            boolean registered = startupRegistration.register(registrationName, target);
+            if (!registered) {
+                String message = "No se pudo registrar el archivo en el inicio del sistema: " + target;
+                logger.error(message);
+                taskLogger.scheduler(message);
+                throw new exceptions.ExecutionException(message + ". Revisa logs/app.log.");
+            }
+            scheduleStore.saveFileStartupSchedule(target);
+            scheduledTasks.add(key);
+            logger.info("Ejecución al iniciar sistema de archivo: " + target + " registrada=" + registered);
+            taskLogger.scheduler("Programado archivo al iniciar sistema: " + target + " registrada=" + registered);
+            System.out.println("Archivo programado al iniciar sistema: " + target);
         }
     }
 
     public void restoreSchedules() {
         java.util.List<ScheduleStore.ScheduleEntry> list = scheduleStore.loadSchedules();
         for (ScheduleStore.ScheduleEntry se : list) {
+            if (se.isFileSchedule()) {
+                Path file = Path.of(se.file).toAbsolutePath().normalize();
+                String key = fileScheduleKey(file);
+                if (scheduledTasks.contains(key)) continue;
+                if (!java.nio.file.Files.exists(file)) {
+                    logger.info("No existe archivo para reprogramar: " + file);
+                    continue;
+                }
+                if ("once".equalsIgnoreCase(se.kind)) {
+                    LocalDateTime fireAt = parseFireAt(se.fireAt);
+                    if (!fireAt.isAfter(LocalDateTime.now())) {
+                        scheduleStore.deleteFileSchedule(file);
+                        taskLogger.scheduler("Archivo de una sola ejecución expirado y eliminado: " + file + " fireAt=" + se.fireAt);
+                        continue;
+                    }
+                    ScheduledFuture<?> future = scheduler.scheduleOnce(() -> runOneTimeScheduledFile(file), secondsUntil(fireAt), TimeUnit.SECONDS);
+                    scheduledFutures.put(key, future);
+                    scheduledTasks.add(key);
+                    logger.info("Restaurado archivo de una sola ejecución: " + file + " en " + fireAt);
+                    taskLogger.scheduler("Restaurado archivo de una sola ejecución: " + file + " en " + fireAt);
+                    continue;
+                }
+                if ("startup".equalsIgnoreCase(se.kind)) {
+                    startupRegistration.register(startupNameForFile(file), file);
+                    scheduledTasks.add(key);
+                    logger.info("Restaurado archivo de inicio del sistema: " + file);
+                    taskLogger.scheduler("Restaurado archivo de inicio del sistema: " + file);
+                    continue;
+                }
+                if (se.periodSeconds <= 0) {
+                    logger.info("Entrada de schedule inválida ignorada para " + file + ": " + se.periodSeconds + "s");
+                    continue;
+                }
+                ScheduledFuture<?> future = scheduler.scheduleAtFixedRateWithHandle(() -> runScheduledFile(file), 0, se.periodSeconds, java.util.concurrent.TimeUnit.SECONDS);
+                scheduledFutures.put(key, future);
+                scheduledTasks.add(key);
+                logger.info("Restaurado archivo programado: " + file + " cada " + se.periodSeconds + "s");
+                taskLogger.scheduler("Restaurado archivo programado: " + file + " cada " + se.periodSeconds + "s");
+                continue;
+            }
+
             if (scheduledTasks.contains(se.task)) continue; // already scheduled in this run
             if (!ctx.tareas.containsKey(se.task)) {
                 logger.info("No existe tarea para reprogramar: " + se.task);
@@ -883,6 +994,67 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         }
     }
 
+    private void executeFile(Path file) {
+        Path target = file.toAbsolutePath().normalize();
+        long startedAt = System.currentTimeMillis();
+        String logName = startupNameForFile(target);
+        runningTask.set(logName);
+        logger.info("Ejecutando archivo MABO: " + target);
+        taskLogger.start(logName, fs.getWorkingDirectory());
+        try {
+            proyectoLexer lexer = new proyectoLexer(CharStreams.fromPath(target));
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            proyectoParser parser = new proyectoParser(tokens);
+            ParseTree tree = parser.programa();
+            if (parser.getNumberOfSyntaxErrors() > 0) {
+                throw new exceptions.ExecutionException("El archivo contiene errores de sintaxis: " + target);
+            }
+            new SemanticVisitor(ctx).validar(tree);
+            visit(tree);
+            long duration = System.currentTimeMillis() - startedAt;
+            taskLogger.end(logName, duration);
+            logger.info("Archivo MABO finalizado: " + target + " en " + duration + " ms");
+        } catch (RuntimeException ex) {
+            taskLogger.error(logName, ex);
+            logger.error("Error ejecutando archivo MABO: " + target, ex);
+            throw ex;
+        } catch (Exception ex) {
+            RuntimeException wrapped = new RuntimeException("Error ejecutando archivo MABO '" + target + "': " + ex.getMessage(), ex);
+            taskLogger.error(logName, wrapped);
+            logger.error("Error ejecutando archivo MABO: " + target, wrapped);
+            throw wrapped;
+        } finally {
+            runningTask.remove();
+        }
+    }
+
+    private void runScheduledFile(Path file) {
+        taskLogger.scheduler("Intentando ejecutar archivo programado: " + file);
+        try {
+            executeFile(file);
+            taskLogger.scheduler("Ejecución programada de archivo finalizada: " + file);
+        } catch (RuntimeException ex) {
+            taskLogger.scheduler("El archivo programado " + file + " falló y se mantendrá programado: " + ex.getMessage());
+        }
+    }
+
+    private void runOneTimeScheduledFile(Path file) {
+        taskLogger.scheduler("Intentando ejecutar archivo programado una sola vez: " + file);
+        try {
+            executeFile(file);
+            scheduleStore.deleteFileSchedule(file);
+            String key = fileScheduleKey(file);
+            scheduledTasks.remove(key);
+            scheduledFutures.remove(key);
+            if (scheduledTasks.isEmpty()) {
+                scheduler.shutdown();
+            }
+            taskLogger.scheduler("Ejecución única de archivo finalizada y eliminada: " + file);
+        } catch (RuntimeException ex) {
+            taskLogger.scheduler("El archivo único " + file + " falló y se mantiene registrado para diagnóstico: " + ex.getMessage());
+        }
+    }
+
     private boolean cancelScheduledTask(String name, boolean deleteFromStore) {
         boolean changed = false;
         ScheduledFuture<?> future = scheduledFutures.remove(name);
@@ -904,12 +1076,41 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         return changed;
     }
 
+    private boolean cancelScheduledFile(Path file, boolean deleteFromStore) {
+        Path target = file.toAbsolutePath().normalize();
+        String key = fileScheduleKey(target);
+        boolean changed = false;
+        ScheduledFuture<?> future = scheduledFutures.remove(key);
+        if (future != null) {
+            future.cancel(false);
+            changed = true;
+        }
+        if (scheduledTasks.remove(key)) {
+            changed = true;
+        }
+        if (deleteFromStore && scheduleStore.deleteFileSchedule(target)) {
+            startupRegistration.unregister(startupNameForFile(target));
+            taskLogger.scheduler("Programación de archivo eliminada: " + target);
+            changed = true;
+        }
+        if (changed && scheduledTasks.isEmpty()) {
+            scheduler.shutdown();
+        }
+        return changed;
+    }
+
     private int cancelAllScheduledTasks() {
         List<ScheduleStore.ScheduleEntry> persisted = scheduleStore.loadSchedules();
         java.util.Set<String> names = new java.util.HashSet<>();
-        names.addAll(scheduledTasks);
+        for (String scheduled : scheduledTasks) {
+            if (scheduled.startsWith("file:")) {
+                names.add(startupNameForFile(Path.of(scheduled.substring("file:".length()))));
+            } else {
+                names.add(scheduled);
+            }
+        }
         for (ScheduleStore.ScheduleEntry entry : persisted) {
-            names.add(entry.task);
+            names.add(registrationName(entry));
         }
 
         for (ScheduledFuture<?> future : scheduledFutures.values()) {
@@ -928,12 +1129,28 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
 
     private String formatSchedule(ScheduleStore.ScheduleEntry schedule) {
         if ("once".equalsIgnoreCase(schedule.kind)) {
-            return schedule.task + " | una vez | " + schedule.fireAt;
+            return schedule.label() + " | una vez | " + schedule.fireAt;
         }
         if ("startup".equalsIgnoreCase(schedule.kind)) {
-            return schedule.task + " | al iniciar sistema";
+            return schedule.label() + " | al iniciar sistema";
         }
-        return schedule.task + " | cada " + schedule.periodSeconds + " segundos";
+        return schedule.label() + " | cada " + schedule.periodSeconds + " segundos";
+    }
+
+    private String fileScheduleKey(Path file) {
+        return "file:" + file.toAbsolutePath().normalize();
+    }
+
+    private String registrationName(ScheduleStore.ScheduleEntry entry) {
+        if (entry.isFileSchedule()) {
+            return startupNameForFile(Path.of(entry.file));
+        }
+        return entry.task;
+    }
+
+    private String startupNameForFile(Path file) {
+        String normalized = file.toAbsolutePath().normalize().toString().toLowerCase(Locale.ROOT);
+        return "Archivo_" + Integer.toUnsignedString(normalized.hashCode(), 16);
     }
 
     private void taskEvent(String message) {
