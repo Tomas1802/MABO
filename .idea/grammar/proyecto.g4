@@ -15,6 +15,8 @@ programa
 sentencia
     : declaracionVariable
     | asignacionVariable
+    | mostrarRuta
+    | cambiarDirectorio
     | mostrar
     | condicion
     | cicloMientras
@@ -40,6 +42,19 @@ sentencia
 
 importar
     : IMPORTAR cadena
+    ;
+
+
+/* =========================================================================
+   NAVEGACION
+   ========================================================================= */
+
+cambiarDirectorio
+    : IR A expresion
+    ;
+
+mostrarRuta
+    : MOSTRAR RUTA
     ;
 
 
@@ -258,7 +273,7 @@ buscarCarpetas
     ;
 
 listarContenido
-    : LISTAR CONTENIDO expresion
+    : LISTAR CONTENIDO expresion?
     ;
 
 existeArchivo
@@ -329,12 +344,15 @@ cambiarPermisos
    ========================================================================= */
 
 eliminarArchivo
-    : ELIMINAR ARCHIVO expresion
+    : ELIMINAR ARCHIVO expresion sinConfirmar?
     ;
 
 eliminarCarpeta
-    : ELIMINAR CARPETA expresion
-    | ELIMINAR CARPETA expresion RECURSIVAMENTE
+    : ELIMINAR CARPETA expresion RECURSIVAMENTE? sinConfirmar?
+    ;
+
+sinConfirmar
+    : SIN CONFIRMAR
     ;
 
 
@@ -547,11 +565,15 @@ RECIENTES          : 'Recientes';
 QUE                : 'Que';
 
 RECURSIVAMENTE     : 'Recursivamente';
+SIN                : 'Sin';
+CONFIRMAR          : 'Confirmar';
 
 AL                 : 'Al';
 INICIAR            : 'Iniciar';
 SISTEMA            : 'Sistema';
 LAS                : 'Las';
+IR                 : 'Ir';
+RUTA               : 'Ruta';
 
 HORAS              : 'Horas';
 MINUTOS            : 'Minutos';

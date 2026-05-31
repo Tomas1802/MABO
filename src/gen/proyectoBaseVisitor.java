@@ -41,6 +41,20 @@ public class proyectoBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitMostrarRuta(proyectoParser.MostrarRutaContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitDeclaracionVariable(proyectoParser.DeclaracionVariableContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -336,6 +350,13 @@ public class proyectoBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitEliminarCarpeta(proyectoParser.EliminarCarpetaContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitSinConfirmar(proyectoParser.SinConfirmarContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

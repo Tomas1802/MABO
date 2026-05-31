@@ -86,7 +86,7 @@ public class Main {
         int blockDepth = 0;
 
         while (true) {
-            System.out.print(blockDepth > 0 ? "... " : "mabo> ");
+            System.out.print(blockDepth > 0 ? "... " : "mabo " + exec.getCurrentDirectory() + "> ");
             if (!scanner.hasNextLine()) break;
 
             String line = scanner.nextLine();
@@ -164,8 +164,10 @@ public class Main {
     private static void printHelp() {
         System.out.println("Ejemplos:");
         System.out.println("  Variable base = \"%USERPROFILE%/Documents/DSLDemo\"");
+        System.out.println("  Ir A base");
+        System.out.println("  Mostrar Ruta");
         System.out.println("  Crear Carpeta base + \"/prueba\"");
-        System.out.println("  Listar Contenido base");
+        System.out.println("  Listar Contenido");
         System.out.println("  Simular Ejecutar PowerShell \"Write-Output 'hola'\"");
         System.out.println("Bloques multilinea:");
         System.out.println("  Tarea Demo:");

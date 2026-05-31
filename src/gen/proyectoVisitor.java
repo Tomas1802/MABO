@@ -31,6 +31,18 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitImportar(proyectoParser.ImportarContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link proyectoParser#cambiarDirectorio}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#mostrarRuta}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMostrarRuta(proyectoParser.MostrarRutaContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link proyectoParser#declaracionVariable}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -288,6 +300,12 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitEliminarCarpeta(proyectoParser.EliminarCarpetaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#sinConfirmar}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSinConfirmar(proyectoParser.SinConfirmarContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link proyectoParser#comprimir}.
 	 * @param ctx the parse tree

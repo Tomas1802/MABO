@@ -26,6 +26,7 @@ public class FileSystemService {
 
     private static final Pattern WINDOWS_ENV_PATTERN = Pattern.compile("%([A-Za-z_][A-Za-z0-9_]*)%");
     private static final Pattern UNIX_ENV_PATTERN = Pattern.compile("\\$\\{([A-Za-z_][A-Za-z0-9_]*)\\}|\\$([A-Za-z_][A-Za-z0-9_]*)");
+    private Path workingDirectory = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
 
     public Path pathOf(Object value) {
         if (value == null) {
@@ -40,8 +41,22 @@ public class FileSystemService {
     }
 
     private Path resolve(Path path) {
-        Path resolved = path.isAbsolute() ? path : Paths.get(System.getProperty("user.dir")).resolve(path);
+        Path resolved = path.isAbsolute() ? path : workingDirectory.resolve(path);
         return resolved.toAbsolutePath().normalize();
+    }
+
+    public Path getWorkingDirectory() {
+        return workingDirectory;
+    }
+
+    public Path changeWorkingDirectory(Object value) {
+        Path target = pathOf(value);
+        SecurityValidator.validatePath(target);
+        if (!Files.isDirectory(target)) {
+            throw new ExecutionException("La ruta no es una carpeta existente: " + target);
+        }
+        workingDirectory = target;
+        return workingDirectory;
     }
 
     // For display: expands env vars; normalizes separators only if result is a Windows absolute path
@@ -55,7 +70,22 @@ public class FileSystemService {
 
     // For path resolution: expands env vars AND normalizes separators
     private String expandPathTokens(String raw) {
-        return expandEnvVars(raw).replace('/', java.io.File.separatorChar);
+        String expanded = expandEnvVars(raw).replace('/', java.io.File.separatorChar);
+        if (isWindows() && startsWithSingleRootSeparator(expanded)) {
+            return expanded.replaceFirst("^[\\\\/]+", "");
+        }
+        return expanded;
+    }
+
+    private boolean isWindows() {
+        return java.io.File.separatorChar == '\\';
+    }
+
+    private boolean startsWithSingleRootSeparator(String path) {
+        return path.length() > 1
+                && (path.charAt(0) == '\\' || path.charAt(0) == '/')
+                && path.charAt(1) != '\\'
+                && path.charAt(1) != '/';
     }
 
     private String expandEnvVars(String raw) {
@@ -372,6 +402,10 @@ public class FileSystemService {
     }
 
     public void delete(Path p, boolean simulate) {
+        delete(p, simulate, false);
+    }
+
+    public void delete(Path p, boolean simulate, boolean skipConfirmation) {
         Path resolved = resolve(p);
         AuditService audit = new logs.AuditService();
         SecurityValidator.validatePath(resolved);
@@ -384,9 +418,10 @@ public class FileSystemService {
                 audit.record("DELETE", resolved, null, true, "simulated");
                 return;
             }
-            // ask confirmation once per delete
-            boolean ok = ConfirmationService.confirm("Eliminar " + resolved + " ?", false);
-            if (!ok) { audit.record("DELETE", resolved, null, false, "cancelled by user"); return; }
+            if (!skipConfirmation) {
+                boolean ok = ConfirmationService.confirm("Eliminar " + resolved + " ?", false);
+                if (!ok) { audit.record("DELETE", resolved, null, false, "cancelled by user"); return; }
+            }
             if (Files.isDirectory(resolved)) {
                 deleteRecursive(resolved);
             } else {

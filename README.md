@@ -124,12 +124,14 @@ mabo examples/automatizacion_combinada.dsl
 
 ```text
 mabo> Variable base = "%USERPROFILE%/Documents/DSLDemo"
+mabo> Ir A base
+mabo> Mostrar Ruta
 mabo> Crear Carpeta base + "/prueba"
-mabo> Listar Contenido base
+mabo> Listar Contenido
 mabo> salir
 ```
 
-En este ejemplo, `base` es una variable que guarda la ruta principal de trabajo. El operador `+` une esa ruta con otro texto, por ejemplo `base + "/prueba"`.
+En este ejemplo, `base` es una variable que guarda la ruta principal de trabajo. `Ir A base` cambia la carpeta actual de MABO, `Mostrar Ruta` muestra esa carpeta y el operador `+` une esa ruta con otro texto, por ejemplo `base + "/prueba"`.
 
 También se puede ejecutar una instrucción corta con `-c`. En Windows es mejor reservarlo para comandos sin comillas internas; para rutas y textos usa el modo interactivo.
 
@@ -329,11 +331,31 @@ La simulación registra la intención sin ejecutar el comando. La ejecución rea
 
 ## Operaciones de Archivos y Carpetas
 
+### Navegacion
+
+```
+Mostrar Ruta
+Ir A "%USERPROFILE%/Documents"
+Ir A "C:\Users\tparr\Documents\TOMAS"
+Ir A "TOMAS"
+Ir A ".."
+Listar Contenido
+```
+
+`Ir A` cambia la carpeta actual de MABO. Las rutas relativas se resuelven desde esa carpeta y el modo interactivo la muestra en el prompt.
+
 ### Crear
 
 ```
 Crear Archivo "ruta/archivo.txt"
 Crear Carpeta "ruta/carpeta"
+```
+
+MABO acepta rutas con `/` y con `\`, por lo que estas dos formas son validas en Windows:
+
+```
+Ir A "C:/Users/tparr/Documents/TOMAS"
+Ir A "C:\Users\tparr\Documents\TOMAS"
 ```
 
 ### Leer y Escribir
@@ -359,9 +381,13 @@ Renombrar Carpeta "vieja/" A "nueva/"
 
 ```
 Eliminar Archivo "ruta/archivo.txt"
+Eliminar Archivo "ruta/archivo.txt" Sin Confirmar
 Eliminar Carpeta "ruta/carpeta"
 Eliminar Carpeta "ruta/carpeta" Recursivamente
+Eliminar Carpeta "ruta/carpeta" Recursivamente Sin Confirmar
 ```
+
+`Sin Confirmar` omite la pregunta interactiva de seguridad. Usalo solo en rutinas revisadas o junto con `Simular` durante pruebas.
 
 ### Búsqueda con Filtros
 
@@ -393,7 +419,10 @@ Buscar Carpetas En "ruta/" Con Nombre "docs"
 ### Consultas
 
 ```
-# Listar contenido directo de una carpeta
+# Listar contenido de la carpeta actual
+Listar Contenido
+
+# Listar contenido directo de otra carpeta
 Listar Contenido "ruta/"
 
 # Verificar existencia
@@ -516,7 +545,7 @@ La variable reservada `ultimoResultado` almacena automáticamente el resultado d
 ```
 Buscar Archivos En "ruta/" Con Extension ".log"
 Para Cada archivo En ultimoResultado
-    Eliminar Archivo archivo
+    Eliminar Archivo archivo Sin Confirmar
 FinPara
 
 Existe Archivo "ruta/config.txt"

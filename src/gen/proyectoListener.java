@@ -40,6 +40,26 @@ public interface proyectoListener extends ParseTreeListener {
 	 */
 	void exitImportar(proyectoParser.ImportarContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link proyectoParser#cambiarDirectorio}.
+	 * @param ctx the parse tree
+	 */
+	void enterCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#cambiarDirectorio}.
+	 * @param ctx the parse tree
+	 */
+	void exitCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#mostrarRuta}.
+	 * @param ctx the parse tree
+	 */
+	void enterMostrarRuta(proyectoParser.MostrarRutaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#mostrarRuta}.
+	 * @param ctx the parse tree
+	 */
+	void exitMostrarRuta(proyectoParser.MostrarRutaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link proyectoParser#declaracionVariable}.
 	 * @param ctx the parse tree
 	 */
@@ -469,6 +489,16 @@ public interface proyectoListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitEliminarCarpeta(proyectoParser.EliminarCarpetaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#sinConfirmar}.
+	 * @param ctx the parse tree
+	 */
+	void enterSinConfirmar(proyectoParser.SinConfirmarContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#sinConfirmar}.
+	 * @param ctx the parse tree
+	 */
+	void exitSinConfirmar(proyectoParser.SinConfirmarContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link proyectoParser#comprimir}.
 	 * @param ctx the parse tree

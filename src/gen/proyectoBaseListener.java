@@ -55,6 +55,30 @@ public class proyectoBaseListener implements proyectoListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMostrarRuta(proyectoParser.MostrarRutaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMostrarRuta(proyectoParser.MostrarRutaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDeclaracionVariable(proyectoParser.DeclaracionVariableContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -566,6 +590,18 @@ public class proyectoBaseListener implements proyectoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitEliminarCarpeta(proyectoParser.EliminarCarpetaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterSinConfirmar(proyectoParser.SinConfirmarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSinConfirmar(proyectoParser.SinConfirmarContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

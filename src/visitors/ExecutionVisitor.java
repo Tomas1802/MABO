@@ -44,6 +44,10 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         return !scheduledTasks.isEmpty();
     }
 
+    public Path getCurrentDirectory() {
+        return fs.getWorkingDirectory();
+    }
+
     public ExecutionVisitor(ExecutionContext ctx, LoggerService logger) {
         this(ctx, new FileSystemService(), logger, null);
     }
@@ -134,6 +138,24 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
         System.out.println(display);
         logger.info("Mostrar: " + display);
         return value;
+    }
+
+    @Override
+    public Object visitCambiarDirectorio(proyectoParser.CambiarDirectorioContext node) {
+        Path path = fs.changeWorkingDirectory(visit(node.expresion()));
+        setLast(path);
+        System.out.println(path);
+        logger.info("Directorio actual: " + path);
+        return path;
+    }
+
+    @Override
+    public Object visitMostrarRuta(proyectoParser.MostrarRutaContext node) {
+        Path path = fs.getWorkingDirectory();
+        setLast(path);
+        System.out.println(path);
+        logger.info("MostrarRuta: " + path);
+        return path;
     }
 
     @Override
@@ -384,13 +406,13 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
 
     @Override
     public Object visitEliminarArchivo(proyectoParser.EliminarArchivoContext node) {
-        fs.delete(toPath(visit(node.expresion())), this.ctx.modoSimulacion);
+        fs.delete(toPath(visit(node.expresion())), this.ctx.modoSimulacion, node.sinConfirmar() != null);
         return null;
     }
 
     @Override
     public Object visitEliminarCarpeta(proyectoParser.EliminarCarpetaContext node) {
-        fs.delete(toPath(visit(node.expresion())), this.ctx.modoSimulacion);
+        fs.delete(toPath(visit(node.expresion())), this.ctx.modoSimulacion, node.sinConfirmar() != null);
         return null;
     }
 
@@ -454,7 +476,8 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
 
     @Override
     public Object visitListarContenido(proyectoParser.ListarContenidoContext node) {
-        List<Path> children = fs.listChildren(toPath(visit(node.expresion())));
+        Path target = node.expresion() == null ? fs.getWorkingDirectory() : toPath(visit(node.expresion()));
+        List<Path> children = fs.listChildren(target);
         setLast(children);
         children.forEach(System.out::println);
         return children;
@@ -701,10 +724,8 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
                         case '"'  -> { sb.append('"');  i++; }
                         case '\'' -> { sb.append('\''); i++; }
                         case 'n'  -> { sb.append('\n'); i++; }
-                        case 't'  -> { sb.append('\t'); i++; }
-                        case 'r'  -> { sb.append('\r'); i++; }
                         case '\\' -> { sb.append('\\'); i++; }
-                        default   -> sb.append('\\');
+                        default   -> { sb.append('\\').append(next); i++; }
                     }
                 } else {
                     sb.append(inner.charAt(i));

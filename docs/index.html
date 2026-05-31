@@ -30,6 +30,7 @@
       <a href="#formas-de-uso">Formas de uso</a>
       <a href="#conceptos">Conceptos clave</a>
       <a href="#rutas">Rutas y seguridad</a>
+      <a href="#navegacion">Navegacion</a>
       <a href="#variables">Variables</a>
       <a href="#salida">Mostrar resultados</a>
       <a href="#archivos">Archivos</a>
@@ -65,8 +66,10 @@
       <div class="terminal-preview" aria-label="Vista previa de consola">
         <div class="terminal-title">mabo</div>
         <pre><code>mabo&gt; Variable base = "%USERPROFILE%/Documents/DSLDemo"
+mabo&gt; Ir A base
+mabo C:\Users\tparr\Documents\DSLDemo&gt; Mostrar Ruta
 mabo&gt; Crear Carpeta base + "/PDF"
-mabo&gt; Buscar Archivos En base Con Extension ".pdf"
+mabo&gt; Listar Contenido
 mabo&gt; Mostrar ultimoResultado</code></pre>
       </div>
     </section>
@@ -127,11 +130,13 @@ mabo&gt; salir</code></pre>
       <h2>3. Tus primeros comandos</h2>
       <p>Estos comandos crean una carpeta segura, crean un archivo, escriben texto, leen el archivo y listan el contenido.</p>
       <pre><code>Variable base = "%USERPROFILE%/Documents/DSLDemo"
+Ir A base
 Crear Carpeta base + "/prueba"
 Crear Archivo base + "/prueba/notas.txt"
 Escribir "Mi primera nota" En base + "/prueba/notas.txt"
 Leer Archivo base + "/prueba/notas.txt"
-Listar Contenido base + "/prueba"</code></pre>
+Ir A base + "/prueba"
+Listar Contenido</code></pre>
       <div class="note">
         <strong>Que significa <code>base</code>?</strong>
         <p><code>base</code> es solo el nombre de una variable. La primera linea guarda la ruta <code>%USERPROFILE%/Documents/DSLDemo</code> dentro de esa variable.</p>
@@ -184,8 +189,21 @@ Variable descargas = base + "/Descargas"</code></pre>
       </div>
     </section>
 
+    <section class="doc-section" id="navegacion" data-search="navegacion ruta actual directorio carpeta actual ir a mostrar ruta cd pwd">
+      <h2>6. Navegacion</h2>
+      <p>MABO tiene una carpeta actual. Las rutas relativas se resuelven desde esa carpeta y el modo interactivo la muestra en el prompt.</p>
+<pre><code>Mostrar Ruta
+Ir A "%USERPROFILE%/Documents"
+Ir A "C:\Users\tparr\Documents\TOMAS"
+Ir A "TOMAS"
+Ir A ".."
+Crear Carpeta "Prueba"
+Listar Contenido</code></pre>
+      <p><code>Ir A</code> cambia la carpeta actual de MABO. <code>Mostrar Ruta</code> imprime la carpeta actual en la consola. En Windows puedes escribir rutas con <code>/</code> o con <code>\</code>.</p>
+    </section>
+
     <section class="doc-section" id="variables" data-search="variables guardar asignacion tipos numeros texto booleanos listas">
-      <h2>6. Variables</h2>
+      <h2>7. Variables</h2>
       <p>Las variables guardan valores para reutilizarlos. Se crean con <code>Variable nombre = valor</code> y se modifican con <code>=</code>.</p>
       <pre><code>Variable cantidad = 10
 Variable nombre = "reporte.txt"
@@ -206,7 +224,7 @@ Mostrar cantidad</code></pre>
     </section>
 
     <section class="doc-section" id="salida" data-search="mostrar imprimir resultado consola concatenar">
-      <h2>7. Mostrar resultados</h2>
+      <h2>8. Mostrar resultados</h2>
       <p>Usa <code>Mostrar</code> para imprimir texto o valores en la consola.</p>
       <pre><code>Mostrar "Hola"
 Mostrar 10
@@ -219,7 +237,7 @@ Mostrar base + "/archivo.txt"</code></pre>
     </section>
 
     <section class="doc-section" id="archivos" data-search="archivos crear leer escribir anexar copiar mover renombrar eliminar">
-      <h2>8. Comandos para archivos</h2>
+      <h2>9. Comandos para archivos</h2>
       <div class="command-list">
         <article>
           <h3>Crear Archivo</h3>
@@ -258,14 +276,15 @@ Mostrar base + "/archivo.txt"</code></pre>
         </article>
         <article>
           <h3>Eliminar Archivo</h3>
-          <pre><code>Eliminar Archivo "ruta/archivo.txt"</code></pre>
-          <p>Elimina un archivo. Para practicar, usa primero <code>Simular</code>.</p>
+          <pre><code>Eliminar Archivo "ruta/archivo.txt"
+Eliminar Archivo "ruta/archivo.txt" Sin Confirmar</code></pre>
+          <p>Elimina un archivo. Para practicar, usa primero <code>Simular</code>. <code>Sin Confirmar</code> omite la pregunta interactiva.</p>
         </article>
       </div>
     </section>
 
     <section class="doc-section" id="carpetas" data-search="carpetas crear copiar mover renombrar eliminar recursivamente listar contenido">
-      <h2>9. Comandos para carpetas</h2>
+      <h2>10. Comandos para carpetas</h2>
       <div class="command-list">
         <article>
           <h3>Crear Carpeta</h3>
@@ -274,7 +293,8 @@ Mostrar base + "/archivo.txt"</code></pre>
         </article>
         <article>
           <h3>Listar Contenido</h3>
-          <pre><code>Listar Contenido "ruta/carpeta"</code></pre>
+          <pre><code>Listar Contenido
+Listar Contenido "ruta/carpeta"</code></pre>
           <p>Muestra archivos y carpetas directos. El resultado queda en <code>ultimoResultado</code>.</p>
         </article>
         <article>
@@ -295,14 +315,15 @@ Mostrar base + "/archivo.txt"</code></pre>
         <article>
           <h3>Eliminar Carpeta</h3>
           <pre><code>Eliminar Carpeta "ruta/carpeta"
-Eliminar Carpeta "ruta/carpeta" Recursivamente</code></pre>
+Eliminar Carpeta "ruta/carpeta" Recursivamente
+Eliminar Carpeta "ruta/carpeta" Recursivamente Sin Confirmar</code></pre>
           <p>Elimina una carpeta. La forma recursiva esta pensada para carpetas con contenido.</p>
         </article>
       </div>
     </section>
 
     <section class="doc-section" id="busqueda" data-search="buscar archivos carpetas filtros extension nombre prefijo sufijo tamano antiguedad">
-      <h2>10. Busqueda y filtros</h2>
+      <h2>11. Busqueda y filtros</h2>
       <p>Los comandos de busqueda recorren una carpeta y devuelven rutas que coinciden con filtros. El resultado queda en <code>ultimoResultado</code>.</p>
       <h3>Buscar archivos</h3>
       <pre><code>Buscar Archivos En "ruta" Con Extension ".pdf"
@@ -322,7 +343,7 @@ Buscar Archivos En "ruta" Mas Recientes Que 7 Dias</code></pre>
     </section>
 
     <section class="doc-section" id="consultas" data-search="existe obtener tamano cantidad propiedad nombre extension ruta existe esarchivo escarpeta">
-      <h2>11. Consultas sobre archivos y carpetas</h2>
+      <h2>12. Consultas sobre archivos y carpetas</h2>
       <pre><code>Existe Archivo "ruta/archivo.txt"
 Existe Carpeta "ruta/carpeta"
 Obtener Tamano Archivo "ruta/archivo.txt"
@@ -344,7 +365,7 @@ FinSi</code></pre>
     </section>
 
     <section class="doc-section" id="control" data-search="condiciones si sino finsi mientras finmientras para cada finpara operadores logicos">
-      <h2>12. Condiciones y ciclos</h2>
+      <h2>13. Condiciones y ciclos</h2>
       <h3>Condiciones</h3>
       <pre><code>Si cantidad > 0 Entonces
     Mostrar "Hay archivos"
@@ -374,7 +395,7 @@ FinPara</code></pre>
     </section>
 
     <section class="doc-section" id="funciones" data-search="funciones parametros retornar recursividad reutilizar">
-      <h2>13. Funciones</h2>
+      <h2>14. Funciones</h2>
       <p>Una funcion calcula o ejecuta algo reutilizable. Puede recibir parametros y devolver un valor con <code>Retornar</code>.</p>
       <pre><code>Funcion NombreCompleto(nombre, apellido)
     Retornar nombre + " " + apellido
@@ -391,7 +412,7 @@ FinFuncion</code></pre>
     </section>
 
     <section class="doc-section" id="tareas" data-search="tareas rutina ejecutar tarea bloque automatizacion">
-      <h2>14. Tareas</h2>
+      <h2>15. Tareas</h2>
       <p>Una tarea es una rutina con nombre. No devuelve valor; sirve para agrupar pasos de automatizacion.</p>
       <pre><code>Tarea PrepararProyecto:
     Crear Carpeta base + "/entrada"
@@ -404,7 +425,7 @@ Ejecutar Tarea PrepararProyecto</code></pre>
     </section>
 
     <section class="doc-section" id="programacion" data-search="programar tareas cada minutos horas dias iniciar sistema a las scheduler">
-      <h2>15. Programacion de tareas</h2>
+      <h2>16. Programacion de tareas</h2>
       <p>Las tareas pueden ejecutarse inmediatamente, cada cierto tiempo, al iniciar el sistema o todos los dias a una hora.</p>
       <pre><code>Ejecutar Tarea Limpieza
 Ejecutar Limpieza Cada 30 Minutos
@@ -416,7 +437,7 @@ Ejecutar Respaldo A Las "23:00"</code></pre>
     </section>
 
     <section class="doc-section" id="simulacion" data-search="simular modo seguro previsualizar eliminar copiar mover comandos nativos">
-      <h2>16. Modo simulacion</h2>
+      <h2>17. Modo simulacion</h2>
       <p><code>Simular</code> ejecuta la validacion y auditoria, pero no modifica archivos ni ejecuta comandos nativos reales.</p>
       <pre><code>Simular Eliminar Archivo base + "/temp/cache.tmp"
 Simular Copiar Carpeta base + "/datos" A base + "/backup"
@@ -426,7 +447,7 @@ Simular Ejecutar PowerShell "Write-Output 'prueba'"</code></pre>
     </section>
 
     <section class="doc-section" id="errores" data-search="errores intentar capturar manejo excepciones archivo no existe">
-      <h2>17. Manejo de errores</h2>
+      <h2>18. Manejo de errores</h2>
       <p>Usa <code>Intentar</code> y <code>Capturar</code> para continuar cuando algo falle.</p>
       <pre><code>Intentar
     Leer Archivo base + "/no_existe.txt"
@@ -437,7 +458,7 @@ FinIntentar</code></pre>
     </section>
 
     <section class="doc-section" id="comandos-nativos" data-search="powershell linux comandos nativos ejecutar shell seguridad stdout stderr">
-      <h2>18. PowerShell y Linux</h2>
+      <h2>19. PowerShell y Linux</h2>
       <p>Cuando MABO no tenga un comando propio para algo, puedes delegar a PowerShell en Windows o a un shell Linux en Linux/Unix.</p>
       <pre><code>Ejecutar PowerShell "Get-ChildItem"
 Ejecutar Linux "ls -la"</code></pre>
@@ -454,7 +475,7 @@ Ejecutar Linux "ls -la"</code></pre>
     </section>
 
     <section class="doc-section" id="backup" data-search="backup comprimir descomprimir zip respaldo">
-      <h2>19. Backup y compresion</h2>
+      <h2>20. Backup y compresion</h2>
       <pre><code>Crear Backup De base + "/datos" En base + "/respaldo/datos"
 Comprimir base + "/datos" A base + "/respaldo/datos_zip"
 Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pre>
@@ -462,7 +483,7 @@ Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pr
     </section>
 
     <section class="doc-section" id="permisos" data-search="permisos chmod posix linux windows cambiar permisos">
-      <h2>20. Permisos</h2>
+      <h2>21. Permisos</h2>
       <p>En sistemas POSIX puedes cambiar permisos con formato octal o simbolico.</p>
       <pre><code>Cambiar Permisos "scripts/run.sh" A "755"
 Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
@@ -470,7 +491,7 @@ Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
     </section>
 
     <section class="doc-section" id="recetas" data-search="recetas ejemplos pdf limpieza respaldo descargas documentos">
-      <h2>21. Recetas completas</h2>
+      <h2>22. Recetas completas</h2>
       <article class="recipe">
         <h3>Organizar PDF desde Descargas</h3>
         <pre><code>Variable base = "%USERPROFILE%/Documents/DSLDemo"
@@ -488,7 +509,7 @@ FinPara</code></pre>
         <pre><code>Variable temp = "%USERPROFILE%/Documents/DSLDemo/Temp"
 Buscar Archivos En temp Con Extension ".tmp" Mas Antiguos Que 30 Dias
 Para Cada archivo En ultimoResultado
-    Simular Eliminar Archivo archivo
+    Eliminar Archivo archivo Sin Confirmar
 FinPara</code></pre>
       </article>
       <article class="recipe">
@@ -503,13 +524,15 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
     </section>
 
     <section class="doc-section" id="referencia" data-search="referencia rapida comandos sintaxis tabla">
-      <h2>22. Referencia rapida de comandos</h2>
+      <h2>23. Referencia rapida de comandos</h2>
       <table class="reference-table">
         <thead><tr><th>Accion</th><th>Sintaxis</th></tr></thead>
         <tbody>
           <tr><td>Declarar variable</td><td><code>Variable nombre = expresion</code></td></tr>
           <tr><td>Asignar variable</td><td><code>nombre = expresion</code></td></tr>
           <tr><td>Mostrar</td><td><code>Mostrar expresion</code></td></tr>
+          <tr><td>Mostrar ruta actual</td><td><code>Mostrar Ruta</code></td></tr>
+          <tr><td>Cambiar carpeta actual</td><td><code>Ir A ruta</code></td></tr>
           <tr><td>Crear archivo</td><td><code>Crear Archivo ruta</code></td></tr>
           <tr><td>Crear carpeta</td><td><code>Crear Carpeta ruta</code></td></tr>
           <tr><td>Leer archivo</td><td><code>Leer Archivo ruta</code></td></tr>
@@ -521,11 +544,11 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
           <tr><td>Mover carpeta</td><td><code>Mover Carpeta origen A destino</code></td></tr>
           <tr><td>Renombrar archivo</td><td><code>Renombrar Archivo origen A destino</code></td></tr>
           <tr><td>Renombrar carpeta</td><td><code>Renombrar Carpeta origen A destino</code></td></tr>
-          <tr><td>Eliminar archivo</td><td><code>Eliminar Archivo ruta</code></td></tr>
-          <tr><td>Eliminar carpeta</td><td><code>Eliminar Carpeta ruta Recursivamente</code></td></tr>
+          <tr><td>Eliminar archivo</td><td><code>Eliminar Archivo ruta</code> o <code>Eliminar Archivo ruta Sin Confirmar</code></td></tr>
+          <tr><td>Eliminar carpeta</td><td><code>Eliminar Carpeta ruta Recursivamente</code> o <code>Eliminar Carpeta ruta Recursivamente Sin Confirmar</code></td></tr>
           <tr><td>Buscar archivos</td><td><code>Buscar Archivos En ruta filtros</code></td></tr>
           <tr><td>Buscar carpetas</td><td><code>Buscar Carpetas En ruta filtros</code></td></tr>
-          <tr><td>Listar</td><td><code>Listar Contenido ruta</code></td></tr>
+          <tr><td>Listar</td><td><code>Listar Contenido</code> o <code>Listar Contenido ruta</code></td></tr>
           <tr><td>Existe archivo</td><td><code>Existe Archivo ruta</code></td></tr>
           <tr><td>Existe carpeta</td><td><code>Existe Carpeta ruta</code></td></tr>
           <tr><td>Tamano</td><td><code>Obtener Tamano Archivo ruta</code></td></tr>
@@ -547,7 +570,7 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
     </section>
 
     <section class="doc-section" id="problemas" data-search="problemas errores comunes reservado backup comillas ruta seguridad">
-      <h2>23. Problemas comunes</h2>
+      <h2>24. Problemas comunes</h2>
       <div class="faq">
         <article>
           <h3>El nombre de mi tarea no funciona</h3>

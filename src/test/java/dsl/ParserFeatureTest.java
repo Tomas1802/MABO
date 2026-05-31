@@ -43,13 +43,18 @@ class ParserFeatureTest {
     void parsesSimplifiedFileWriteListAndExplicitSizeFilters() {
         String script = """
                 Variable base = "%USERPROFILE%/Documents/DSLDemo"
+                Ir A base
+                Mostrar Ruta
                 Escribir "Mi primera nota" En base + "/notas.txt"
                 Anexar "\\nOtra nota" En base + "/notas.txt"
+                Listar Contenido
                 Listar Contenido base
                 Buscar Archivos En base Con Tamano Menor Que 5 MB
                 Buscar Archivos En base Con Tamano Mayor Que 100 KB
                 Buscar Archivos En base Con Tamano Menor Que 1024 Bytes
                 Buscar Archivos En base Con Tamano Mayor Que 1 GB
+                Eliminar Archivo base + "/notas.txt" Sin Confirmar
+                Eliminar Carpeta base + "/tmp" Recursivamente Sin Confirmar
                 """;
 
         proyectoLexer lexer = new proyectoLexer(CharStreams.fromString(script));
