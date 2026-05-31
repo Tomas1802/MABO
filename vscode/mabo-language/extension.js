@@ -22,9 +22,17 @@ function runMabo(checkOnly) {
 
   const executable = vscode.workspace.getConfiguration("mabo").get("executable") || "mabo";
   const args = checkOnly ? ["--check", document.fileName] : [document.fileName];
-  const terminal = vscode.window.createTerminal(checkOnly ? "MABO Check" : "MABO Run");
+  const terminal = vscode.window.createTerminal(checkOnly ? "MABO Validar" : "MABO Ejecutar");
   terminal.show();
-  terminal.sendText([quote(executable), ...args.map(quote)].join(" "));
+  terminal.sendText([formatExecutable(executable), ...args.map(quote)].join(" "));
+}
+
+function formatExecutable(value) {
+  const text = String(value);
+  if (/^[A-Za-z0-9_.-]+$/.test(text)) {
+    return text;
+  }
+  return `& ${quote(text)}`;
 }
 
 function quote(value) {

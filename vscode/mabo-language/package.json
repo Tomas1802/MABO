@@ -40,11 +40,11 @@
     "commands": [
       {
         "command": "mabo.runFile",
-        "title": "MABO: Run Current File"
+        "title": "MABO: Ejecutar archivo actual"
       },
       {
         "command": "mabo.checkFile",
-        "title": "MABO: Check Current File"
+        "title": "MABO: Validar archivo actual"
       }
     ],
     "configuration": {
@@ -53,7 +53,7 @@
         "mabo.executable": {
           "type": "string",
           "default": "mabo",
-          "description": "Path to the MABO executable."
+          "description": "Ruta del ejecutable de MABO."
         }
       }
     }

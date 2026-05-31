@@ -74,28 +74,32 @@ tasks.named('startScripts') {
         def windowsCheck = '''
 
 @rem Check Java version before launching MABO.
-for /f "tokens=3" %%g in ('"%JAVA_EXE%" -version 2^>^&1 ^| findstr /i "version"') do set JAVA_VERSION=%%g
-set JAVA_VERSION=%JAVA_VERSION:"=%
-for /f "tokens=1,2 delims=." %%a in ("%JAVA_VERSION%") do (
-    if "%%a"=="1" (set JAVA_MAJOR=%%b) else (set JAVA_MAJOR=%%a)
-)
-if "%JAVA_MAJOR%"=="" goto javaVersionError
+set "MABO_JAVA_VERSION_FILE=%TEMP%\\mabo-java-version-%RANDOM%.txt"
+"%JAVA_EXE%" -version > "%MABO_JAVA_VERSION_FILE%" 2>&1
+set /p JAVA_VERSION_LINE=<"%MABO_JAVA_VERSION_FILE%"
+del "%MABO_JAVA_VERSION_FILE%" >NUL 2>&1
+for /f "tokens=3" %%g in ("%JAVA_VERSION_LINE%") do set "JAVA_VERSION=%%~g"
+for /f "tokens=1,2 delims=." %%a in ("%JAVA_VERSION%") do set "JAVA_FIRST=%%a" & set "JAVA_SECOND=%%b"
+set "JAVA_MAJOR=%JAVA_FIRST%"
+if "%JAVA_FIRST%"=="1" set "JAVA_MAJOR=%JAVA_SECOND%"
+if not defined JAVA_MAJOR goto javaVersionError
 if %JAVA_MAJOR% LSS 17 goto javaVersionError
 goto javaVersionOk
 
 :javaVersionError
-echo. 1^>^&2
-echo MABO requires Java 17 or newer. 1^>^&2
-echo Your current Java runtime is: %JAVA_VERSION% 1^>^&2
-echo Install a current JDK, then make sure 'java -version' shows 17 or newer. 1^>^&2
-echo Recommended on Windows: winget install EclipseAdoptium.Temurin.21.JDK 1^>^&2
-echo If you already installed Java, reopen the terminal or update JAVA_HOME/PATH. 1^>^&2
-echo. 1^>^&2
-"%COMSPEC%" /c exit 1
+>&2 echo.
+>&2 echo MABO requires Java 17 or newer.
+>&2 echo Your current Java runtime is: %JAVA_VERSION%
+>&2 echo Install a current JDK, then make sure 'java -version' shows 17 or newer.
+>&2 echo Recommended on Windows: winget install EclipseAdoptium.Temurin.21.JDK
+>&2 echo If you already installed Java, reopen the terminal or update JAVA_HOME/PATH.
+>&2 echo.
+exit /b 1
 
 :javaVersionOk
 '''
         windows.text = windowsText.replace(':execute\r\n@rem Setup the command line', ':execute\r\n' + windowsCheck + '\r\n@rem Setup the command line')
+        windows.text = windows.text.replace('"%COMSPEC%" /c exit %ERRORLEVEL%', 'exit /b %ERRORLEVEL%')
 
         def unix = unixScript
         def unixText = unix.text

@@ -1,40 +1,52 @@
-# MABO Language
+# MABO para VS Code
 
-Simple VS Code support for `.mabo` files.
+Extension simple para trabajar con archivos `.mabo` en VS Code.
 
-## Features
+## Que incluye
 
-- Syntax highlighting.
-- Line comments with `#`.
-- Bracket and quote pairs.
-- `MABO: Run Current File`.
-- `MABO: Check Current File`.
+- Colores de sintaxis para archivos `.mabo`.
+- Comentarios con `#`.
+- Pares de parentesis, corchetes y comillas.
+- Comando `MABO: Ejecutar archivo actual`.
+- Comando `MABO: Validar archivo actual`.
 
-Both commands call the installed `mabo` executable. If MABO is not on PATH, set `mabo.executable` in VS Code settings.
+## Instalar
 
-## Local development
+1. Instala MABO y confirma que `mabo` funciona en PowerShell.
+2. Abre `https://github.com/Tomas1802/MABO/releases/latest`.
+3. Busca la seccion `Assets` al final de la release.
+4. Descarga `mabo-language-0.1.0.vsix`. Si no ves la lista, presiona `Assets` para desplegarla.
+5. Abre VS Code.
+6. Ve a Extensions.
+7. Abre el menu de tres puntos.
+8. Elige `Install from VSIX...`.
+9. Selecciona `mabo-language-0.1.0.vsix`.
+10. Abre un archivo `.mabo`.
 
-From this folder:
+Si clonaste el repositorio, primero crea el archivo `.vsix`:
 
 ```powershell
-code .
-```
-
-Then press F5 to open an Extension Development Host.
-
-## Install from VSIX
-
-After packaging the extension as a `.vsix`, install it with:
-
-```powershell
+cd vscode/mabo-language
+npx --yes @vscode/vsce package
 code --install-extension mabo-language-0.1.0.vsix
 ```
 
-You can also use VS Code's Extensions view and choose `Install from VSIX...`.
+Tambien puedes instalar desde PowerShell:
 
-## Configure MABO path
+```powershell
+code --install-extension "C:\ruta\mabo-language-0.1.0.vsix"
+```
 
-If `mabo` is not available in PATH, set the executable path in VS Code settings:
+## Usar
+
+Abre un archivo `.mabo`, presiona `Ctrl+Shift+P`, escribe `MABO` y elige:
+
+- `MABO: Ejecutar archivo actual`: ejecuta el archivo.
+- `MABO: Validar archivo actual`: valida sintaxis y semantica sin ejecutar acciones.
+
+## Configurar la ruta de MABO
+
+Si `mabo` no esta en PATH, configura `mabo.executable` en VS Code:
 
 ```json
 {

@@ -149,26 +149,39 @@ mabo validar "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"</code></pre>
       <p>Consulta la seccion de VS Code para instalarla o probarla en modo desarrollo.</p>
     </section>
 
-    <section class="doc-section" id="vscode-extension" data-search="vscode visual studio code extension instalar vsix desarrollo f5 mabo executable">
+    <section class="doc-section" id="vscode-extension" data-search="vscode visual studio code extension instalar vsix mabo executable paleta comandos">
       <h2>4. Extension de VS Code</h2>
-      <p>La extension permite trabajar con archivos <code>.mabo</code> desde VS Code con resaltado de sintaxis y comandos para ejecutar o validar el archivo actual.</p>
-      <h3>Requisitos</h3>
+      <p>La extension permite abrir archivos <code>.mabo</code> en VS Code con colores de sintaxis y botones de comando para ejecutar o validar el archivo actual.</p>
+      <h3>Antes de instalar</h3>
       <ul>
-        <li>MABO instalado y disponible como <code>mabo</code> en PATH.</li>
-        <li>Visual Studio Code instalado.</li>
+        <li>Instala MABO primero.</li>
+        <li>Cierra y abre PowerShell, luego confirma que <code>mabo</code> funciona.</li>
+        <li>Instala Visual Studio Code si no lo tienes.</li>
       </ul>
-      <h3>Probar desde el codigo fuente</h3>
+      <h3>Instalar paso a paso</h3>
+      <ol>
+        <li>Abre <code>https://github.com/Tomas1802/MABO/releases/latest</code> en tu navegador.</li>
+        <li>Busca la seccion <strong>Assets</strong> al final de la release.</li>
+        <li>Descarga <code>mabo-language-0.1.0.vsix</code>. Si no ves la lista, presiona el titulo <strong>Assets</strong> para desplegarla.</li>
+        <li>Abre VS Code.</li>
+        <li>Abre la seccion Extensions.</li>
+        <li>Presiona el menu de tres puntos de Extensions.</li>
+        <li>Elige <strong>Install from VSIX...</strong>.</li>
+        <li>Selecciona el archivo <code>mabo-language-0.1.0.vsix</code>.</li>
+        <li>Abre un archivo terminado en <code>.mabo</code>.</li>
+      </ol>
+      <h3>Si clonaste el repositorio</h3>
+      <p>La carpeta <code>vscode/mabo-language</code> contiene el codigo de la extension, pero VS Code no la instala automaticamente desde esa carpeta. Primero debes crear el archivo <code>.vsix</code> y luego instalarlo.</p>
       <pre><code>cd vscode/mabo-language
-code .</code></pre>
-      <p>En VS Code presiona F5. Se abre una ventana llamada Extension Development Host. Desde esa ventana abre un archivo <code>.mabo</code> y usa la paleta de comandos.</p>
-      <h3>Comandos incluidos</h3>
-      <pre><code>MABO: Run Current File
-MABO: Check Current File</code></pre>
-      <p><code>Run Current File</code> ejecuta el archivo con MABO. <code>Check Current File</code> ejecuta <code>mabo --check</code> para validar sin modificar archivos.</p>
-      <h3>Instalar desde un archivo .vsix</h3>
-      <p>Cuando empaquetes la extension, puedes instalarla desde un archivo <code>.vsix</code> con VS Code.</p>
-      <pre><code>code --install-extension mabo-language-0.1.0.vsix</code></pre>
-      <p>Tambien puedes abrir VS Code, entrar a Extensions, seleccionar Install from VSIX y elegir el archivo.</p>
+npx --yes @vscode/vsce package
+code --install-extension mabo-language-0.1.0.vsix</code></pre>
+      <p>Tambien puedes instalarla desde PowerShell si tienes el comando <code>code</code> habilitado:</p>
+      <pre><code>code --install-extension "C:\ruta\mabo-language-0.1.0.vsix"</code></pre>
+      <h3>Como usarla</h3>
+      <p>Abre un archivo <code>.mabo</code>, presiona <code>Ctrl+Shift+P</code> y escribe <code>MABO</code>. Veras estos comandos:</p>
+      <pre><code>MABO: Ejecutar archivo actual
+MABO: Validar archivo actual</code></pre>
+      <p><code>Ejecutar archivo actual</code> corre el archivo con MABO. <code>Validar archivo actual</code> revisa sintaxis y semantica sin ejecutar acciones.</p>
       <h3>Si MABO no esta en PATH</h3>
       <p>Configura la ruta del ejecutable en los ajustes de VS Code con <code>mabo.executable</code>.</p>
       <pre><code>{

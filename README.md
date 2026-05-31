@@ -186,27 +186,43 @@ mabo -c "Mostrar 123"
 
 Los archivos propios de MABO usan la extensión `.mabo`. `mabo archivo.mabo` ejecuta el archivo. `mabo --check archivo.mabo` o `mabo validar archivo.mabo` valida sintaxis y semántica sin ejecutar acciones.
 
-La extensión simple de VS Code está en `vscode/mabo-language`. Incluye resaltado de sintaxis, comentarios, pares de símbolos y comandos para ejecutar o validar el archivo actual. Para probarla:
+La extensión simple de VS Code permite abrir archivos `.mabo` con resaltado de sintaxis y comandos para ejecutar o validar el archivo actual.
+
+Instalacion para usuarios:
+
+1. Instala MABO y confirma que `mabo` funciona en PowerShell.
+2. Abre `https://github.com/Tomas1802/MABO/releases/latest`.
+3. Busca la seccion **Assets** al final de la release.
+4. Descarga `mabo-language-0.1.0.vsix`. Si no ves la lista, presiona **Assets** para desplegarla.
+5. Abre VS Code.
+6. Ve a Extensions.
+7. Abre el menu de tres puntos.
+8. Elige **Install from VSIX...**.
+9. Selecciona `mabo-language-0.1.0.vsix`.
+10. Abre un archivo `.mabo`.
+
+Si clonaste el repositorio, la carpeta `vscode/mabo-language` contiene el codigo de la extension, pero VS Code no la instala automaticamente desde esa carpeta. Primero crea el `.vsix` y luego instalalo:
 
 ```powershell
 cd vscode/mabo-language
-code .
-```
-
-Presiona F5 desde VS Code para abrir una ventana de desarrollo con la extensión cargada. La extensión espera que `mabo` esté instalado en PATH.
-
-Para instalar una versión empaquetada de la extensión, usa un archivo `.vsix`:
-
-```powershell
+npx --yes @vscode/vsce package
 code --install-extension mabo-language-0.1.0.vsix
 ```
 
-También puedes abrir VS Code, entrar a Extensions, elegir Install from VSIX y seleccionar el archivo. La extensión agrega estos comandos:
+Tambien puedes instalarla desde PowerShell si tienes el comando `code` habilitado:
+
+```powershell
+code --install-extension "C:\ruta\mabo-language-0.1.0.vsix"
+```
+
+Para usarla, abre un archivo `.mabo`, presiona `Ctrl+Shift+P`, escribe `MABO` y elige uno de estos comandos:
 
 ```text
-MABO: Run Current File
-MABO: Check Current File
+MABO: Ejecutar archivo actual
+MABO: Validar archivo actual
 ```
+
+`Ejecutar archivo actual` corre el archivo con MABO. `Validar archivo actual` revisa sintaxis y semantica sin ejecutar acciones.
 
 Si `mabo` no está en PATH, configura la ruta en VS Code:
 

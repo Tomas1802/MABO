@@ -33,6 +33,11 @@ jobs:
         with:
           gradle-version: current
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Package release
         shell: pwsh
         run: ./scripts/package-release.ps1
@@ -56,3 +61,4 @@ jobs:
             build/release/mabo-windows.zip
             build/release/install-windows.ps1
             build/release/uninstall-windows.ps1
+            build/release/mabo-language-0.1.0.vsix
