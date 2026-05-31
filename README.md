@@ -24,7 +24,7 @@ Este proyecto implementa un lenguaje de scripting en español que permite automa
 
 ## Tecnologías
 
-- **Java 21+** (compatible con JDK 25)
+- **Java 17+** para ejecutar MABO
 - **ANTLR 4.13.1** — generación de lexer/parser desde gramática `.g4`
 - **Java NIO** — operaciones de archivos (`Files`, `Path`, `Paths`)
 - **java.util.zip** — compresión y descompresión ZIP
@@ -81,8 +81,8 @@ src/
 
 ### Requisitos
 
-1. JDK 21 o superior
-2. `antlr-runtime-4.13.1.jar` en el classpath
+1. JDK 17 o superior. En Windows puedes instalarlo con `winget install EclipseAdoptium.Temurin.21.JDK`.
+2. Gradle para compilar desde el codigo fuente.
 3. IntelliJ IDEA (recomendado)
 
 ### Desde IntelliJ IDEA
@@ -122,6 +122,15 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://github.com/T
 ```
 
 El instalador descarga `mabo-windows.zip`, instala en `%LOCALAPPDATA%\MABO` y agrega `%LOCALAPPDATA%\MABO\bin` al `PATH` del usuario.
+
+MABO requiere Java 17 o superior. Si al ejecutar `mabo` ves un error como `UnsupportedClassVersionError` o `class file version`, significa que Windows esta usando una version antigua de Java. Ejecuta:
+
+```powershell
+java -version
+winget install EclipseAdoptium.Temurin.21.JDK
+```
+
+Despues de instalar Java, cierra y abre PowerShell. `java -version` debe mostrar 17 o superior.
 
 #### Instalación desde el código fuente
 

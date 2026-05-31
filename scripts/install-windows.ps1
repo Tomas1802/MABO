@@ -105,6 +105,44 @@ function Get-ReleaseZipUrl {
     return "https://github.com/$Repository/releases/download/$Version/mabo-windows.zip"
 }
 
+function Get-JavaMajorVersion {
+    $javaCommand = Get-Command java -ErrorAction SilentlyContinue
+    if (-not $javaCommand) {
+        return $null
+    }
+
+    $versionOutput = & java -version 2>&1
+    $versionLine = $versionOutput | Where-Object { $_ -match 'version' } | Select-Object -First 1
+    if (-not $versionLine) {
+        return $null
+    }
+    if ($versionLine -notmatch '"([^"]+)"') {
+        return $null
+    }
+
+    $version = $Matches[1]
+    $parts = $version.Split('.')
+    if ($parts[0] -eq "1" -and $parts.Length -gt 1) {
+        return [int]$parts[1]
+    }
+    return [int]$parts[0]
+}
+
+function Write-JavaRequirementWarning {
+    $major = Get-JavaMajorVersion
+    if ($null -eq $major) {
+        Write-Warning "MABO requires Java 17 or newer, but no Java runtime was found in PATH."
+        Write-Host "Install Java with: winget install EclipseAdoptium.Temurin.21.JDK"
+        Write-Host "Then reopen PowerShell and run: java -version"
+        return
+    }
+    if ($major -lt 17) {
+        Write-Warning "MABO requires Java 17 or newer, but PATH currently uses Java $major."
+        Write-Host "Install Java with: winget install EclipseAdoptium.Temurin.21.JDK"
+        Write-Host "Then reopen PowerShell and confirm: java -version"
+    }
+}
+
 function Install-FromDistribution {
     param([string]$Distribution)
 
@@ -177,6 +215,8 @@ if (-not $SkipPath) {
     Add-ToUserPath -PathToAdd $BinPath
 }
 
+Write-JavaRequirementWarning
+
 Write-Host "MABO installed at: $InstallPath"
-Write-Host "Command: mabo <script.dsl>"
+Write-Host "Command: mabo <script.mabo>"
 Write-Host "If this is a new terminal, reopen it before running mabo."

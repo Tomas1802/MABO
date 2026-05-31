@@ -7,6 +7,11 @@ plugins {
 group = 'edu.unal.mabo'
 version = '1.0.0'
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
 application {
     applicationName = 'mabo'
     mainClass = 'Main'
@@ -59,5 +64,57 @@ tasks.register('regenerateGrammar', JavaExec) {
             }
             delete 'src/gen/.idea'
         }
+    }
+}
+
+tasks.named('startScripts') {
+    doLast {
+        def windows = windowsScript
+        def windowsText = windows.text
+        def windowsCheck = '''
+
+@rem Check Java version before launching MABO.
+for /f "tokens=3" %%g in ('"%JAVA_EXE%" -version 2^>^&1 ^| findstr /i "version"') do set JAVA_VERSION=%%g
+set JAVA_VERSION=%JAVA_VERSION:"=%
+for /f "tokens=1,2 delims=." %%a in ("%JAVA_VERSION%") do (
+    if "%%a"=="1" (set JAVA_MAJOR=%%b) else (set JAVA_MAJOR=%%a)
+)
+if "%JAVA_MAJOR%"=="" goto javaVersionError
+if %JAVA_MAJOR% LSS 17 goto javaVersionError
+goto javaVersionOk
+
+:javaVersionError
+echo. 1^>^&2
+echo MABO requires Java 17 or newer. 1^>^&2
+echo Your current Java runtime is: %JAVA_VERSION% 1^>^&2
+echo Install a current JDK, then make sure 'java -version' shows 17 or newer. 1^>^&2
+echo Recommended on Windows: winget install EclipseAdoptium.Temurin.21.JDK 1^>^&2
+echo If you already installed Java, reopen the terminal or update JAVA_HOME/PATH. 1^>^&2
+echo. 1^>^&2
+"%COMSPEC%" /c exit 1
+
+:javaVersionOk
+'''
+        windows.text = windowsText.replace(':execute\r\n@rem Setup the command line', ':execute\r\n' + windowsCheck + '\r\n@rem Setup the command line')
+
+        def unix = unixScript
+        def unixText = unix.text
+        def unixCheck = '''
+
+# Check Java version before launching MABO.
+java_version=$("$JAVACMD" -version 2>&1 | awk -F'"' '/version/ {print $2; exit}')
+java_major=$(printf '%s' "$java_version" | awk -F. '{ if ($1 == "1") print $2; else print $1 }')
+case "$java_major" in
+  ''|*[!0-9]*) die "MABO requires Java 17 or newer.
+Your current Java runtime is: ${java_version:-unknown}
+Install a current JDK, then make sure 'java -version' shows 17 or newer." ;;
+esac
+if [ "$java_major" -lt 17 ]; then
+    die "MABO requires Java 17 or newer.
+Your current Java runtime is: $java_version
+Install a current JDK, then make sure 'java -version' shows 17 or newer."
+fi
+'''
+        unix.text = unixText.replace('# Increase the maximum file descriptors if we can.', unixCheck + '\n# Increase the maximum file descriptors if we can.')
     }
 }

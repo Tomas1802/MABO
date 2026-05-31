@@ -69,6 +69,9 @@
     <section class="doc-section" id="instalacion" data-search="instalacion windows gradle powershell path localappdata instalar desinstalar">
       <h2>1. Instalacion en Windows</h2>
       <p>Instala MABO desde la ultima release de GitHub. El instalador descarga la distribucion, la copia en <code>%LOCALAPPDATA%\MABO</code> y agrega <code>mabo</code> al PATH de tu usuario.</p>
+      <div class="note">
+        <strong>Requisito:</strong> MABO necesita Java 17 o superior. Puedes instalar una version actual con <code>winget install EclipseAdoptium.Temurin.21.JDK</code>.
+      </div>
       <div class="steps stack">
         <article>
           <h3>Instalar</h3>
@@ -89,6 +92,9 @@
       </div>
       <div class="note">
         <strong>Logs de tareas:</strong> MABO muestra la ruta al iniciar. En Windows normalmente es <code>%LOCALAPPDATA%\MABO\logs\tasks</code>.
+      </div>
+      <div class="warning">
+        Si ves <code>UnsupportedClassVersionError</code> o <code>class file version</code>, Windows esta usando una version antigua de Java. Ejecuta <code>java -version</code>, instala Java 17 o superior y abre una nueva terminal.
       </div>
     </section>
 
