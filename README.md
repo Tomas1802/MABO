@@ -70,9 +70,20 @@ src/
 │   ├── SemanticException.java
 │   ├── SecurityException.java
 │   └── ReturnException.java         # Control de flujo para retorno de funciones
-├── input_prueba_completa.txt        # Script de prueba con los 16 bloques
-└── .idea/grammar/
-    └── proyecto.g4                  # Gramática ANTLR del DSL
+└── test/java/                       # Pruebas automatizadas
+examples/
+├── limpieza.mabo                    # Ejemplo de limpieza de archivos
+└── organizar-pdf.mabo               # Ejemplo de organización de PDF
+docs/
+└── index.html                       # Documentación de usuario
+scripts/
+├── install-windows.ps1              # Instalador local/remoto
+├── uninstall-windows.ps1            # Desinstalador
+├── package-release.ps1              # Empaquetado de release
+└── publish-release.ps1              # Publicación con GitHub CLI
+vscode/mabo-language/                # Extensión simple para VS Code
+.idea/grammar/
+└── proyecto.g4                      # Gramática ANTLR del DSL
 ```
 
 ---
@@ -90,20 +101,20 @@ src/
 1. Abrir el proyecto en IntelliJ
 2. Agregar `antlr-runtime-4.13.1.jar` en **File → Project Structure → Modules → Dependencies**
 3. Si se modifica la gramática `proyecto.g4`: clic derecho sobre el archivo → *Generate ANTLR Recognizer* → reconstruir proyecto (**Build → Rebuild Project**)
-4. Ejecutar `Main.java` con el path del script DSL como argumento de programa:
+4. Ejecutar `Main.java` con el path de un script MABO como argumento de programa:
 
 ```
-src/input_prueba_completa.txt
+examples/limpieza.mabo
 ```
 
 ### Desde Gradle
 
 ```bash
 gradle clean test
-gradle run --args="src/input_prueba_completa.txt"
+gradle run --args="examples/limpieza.mabo"
 ```
 
-Gradle regenera el parser desde `.idea/grammar/proyecto.g4` usando ANTLR y ejecuta las pruebas automatizadas.
+Las pruebas automatizadas viven en `src/test/java`. Si modificas la gramática, ejecuta `gradle regenerateGrammar` para actualizar los archivos generados en `src/gen`.
 
 ### Instalar en Windows
 
@@ -144,7 +155,6 @@ Cuando se ejecuta desde el repositorio, el instalador compila la distribución c
 
 ```powershell
 mabo
-mabo src/input_prueba_completa.txt
 mabo examples/limpieza.mabo
 mabo --check examples/limpieza.mabo
 ```
@@ -209,7 +219,7 @@ git push origin v1.0.0
 ### Desde línea de comandos manual
 
 ```bash
-java -classpath "out/production/Bash;antlr-runtime-4.13.1.jar" Main src/input_prueba_completa.txt
+gradle run --args="examples/limpieza.mabo"
 ```
 
 ---
@@ -217,7 +227,7 @@ java -classpath "out/production/Bash;antlr-runtime-4.13.1.jar" Main src/input_pr
 ## Flujo de Ejecución
 
 ```
-Script .txt
+Script .mabo
     │
     ▼
 proyectoLexer  →  proyectoParser  →  ParseTree
@@ -760,25 +770,11 @@ Ejecutar Verificar Cada 1 Horas
 
 ---
 
-## Archivo de Prueba Incluido
+## Archivos de Ejemplo y Pruebas
 
-El proyecto incluye `src/input_prueba_completa.txt` con **16 bloques de prueba** que cubren todas las funcionalidades:
+Los ejemplos de uso para usuarios están en `examples/`:
 
-| Bloque | Contenido |
-|--------|-----------|
-| 1 | Variables y operadores aritméticos |
-| 2 | Comparaciones y operadores lógicos |
-| 3 | Funciones con parámetros, retorno y recursividad |
-| 4 | Condiciones Si / Sino / FinSi |
-| 5 | Ciclos Mientras y Para Cada |
-| 6 | Crear estructura de archivos y carpetas |
-| 7 | Leer, copiar, mover y renombrar |
-| 8 | Búsqueda con todos los filtros disponibles |
-| 9 | Consultas: Existe, Tamaño, Cantidad, Propiedad |
-| 10 | Para Cada sobre resultado de búsqueda |
-| 11 | Modo simulación |
-| 12 | Intentar / Capturar |
-| 13 | Backup de carpeta |
-| 14 | Función que usa operaciones de archivos |
-| 15 | Tarea programada con scheduler |
-| 16 | Compresión y descompresión ZIP |
+- `examples/limpieza.mabo`
+- `examples/organizar-pdf.mabo`
+
+Las pruebas automatizadas están en `src/test/java` y cubren parser, ejecución, validación, seguridad, archivos, shell y comandos de verificación.

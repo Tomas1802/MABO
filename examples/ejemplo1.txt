@@ -1,9 +1,0 @@
-Tarea LimpiarDescargas:
-    Variable carpeta = "Descargas"
-    Buscar Archivos En carpeta Con Extension ".pdf"
-    Para Cada archivo En ultimoResultado
-        Simular Eliminar Archivo archivo
-    FinPara
-Fin
-
-Ejecutar Tarea LimpiarDescargas
