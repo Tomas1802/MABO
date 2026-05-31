@@ -50,7 +50,6 @@
       <a href="#permisos">Permisos</a>
       <a href="#recetas">Ejemplos practicos</a>
       <a href="#referencia">Referencia rapida</a>
-      <a href="#problemas">Problemas comunes</a>
     </nav>
   </aside>
 
@@ -656,31 +655,6 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
       </table>
     </section>
 
-    <section class="doc-section" id="problemas" data-search="problemas errores comunes reservado backup comillas ruta seguridad">
-      <h2>26. Problemas comunes</h2>
-      <div class="faq">
-        <article>
-          <h3>El nombre de mi tarea no funciona</h3>
-          <p>No uses palabras reservadas como nombre de tarea o variable. Por ejemplo, <code>Backup</code> es una palabra del lenguaje. Usa <code>BackupDiario</code> o <code>RespaldoDiario</code>.</p>
-        </article>
-        <article>
-          <h3>Me sale acceso denegado</h3>
-          <p>MABO permite trabajar dentro de tu perfil de usuario y dentro de la carpeta actual del proyecto. Tambien puedes guardar una ruta segura con <code>Variable nombre = valor</code> para registrarla como raiz permitida. Evita rutas del sistema.</p>
-        </article>
-        <article>
-          <h3>El comando con -c falla por comillas</h3>
-          <p>En Windows, usa el modo interactivo para comandos con textos o rutas entre comillas. <code>-c</code> funciona mejor con instrucciones simples.</p>
-        </article>
-        <article>
-          <h3>Una tarea programada deja la terminal abierta</h3>
-          <p>Es normal cuando usa el scheduler interno. Presiona Ctrl+C para detenerlo.</p>
-        </article>
-        <article>
-          <h3>No se que hizo una tarea programada</h3>
-          <p>Revisa <code>%LOCALAPPDATA%\MABO\logs\tasks</code>. Cada tarea tiene un archivo por dia y el scheduler usa <code>scheduler.log</code>.</p>
-        </article>
-      </div>
-    </section>
   </main>
 
   <button class="back-to-top" type="button" aria-label="Volver arriba">Arriba</button>
