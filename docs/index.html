@@ -1,0 +1,651 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MABO Docs</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#inicio" aria-label="MABO documentation home">
+      <span class="brand-mark">M</span>
+      <span>
+        <strong>MABO</strong>
+        <small>Lenguaje de consola en espanol</small>
+      </span>
+    </a>
+    <button class="menu-button" type="button" aria-controls="sidebar" aria-expanded="false">Menu</button>
+  </header>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="search-box">
+      <label for="doc-search">Buscar en la guia</label>
+      <input id="doc-search" type="search" placeholder="Ej: Crear Carpeta, filtros, tarea">
+    </div>
+    <nav aria-label="Secciones de documentacion">
+      <a href="#inicio">Inicio rapido</a>
+      <a href="#instalacion">Instalacion</a>
+      <a href="#formas-de-uso">Formas de uso</a>
+      <a href="#mabo-files">Archivos .mabo</a>
+      <a href="#rutas">Rutas y seguridad</a>
+      <a href="#navegacion">Navegacion</a>
+      <a href="#variables">Variables</a>
+      <a href="#salida">Mostrar resultados</a>
+      <a href="#archivos">Archivos</a>
+      <a href="#carpetas">Carpetas</a>
+      <a href="#busqueda">Busqueda y filtros</a>
+      <a href="#consultas">Consultas</a>
+      <a href="#control">Condiciones y ciclos</a>
+      <a href="#funciones">Funciones</a>
+      <a href="#tareas">Tareas</a>
+      <a href="#programacion">Programacion</a>
+      <a href="#logs">Logs</a>
+      <a href="#simulacion">Simulacion</a>
+      <a href="#errores">Errores</a>
+      <a href="#comandos-nativos">PowerShell y Linux</a>
+      <a href="#backup">Backup y ZIP</a>
+      <a href="#permisos">Permisos</a>
+      <a href="#recetas">Ejemplos practicos</a>
+      <a href="#referencia">Referencia rapida</a>
+      <a href="#problemas">Problemas comunes</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <section class="hero doc-section" id="inicio" data-search="inicio rapido aprender mabo consola dsl espanol">
+      <div class="hero-text">
+        <p class="eyebrow">Documentacion de usuario</p>
+        <h1>Aprende MABO desde cero</h1>
+        <p class="lead">MABO es un lenguaje de consola en espanol para administrar archivos, carpetas y automatizaciones con comandos faciles de leer.</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#primeros-comandos">Empezar con comandos</a>
+          <a class="button secondary" href="#referencia">Ver referencia</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="doc-section" id="instalacion" data-search="instalacion windows gradle powershell path localappdata instalar desinstalar">
+      <h2>1. Instalacion en Windows</h2>
+      <p>Instala MABO desde la ultima release de GitHub. El instalador descarga la distribucion, la copia en <code>%LOCALAPPDATA%\MABO</code> y agrega <code>mabo</code> al PATH de tu usuario.</p>
+      <div class="note">
+        <strong>Requisito:</strong> MABO necesita Java 17 o superior. Puedes instalar una version actual con <code>winget install EclipseAdoptium.Temurin.21.JDK</code>.
+      </div>
+      <div class="steps stack">
+        <article>
+          <h3>Instalar</h3>
+          <pre><code>powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://github.com/Tomas1802/MABO/releases/latest/download/install-windows.ps1 | iex"</code></pre>
+        </article>
+        <article>
+          <h3>Abrir una nueva terminal</h3>
+          <p>Cierra y abre PowerShell para que Windows cargue el PATH actualizado.</p>
+          <pre><code>mabo</code></pre>
+        </article>
+        <article>
+          <h3>Desinstalar</h3>
+          <pre><code>powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://github.com/Tomas1802/MABO/releases/latest/download/uninstall-windows.ps1 | iex"</code></pre>
+        </article>
+      </div>
+      <div class="note">
+        <strong>Ubicacion instalada:</strong> <code>%LOCALAPPDATA%\MABO</code>. El ejecutable queda en <code>%LOCALAPPDATA%\MABO\bin\mabo.bat</code>.
+      </div>
+      <div class="note">
+        <strong>Logs de tareas:</strong> MABO muestra la ruta al iniciar. En Windows normalmente es <code>%LOCALAPPDATA%\MABO\logs\tasks</code>.
+      </div>
+      <div class="warning">
+        Si ves <code>UnsupportedClassVersionError</code> o <code>class file version</code>, Windows esta usando una version antigua de Java. Ejecuta <code>java -version</code>, instala Java 17 o superior y abre una nueva terminal.
+      </div>
+    </section>
+
+    <section class="doc-section" id="formas-de-uso" data-search="modo interactivo archivo script comando -c salir ayuda">
+      <h2>2. Formas de usar MABO</h2>
+      <div class="grid two">
+        <article>
+          <h3>Modo interactivo</h3>
+          <p>Es la forma recomendada para aprender. Escribes un comando, presionas Enter y ves el resultado.</p>
+          <pre><code>mabo
+mabo&gt; Mostrar "Hola"
+mabo&gt; salir</code></pre>
+        </article>
+        <article>
+          <h3>Ejecutar un archivo</h3>
+          <p>Guarda comandos en un archivo <code>.mabo</code> y ejecutalos como rutina.</p>
+          <pre><code>mabo scripts\limpieza.mabo</code></pre>
+        </article>
+        <article>
+          <h3>Comando corto</h3>
+          <p>Sirve para instrucciones simples. En Windows evita comillas internas complejas.</p>
+          <pre><code>mabo -c "Mostrar 123"</code></pre>
+        </article>
+        <article>
+          <h3>Ayuda dentro del modo interactivo</h3>
+          <pre><code>mabo&gt; ayuda
+mabo&gt; salir</code></pre>
+        </article>
+      </div>
+    </section>
+
+    <section class="doc-section" id="mabo-files" data-search="mabo extension archivos vscode validar check sintaxis semantica">
+      <h2>3. Archivos .mabo</h2>
+      <p>Los scripts propios de MABO usan la extension <code>.mabo</code>. Un archivo puede contener comandos sueltos, ciclos, condiciones, tareas o llamadas a PowerShell/Linux.</p>
+      <pre><code>mabo examples/limpieza.mabo
+mabo --check examples/limpieza.mabo</code></pre>
+      <p><code>mabo archivo.mabo</code> ejecuta el archivo. <code>mabo --check archivo.mabo</code> analiza sintaxis y semantica con ANTLR y <code>SemanticVisitor</code>, pero no ejecuta acciones.</p>
+      <h3>Ejecutar archivos desde MABO</h3>
+      <pre><code>Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"</code></pre>
+      <p>Esta instruccion ejecuta el archivo inmediatamente. Para programarlo, agrega una programacion al final.</p>
+      <pre><code>Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" A Las "23:00"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Cada 24 Horas
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Al Iniciar Sistema</code></pre>
+      <div class="note"><code>Al Iniciar Sistema</code> solo registra el arranque; no ejecuta el archivo en ese momento. <code>A Las</code> y <code>Cada</code> si quedan activos en el proceso actual.</div>
+      <h3>Validar antes de ejecutar</h3>
+      <pre><code>mabo --check "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"
+mabo validar "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"</code></pre>
+      <p>Usa validacion cuando estes editando un archivo y quieras detectar errores sin mover, borrar o crear nada.</p>
+      <h3>Extension simple para VS Code</h3>
+      <p>El proyecto incluye una extension basica en <code>vscode/mabo-language</code> con resaltado de sintaxis, comentarios, pares de simbolos y comandos para ejecutar o validar el archivo actual.</p>
+      <pre><code>cd vscode/mabo-language
+code .</code></pre>
+      <p>Desde VS Code puedes abrir esa carpeta y presionar F5 para probar la extension en una ventana de desarrollo. La extension espera que el comando <code>mabo</code> este instalado en PATH.</p>
+    </section>
+
+    <section class="doc-section" id="primeros-comandos" data-search="primeros comandos crear listar escribir leer eliminar">
+      <h2>4. Tus primeros comandos</h2>
+      <p>Estos comandos crean una carpeta segura, crean un archivo, escriben texto, leen el archivo y listan el contenido.</p>
+      <pre><code>Variable base = "%USERPROFILE%/Documents/MABO"
+Ir A base
+Crear Carpeta base + "/prueba"
+Crear Archivo base + "/prueba/notas.txt"
+Escribir "Mi primera nota" En base + "/prueba/notas.txt"
+Leer Archivo base + "/prueba/notas.txt"
+Ir A base + "/prueba"
+Listar Contenido</code></pre>
+    </section>
+
+    <section class="doc-section" id="rutas" data-search="rutas seguridad userprofile documents MABO variables entorno windows unix">
+      <h2>5. Rutas y seguridad</h2>
+      <p>MABO trabaja con rutas del sistema de archivos. Por seguridad, valida que las rutas esten dentro de raices permitidas y bloquea rutas criticas del sistema.</p>
+      <h3>Rutas recomendadas</h3>
+      <pre><code>Variable base = "%USERPROFILE%/Documents/MABO"
+Variable documentos = base + "/Documentos"
+Variable descargas = base + "/Descargas"</code></pre>
+      <p>En los ejemplos usamos <code>base</code> como carpeta principal de trabajo. Puedes usar otro nombre, como <code>proyecto</code> o <code>raiz</code>, siempre que lo hayas creado con <code>Variable nombre = valor</code>.</p>
+      <h3>Variables de entorno soportadas</h3>
+      <table>
+        <thead><tr><th>Formato</th><th>Ejemplo</th><th>Uso</th></tr></thead>
+        <tbody>
+          <tr><td>Windows</td><td><code>%USERPROFILE%</code></td><td>Carpeta del usuario actual</td></tr>
+          <tr><td>Windows</td><td><code>%APPDATA%</code></td><td>Configuracion de aplicaciones</td></tr>
+          <tr><td>Unix/Linux</td><td><code>${HOME}</code></td><td>Carpeta del usuario</td></tr>
+          <tr><td>Unix/Linux</td><td><code>~</code></td><td>Carpeta del usuario</td></tr>
+        </tbody>
+      </table>
+      <div class="warning">
+        MABO bloquea rutas raiz, <code>System32</code>, <code>Program Files</code> y otras ubicaciones peligrosas. Para trabajar sin problemas, usa una carpeta de proyecto dentro de Documents.
+      </div>
+    </section>
+
+    <section class="doc-section" id="navegacion" data-search="navegacion ruta actual directorio carpeta actual ir a mostrar ruta cd pwd">
+      <h2>6. Navegacion</h2>
+      <p>MABO tiene una carpeta actual. Las rutas relativas se resuelven desde esa carpeta y el modo interactivo la muestra en el prompt.</p>
+<pre><code>Mostrar Ruta
+Ir A "%USERPROFILE%/Documents"
+Ir A "C:\Users\tparr\Documents\TOMAS"
+Ir A "TOMAS"
+Ir A ".."
+Crear Carpeta "Prueba"
+Listar Contenido</code></pre>
+      <p><code>Ir A</code> cambia la carpeta actual de MABO. <code>Mostrar Ruta</code> imprime la carpeta actual en la consola. En Windows puedes escribir rutas con <code>/</code> o con <code>\</code>.</p>
+    </section>
+
+    <section class="doc-section" id="variables" data-search="variables guardar asignacion tipos numeros texto booleanos listas">
+      <h2>7. Variables</h2>
+      <p>Las variables guardan valores para reutilizarlos. Se crean con <code>Variable nombre = valor</code> y se modifican con <code>=</code>.</p>
+      <pre><code>Variable cantidad = 10
+Variable nombre = "reporte.txt"
+Variable activo = Verdadero
+Variable colores = ["rojo", "verde", "azul"]
+cantidad = cantidad + 1
+Mostrar cantidad</code></pre>
+      <h3>Tipos comunes</h3>
+      <table>
+        <thead><tr><th>Tipo</th><th>Ejemplo</th><th>Descripcion</th></tr></thead>
+        <tbody>
+          <tr><td>Numero</td><td><code>42</code>, <code>3.5</code></td><td>Valores para calculos.</td></tr>
+          <tr><td>Texto</td><td><code>"Hola"</code></td><td>Cadenas entre comillas dobles.</td></tr>
+          <tr><td>Booleano</td><td><code>Verdadero</code>, <code>Falso</code></td><td>Valores para condiciones.</td></tr>
+          <tr><td>Lista</td><td><code>["a", "b"]</code></td><td>Valores que puedes recorrer con <code>Para Cada</code>.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="doc-section" id="salida" data-search="mostrar imprimir resultado consola concatenar">
+      <h2>8. Mostrar resultados</h2>
+      <p>Usa <code>Mostrar</code> para imprimir texto o valores en la consola.</p>
+      <pre><code>Mostrar "Hola"
+Mostrar 10
+Mostrar Verdadero
+Mostrar "Total: " + 25</code></pre>
+      <p>El operador <code>+</code> concatena texto o suma numeros segun el contexto.</p>
+      <pre><code>Mostrar 10 + 5
+Mostrar "Hola " + "Mundo"
+Mostrar base + "/archivo.txt"</code></pre>
+    </section>
+
+    <section class="doc-section" id="archivos" data-search="archivos crear leer escribir anexar copiar mover renombrar eliminar">
+      <h2>9. Comandos para archivos</h2>
+      <div class="command-list">
+        <article>
+          <h3>Crear Archivo</h3>
+          <pre><code>Crear Archivo "ruta/archivo.txt"</code></pre>
+          <p>Crea un archivo vacio. Si la carpeta padre no existe, MABO intenta crearla.</p>
+        </article>
+        <article>
+          <h3>Leer Archivo</h3>
+          <pre><code>Leer Archivo "ruta/archivo.txt"</code></pre>
+          <p>Muestra el contenido y guarda el texto en <code>ultimoResultado</code>.</p>
+        </article>
+        <article>
+          <h3>Escribir</h3>
+          <pre><code>Escribir "contenido" En "ruta/archivo.txt"</code></pre>
+          <p>Crea o reemplaza el contenido completo del archivo.</p>
+        </article>
+        <article>
+          <h3>Anexar</h3>
+          <pre><code>Anexar "\nlinea nueva" En "ruta/archivo.txt"</code></pre>
+          <p>Agrega texto al final sin borrar lo anterior.</p>
+        </article>
+        <article>
+          <h3>Copiar Archivo</h3>
+          <pre><code>Copiar Archivo "origen.txt" A "destino.txt"</code></pre>
+          <p>Copia el archivo. Si el destino existe puede pedir confirmacion.</p>
+        </article>
+        <article>
+          <h3>Mover Archivo</h3>
+          <pre><code>Mover Archivo "origen.txt" A "carpeta/destino.txt"</code></pre>
+          <p>Mueve el archivo a una nueva ruta.</p>
+        </article>
+        <article>
+          <h3>Renombrar Archivo</h3>
+          <pre><code>Renombrar Archivo "viejo.txt" A "nuevo.txt"</code></pre>
+          <p>Usa una nueva ruta con el nuevo nombre.</p>
+        </article>
+        <article>
+          <h3>Eliminar Archivo</h3>
+          <pre><code>Eliminar Archivo "ruta/archivo.txt"
+Eliminar Archivo "ruta/archivo.txt" Sin Confirmar</code></pre>
+          <p>Elimina un archivo. Para practicar, usa primero <code>Simular</code>. <code>Sin Confirmar</code> omite la pregunta interactiva.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="doc-section" id="carpetas" data-search="carpetas crear copiar mover renombrar eliminar recursivamente listar contenido">
+      <h2>10. Comandos para carpetas</h2>
+      <div class="command-list">
+        <article>
+          <h3>Crear Carpeta</h3>
+          <pre><code>Crear Carpeta "ruta/carpeta"</code></pre>
+          <p>Crea una carpeta y sus carpetas padre si hacen falta.</p>
+        </article>
+        <article>
+          <h3>Listar Contenido</h3>
+          <pre><code>Listar Contenido
+Listar Contenido "ruta/carpeta"</code></pre>
+          <p>Muestra archivos y carpetas directos. El resultado queda en <code>ultimoResultado</code>.</p>
+        </article>
+        <article>
+          <h3>Copiar Carpeta</h3>
+          <pre><code>Copiar Carpeta "origen" A "destino"</code></pre>
+          <p>Copia la carpeta completa.</p>
+        </article>
+        <article>
+          <h3>Mover Carpeta</h3>
+          <pre><code>Mover Carpeta "origen" A "destino"</code></pre>
+          <p>Mueve una carpeta completa.</p>
+        </article>
+        <article>
+          <h3>Renombrar Carpeta</h3>
+          <pre><code>Renombrar Carpeta "vieja" A "nueva"</code></pre>
+          <p>Renombra o cambia la ruta de la carpeta.</p>
+        </article>
+        <article>
+          <h3>Eliminar Carpeta</h3>
+          <pre><code>Eliminar Carpeta "ruta/carpeta"
+Eliminar Carpeta "ruta/carpeta" Recursivamente
+Eliminar Carpeta "ruta/carpeta" Recursivamente Sin Confirmar</code></pre>
+          <p>Elimina una carpeta. La forma recursiva esta pensada para carpetas con contenido.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="doc-section" id="busqueda" data-search="buscar archivos carpetas filtros extension nombre prefijo sufijo tamano antiguedad">
+      <h2>11. Busqueda y filtros</h2>
+      <p>Los comandos de busqueda recorren una carpeta y devuelven rutas que coinciden con filtros. El resultado queda en <code>ultimoResultado</code>.</p>
+      <h3>Buscar archivos</h3>
+      <pre><code>Buscar Archivos En "ruta" Con Extension ".pdf"
+Buscar Archivos En "ruta" Con Nombre "factura"
+Buscar Archivos En "ruta" Con Prefijo "backup"
+Buscar Archivos En "ruta" Con Sufijo "final"
+Buscar Archivos En "ruta" Con Tamano Menor Que 5 MB
+Buscar Archivos En "ruta" Con Tamano Mayor Que 10 MB
+Buscar Archivos En "ruta" Mas Antiguos Que 30 Dias
+Buscar Archivos En "ruta" Mas Recientes Que 7 Dias</code></pre>
+      <p>En <code>Mas Antiguos Que</code> y <code>Mas Recientes Que</code>, la palabra <code>Mas</code> forma parte del filtro. No significa suma ni concatenacion.</p>
+      <h3>Combinar filtros</h3>
+      <pre><code>Buscar Archivos En descargas Con Extension ".pdf" Con Nombre "factura"</code></pre>
+      <h3>Buscar carpetas</h3>
+      <pre><code>Buscar Carpetas En "ruta" Con Nombre "docs"</code></pre>
+      <div class="note">Los filtros de tamano siempre deben indicar unidad: <code>Bytes</code>, <code>KB</code>, <code>MB</code> o <code>GB</code>.</div>
+    </section>
+
+    <section class="doc-section" id="consultas" data-search="existe obtener tamano cantidad propiedad nombre extension ruta existe esarchivo escarpeta">
+      <h2>12. Consultas sobre archivos y carpetas</h2>
+      <pre><code>Existe Archivo "ruta/archivo.txt"
+Existe Carpeta "ruta/carpeta"
+Obtener Tamano Archivo "ruta/archivo.txt"
+Obtener Tamano Carpeta "ruta/carpeta"
+Obtener Cantidad Archivos En "ruta/carpeta"
+Obtener Propiedad nombre De "ruta/archivo.txt"
+Obtener Propiedad extension De "ruta/archivo.txt"
+Obtener Propiedad ruta De "ruta/archivo.txt"
+Obtener Propiedad existe De "ruta/archivo.txt"
+Obtener Propiedad esArchivo De "ruta/archivo.txt"
+Obtener Propiedad esCarpeta De "ruta/carpeta"</code></pre>
+      <p>Despues de cada consulta puedes usar <code>ultimoResultado</code>.</p>
+      <pre><code>Existe Archivo base + "/config.txt"
+Si ultimoResultado Entonces
+    Mostrar "Existe"
+Sino
+    Mostrar "No existe"
+FinSi</code></pre>
+    </section>
+
+    <section class="doc-section" id="control" data-search="condiciones si sino finsi mientras finmientras para cada finpara operadores logicos">
+      <h2>13. Condiciones y ciclos</h2>
+      <h3>Condiciones</h3>
+      <pre><code>Si cantidad > 0 Entonces
+    Mostrar "Hay archivos"
+Sino
+    Mostrar "No hay archivos"
+FinSi</code></pre>
+      <h3>Ciclo Mientras</h3>
+      <pre><code>Variable i = 1
+Mientras i <= 3
+    Mostrar i
+    i = i + 1
+FinMientras</code></pre>
+      <h3>Ciclo Para Cada</h3>
+      <pre><code>Buscar Archivos En base Con Extension ".txt"
+Para Cada archivo En ultimoResultado
+    Mostrar archivo
+FinPara</code></pre>
+      <h3>Operadores</h3>
+      <table>
+        <thead><tr><th>Tipo</th><th>Operadores</th></tr></thead>
+        <tbody>
+          <tr><td>Aritmeticos</td><td><code>+</code> o <code>Mas</code>, <code>-</code> o <code>Menos</code>, <code>*</code> o <code>Por</code>, <code>/</code> o <code>Entre</code>, <code>%</code> o <code>Modulo</code></td></tr>
+          <tr><td>Comparacion</td><td><code>&gt;</code>, <code>&lt;</code>, <code>&gt;=</code>, <code>&lt;=</code>, <code>==</code>, <code>!=</code></td></tr>
+          <tr><td>Logicos</td><td><code>Y</code>, <code>O</code>, <code>No</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="doc-section" id="funciones" data-search="funciones parametros retornar recursividad reutilizar">
+      <h2>14. Funciones</h2>
+      <p>Una funcion calcula o ejecuta algo reutilizable. Puede recibir parametros y devolver un valor con <code>Retornar</code>.</p>
+      <pre><code>Funcion NombreCompleto(nombre, apellido)
+    Retornar nombre + " " + apellido
+FinFuncion
+
+Variable persona = NombreCompleto("Ana", "Lopez")
+Mostrar persona</code></pre>
+      <h3>Funcion que usa archivos</h3>
+      <pre><code>Funcion ContarTxt(ruta)
+    Buscar Archivos En ruta Con Extension ".txt"
+    Obtener Cantidad Archivos En ultimoResultado
+    Retornar ultimoResultado
+FinFuncion</code></pre>
+    </section>
+
+    <section class="doc-section" id="tareas" data-search="tareas rutina ejecutar tarea bloque automatizacion">
+      <h2>15. Tareas</h2>
+      <p>Una tarea es una rutina con nombre. No devuelve valor; sirve para agrupar pasos de automatizacion.</p>
+      <pre><code>Tarea PrepararProyecto:
+    Crear Carpeta base + "/entrada"
+    Crear Carpeta base + "/salida"
+    Mostrar "Proyecto preparado"
+Fin
+
+Ejecutar Tarea PrepararProyecto</code></pre>
+      <p>Dentro del modo interactivo, MABO espera hasta que escribas <code>Fin</code> antes de ejecutar o registrar la tarea.</p>
+    </section>
+
+    <section class="doc-section" id="programacion" data-search="programar tareas cada minutos horas dias iniciar sistema a las scheduler">
+      <h2>16. Programacion de tareas</h2>
+      <p>Las tareas y los archivos <code>.mabo</code> pueden ejecutarse inmediatamente, cada cierto tiempo, al iniciar el sistema o una sola vez a una hora especifica.</p>
+      <h3>Programar tareas con nombre</h3>
+      <pre><code>Ejecutar Tarea Limpieza
+Ejecutar Limpieza
+Ejecutar Limpieza Cada 30 Minutos
+Ejecutar Tarea Limpieza Cada 30 Minutos
+Ejecutar Respaldo Cada 24 Horas
+Ejecutar Respaldo Cada 1 Dias
+Ejecutar Limpieza Al Iniciar Sistema
+Ejecutar Respaldo A Las "23:00"
+Ejecutar Tarea Respaldo A Las "23:00"</code></pre>
+      <p>La palabra <code>Tarea</code> es opcional al ejecutar o programar tareas.</p>
+      <h3>Programar archivos .mabo</h3>
+      <pre><code>Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" A Las "23:00"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Cada 24 Horas
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Al Iniciar Sistema</code></pre>
+      <p>Programar el archivo completo suele ser la forma mas practica para rutinas de arranque, porque MABO guarda la ruta del <code>.mabo</code> y puede ejecutarlo despues de reiniciar.</p>
+      <h3>Como se comporta cada programacion</h3>
+      <table>
+        <thead><tr><th>Programacion</th><th>Comportamiento</th></tr></thead>
+        <tbody>
+          <tr><td><code>A Las "HH:mm"</code></td><td>Ejecuta una vez a la proxima ocurrencia de esa hora. Si termina correctamente, MABO la elimina.</td></tr>
+          <tr><td><code>Cada X Minutos/Horas/Dias</code></td><td>Ejecuta inmediatamente y luego repite mientras el proceso siga activo. La programacion queda guardada para restaurarla.</td></tr>
+          <tr><td><code>Al Iniciar Sistema</code></td><td>Registra el arranque del sistema. No ejecuta inmediatamente.</td></tr>
+        </tbody>
+      </table>
+      <p>Las programaciones se guardan en <code>%USERPROFILE%/Documents/MABO/schedules.ndjson</code>.</p>
+      <p>Si vienes de una version anterior, MABO puede copiar programaciones antiguas a la nueva carpeta cuando la nueva ruta todavia no existe.</p>
+      <h3>Administrar programaciones</h3>
+      <pre><code>Listar Tareas Programadas
+Eliminar Tarea Programada Limpieza
+Eliminar Tareas Programadas
+Cambiar Programacion De Tarea Limpieza Cada 2 Horas
+Cambiar Programacion De Tarea Limpieza A Las "23:30"</code></pre>
+      <p><code>Listar Tareas Programadas</code> muestra tareas y archivos programados. <code>Eliminar Tarea Programada Nombre</code> borra una programacion de tarea por nombre. <code>Eliminar Tareas Programadas</code> borra todas las programaciones, incluidas las de archivos <code>.mabo</code> y entradas de arranque creadas por MABO. <code>Cambiar Programacion De Tarea</code> reemplaza la programacion anterior de una tarea con nombre.</p>
+      <div class="warning">Las tareas programadas mantienen el proceso activo cuando usan el scheduler interno. Para detenerlo, usa Ctrl+C en la terminal.</div>
+    </section>
+
+    <section class="doc-section" id="logs" data-search="logs tareas scheduler auditoria localappdata errores diagnostico">
+      <h2>17. Logs de tareas</h2>
+      <p>Las tareas manuales y programadas escriben logs para que puedas revisar que hicieron cuando no estabas viendo la terminal.</p>
+      <pre><code>%LOCALAPPDATA%\MABO\logs\tasks</code></pre>
+      <p>Cada tarea crea un archivo por dia con este formato:</p>
+      <pre><code>LimpiarArchivosXML-2026-05-31.log</code></pre>
+      <p>Ese archivo incluye inicio, fin, errores, mensajes de <code>Mostrar</code>, busquedas, listados y operaciones como crear, escribir, copiar, mover, eliminar, comprimir y comandos nativos.</p>
+      <p>La misma carpeta contiene <code>scheduler.log</code>, que registra cuando se programa o restaura una tarea y si una ejecucion programada falla.</p>
+      <p>Las programaciones activas se guardan aparte en <code>%USERPROFILE%/Documents/MABO/schedules.ndjson</code>.</p>
+      <p>En Windows, <code>Al Iniciar Sistema</code> intenta usar Task Scheduler. Si Windows responde <code>Acceso denegado</code>, usa la carpeta Startup del usuario como respaldo. En ambos casos crea un wrapper en <code>%LOCALAPPDATA%\MABO\startup</code> y guarda su salida en <code>%LOCALAPPDATA%\MABO\logs\startup</code>.</p>
+      <pre><code>%LOCALAPPDATA%\MABO\startup
+%LOCALAPPDATA%\MABO\logs\startup
+%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup</code></pre>
+      <div class="note">Si una tarea programada falla, MABO guarda el error. Las tareas de intervalo siguen programadas; las tareas de una sola ejecucion quedan registradas para diagnostico hasta que las elimines o cambies.</div>
+    </section>
+
+    <section class="doc-section" id="simulacion" data-search="simular modo seguro previsualizar eliminar copiar mover comandos nativos">
+      <h2>18. Modo simulacion</h2>
+      <p><code>Simular</code> ejecuta la validacion y auditoria, pero no modifica archivos ni ejecuta comandos nativos reales.</p>
+      <pre><code>Simular Eliminar Archivo base + "/temp/cache.tmp"
+Simular Copiar Carpeta base + "/datos" A base + "/backup"
+Simular Comprimir base + "/docs" A base + "/docs.zip"
+Simular Ejecutar PowerShell "Write-Output 'prueba'"</code></pre>
+      <p>Usalo antes de acciones peligrosas, especialmente eliminaciones y comandos nativos.</p>
+    </section>
+
+    <section class="doc-section" id="errores" data-search="errores intentar capturar manejo excepciones archivo no existe">
+      <h2>19. Manejo de errores</h2>
+      <p>Usa <code>Intentar</code> y <code>Capturar</code> para continuar cuando algo falle.</p>
+      <pre><code>Intentar
+    Leer Archivo base + "/no_existe.txt"
+    Mostrar "Esto no se mostrara si falla"
+Capturar
+    Mostrar "No se pudo leer el archivo, continuo"
+FinIntentar</code></pre>
+    </section>
+
+    <section class="doc-section" id="comandos-nativos" data-search="powershell linux comandos nativos ejecutar shell seguridad stdout stderr">
+      <h2>20. PowerShell y Linux</h2>
+      <p>Cuando MABO no tenga un comando propio para algo, puedes delegar a PowerShell en Windows o a un shell Linux en Linux/Unix.</p>
+      <pre><code>Ejecutar PowerShell "Get-ChildItem"
+Ejecutar Linux "ls -la"</code></pre>
+      <h3>Reglas de seguridad</h3>
+      <ul>
+        <li>PowerShell real solo se ejecuta automaticamente en Windows.</li>
+        <li>Linux real solo se ejecuta automaticamente en Linux/Unix.</li>
+        <li>La simulacion funciona para ambos sin ejecutar nada.</li>
+        <li>Patrones peligrosos como borrados masivos se bloquean.</li>
+        <li>Comandos potencialmente destructivos pueden pedir confirmacion.</li>
+      </ul>
+      <h3>Resultado</h3>
+      <p>El resultado queda en <code>ultimoResultado</code> como un objeto con shell, comando, codigo de salida, stdout, stderr y bandera de simulacion.</p>
+    </section>
+
+    <section class="doc-section" id="backup" data-search="backup comprimir descomprimir zip respaldo">
+      <h2>21. Backup y compresion</h2>
+      <pre><code>Crear Backup De base + "/datos" En base + "/respaldo/datos"
+Comprimir base + "/datos" A base + "/respaldo/datos_zip"
+Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pre>
+      <p>Si el destino de <code>Comprimir</code> no termina en <code>.zip</code>, MABO agrega la extension automaticamente.</p>
+    </section>
+
+    <section class="doc-section" id="permisos" data-search="permisos chmod posix linux windows cambiar permisos">
+      <h2>22. Permisos</h2>
+      <p>En sistemas POSIX puedes cambiar permisos con formato octal o simbolico.</p>
+      <pre><code>Cambiar Permisos "scripts/run.sh" A "755"
+Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
+      <div class="note">En Windows esta operacion muestra un error claro porque los permisos POSIX no estan disponibles.</div>
+    </section>
+
+    <section class="doc-section" id="recetas" data-search="recetas ejemplos pdf limpieza respaldo descargas documentos">
+      <h2>23. Ejemplos practicos</h2>
+      <article class="recipe">
+        <h3>Organizar PDF desde Descargas</h3>
+        <pre><code>Variable base = "%USERPROFILE%/Documents/MABO"
+Variable descargas = base + "/Descargas"
+Variable pdfs = base + "/Documentos/PDF"
+Crear Carpeta pdfs
+Buscar Archivos En descargas Con Extension ".pdf"
+Para Cada archivo En ultimoResultado
+    Obtener Propiedad nombre De archivo
+    Mover Archivo archivo A pdfs + "/" + ultimoResultado
+FinPara</code></pre>
+      </article>
+      <article class="recipe">
+        <h3>Simular limpieza de temporales antiguos</h3>
+        <pre><code>Variable temp = "%USERPROFILE%/Documents/MABO/Temp"
+Buscar Archivos En temp Con Extension ".tmp" Mas Antiguos Que 30 Dias
+Para Cada archivo En ultimoResultado
+    Eliminar Archivo archivo Sin Confirmar
+FinPara</code></pre>
+      </article>
+      <article class="recipe">
+        <h3>Backup cada 24 horas</h3>
+        <pre><code>Tarea BackupDiario:
+    Crear Backup De base + "/datos" En base + "/respaldo/datos"
+    Mostrar "Backup listo"
+Fin
+
+Ejecutar BackupDiario Cada 24 Horas</code></pre>
+      </article>
+    </section>
+
+    <section class="doc-section" id="referencia" data-search="referencia rapida comandos sintaxis tabla">
+      <h2>24. Referencia rapida de comandos</h2>
+      <table class="reference-table">
+        <thead><tr><th>Accion</th><th>Sintaxis</th></tr></thead>
+        <tbody>
+          <tr><td>Declarar variable</td><td><code>Variable nombre = expresion</code></td></tr>
+          <tr><td>Asignar variable</td><td><code>nombre = expresion</code></td></tr>
+          <tr><td>Mostrar</td><td><code>Mostrar expresion</code></td></tr>
+          <tr><td>Mostrar ruta actual</td><td><code>Mostrar Ruta</code></td></tr>
+          <tr><td>Cambiar carpeta actual</td><td><code>Ir A ruta</code></td></tr>
+          <tr><td>Crear archivo</td><td><code>Crear Archivo ruta</code></td></tr>
+          <tr><td>Crear carpeta</td><td><code>Crear Carpeta ruta</code></td></tr>
+          <tr><td>Leer archivo</td><td><code>Leer Archivo ruta</code></td></tr>
+          <tr><td>Escribir archivo</td><td><code>Escribir contenido En ruta</code></td></tr>
+          <tr><td>Anexar archivo</td><td><code>Anexar contenido En ruta</code></td></tr>
+          <tr><td>Copiar archivo</td><td><code>Copiar Archivo origen A destino</code></td></tr>
+          <tr><td>Copiar carpeta</td><td><code>Copiar Carpeta origen A destino</code></td></tr>
+          <tr><td>Mover archivo</td><td><code>Mover Archivo origen A destino</code></td></tr>
+          <tr><td>Mover carpeta</td><td><code>Mover Carpeta origen A destino</code></td></tr>
+          <tr><td>Renombrar archivo</td><td><code>Renombrar Archivo origen A destino</code></td></tr>
+          <tr><td>Renombrar carpeta</td><td><code>Renombrar Carpeta origen A destino</code></td></tr>
+          <tr><td>Eliminar archivo</td><td><code>Eliminar Archivo ruta</code> o <code>Eliminar Archivo ruta Sin Confirmar</code></td></tr>
+          <tr><td>Eliminar carpeta</td><td><code>Eliminar Carpeta ruta Recursivamente</code> o <code>Eliminar Carpeta ruta Recursivamente Sin Confirmar</code></td></tr>
+          <tr><td>Buscar archivos</td><td><code>Buscar Archivos En ruta filtros</code></td></tr>
+          <tr><td>Buscar carpetas</td><td><code>Buscar Carpetas En ruta filtros</code></td></tr>
+          <tr><td>Listar</td><td><code>Listar Contenido</code> o <code>Listar Contenido ruta</code></td></tr>
+          <tr><td>Existe archivo</td><td><code>Existe Archivo ruta</code></td></tr>
+          <tr><td>Existe carpeta</td><td><code>Existe Carpeta ruta</code></td></tr>
+          <tr><td>Tamano</td><td><code>Obtener Tamano Archivo ruta</code></td></tr>
+          <tr><td>Cantidad</td><td><code>Obtener Cantidad Archivos En ruta</code></td></tr>
+          <tr><td>Propiedad</td><td><code>Obtener Propiedad nombre De ruta</code></td></tr>
+          <tr><td>Comprimir</td><td><code>Comprimir origen A destino</code></td></tr>
+          <tr><td>Descomprimir</td><td><code>Descomprimir zip En destino</code></td></tr>
+          <tr><td>Backup</td><td><code>Crear Backup De origen En destino</code></td></tr>
+          <tr><td>Simular</td><td><code>Simular accionArchivo</code></td></tr>
+          <tr><td>PowerShell</td><td><code>Ejecutar PowerShell comando</code></td></tr>
+          <tr><td>Linux</td><td><code>Ejecutar Linux comando</code></td></tr>
+          <tr><td>Tarea</td><td><code>Tarea Nombre: ... Fin</code></td></tr>
+          <tr><td>Ejecutar tarea</td><td><code>Ejecutar Nombre</code> o <code>Ejecutar Tarea Nombre</code></td></tr>
+          <tr><td>Ejecutar archivo</td><td><code>Ejecutar Archivo "C:\ruta\script.mabo"</code></td></tr>
+          <tr><td>Programar intervalo</td><td><code>Ejecutar Nombre Cada 1 Horas</code> o <code>Ejecutar Tarea Nombre Cada 1 Horas</code></td></tr>
+          <tr><td>Programar archivo</td><td><code>Ejecutar Archivo "C:\ruta\script.mabo" Cada 1 Horas</code></td></tr>
+          <tr><td>Programar hora</td><td><code>Ejecutar Nombre A Las "23:00"</code> o <code>Ejecutar Tarea Nombre A Las "23:00"</code></td></tr>
+          <tr><td>Al iniciar</td><td><code>Ejecutar Nombre Al Iniciar Sistema</code> o <code>Ejecutar Archivo "C:\ruta\script.mabo" Al Iniciar Sistema</code></td></tr>
+          <tr><td>Listar programaciones</td><td><code>Listar Tareas Programadas</code></td></tr>
+          <tr><td>Eliminar programacion</td><td><code>Eliminar Tarea Programada Nombre</code></td></tr>
+          <tr><td>Eliminar todas</td><td><code>Eliminar Tareas Programadas</code></td></tr>
+          <tr><td>Cambiar programacion</td><td><code>Cambiar Programacion De Tarea Nombre Cada 2 Horas</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="doc-section" id="problemas" data-search="problemas errores comunes reservado backup comillas ruta seguridad">
+      <h2>25. Problemas comunes</h2>
+      <div class="faq">
+        <article>
+          <h3>El nombre de mi tarea no funciona</h3>
+          <p>No uses palabras reservadas como nombre de tarea o variable. Por ejemplo, <code>Backup</code> es una palabra del lenguaje. Usa <code>BackupDiario</code> o <code>RespaldoDiario</code>.</p>
+        </article>
+        <article>
+          <h3>Me sale acceso denegado</h3>
+          <p>MABO permite trabajar dentro de tu perfil de usuario y dentro de la carpeta actual del proyecto. Tambien puedes guardar una ruta segura con <code>Variable nombre = valor</code> para registrarla como raiz permitida. Evita rutas del sistema.</p>
+        </article>
+        <article>
+          <h3>El comando con -c falla por comillas</h3>
+          <p>En Windows, usa el modo interactivo para comandos con textos o rutas entre comillas. <code>-c</code> funciona mejor con instrucciones simples.</p>
+        </article>
+        <article>
+          <h3>Una tarea programada deja la terminal abierta</h3>
+          <p>Es normal cuando usa el scheduler interno. Presiona Ctrl+C para detenerlo.</p>
+        </article>
+        <article>
+          <h3>No se que hizo una tarea programada</h3>
+          <p>Revisa <code>%LOCALAPPDATA%\MABO\logs\tasks</code>. Cada tarea tiene un archivo por dia y el scheduler usa <code>scheduler.log</code>.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <button class="back-to-top" type="button" aria-label="Volver arriba">Arriba</button>
+  <script src="script.js"></script>
+</body>
+</html>
+

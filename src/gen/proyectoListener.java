@@ -1,4 +1,4 @@
-// Generated from C:/Users/LauraValentinaPabonC/Downloads/Bash/Bash/.idea/grammar/proyecto.g4 by ANTLR 4.13.2
+// Generated from .idea/grammar/proyecto.g4 by ANTLR 4.13.2
 
     package gen;
 
@@ -39,6 +39,26 @@ public interface proyectoListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitImportar(proyectoParser.ImportarContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#cambiarDirectorio}.
+	 * @param ctx the parse tree
+	 */
+	void enterCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#cambiarDirectorio}.
+	 * @param ctx the parse tree
+	 */
+	void exitCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#mostrarRuta}.
+	 * @param ctx the parse tree
+	 */
+	void enterMostrarRuta(proyectoParser.MostrarRutaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#mostrarRuta}.
+	 * @param ctx the parse tree
+	 */
+	void exitMostrarRuta(proyectoParser.MostrarRutaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link proyectoParser#declaracionVariable}.
 	 * @param ctx the parse tree
@@ -130,6 +150,56 @@ public interface proyectoListener extends ParseTreeListener {
 	 */
 	void exitEjecutarTarea(proyectoParser.EjecutarTareaContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link proyectoParser#ejecutarArchivo}.
+	 * @param ctx the parse tree
+	 */
+	void enterEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#ejecutarArchivo}.
+	 * @param ctx the parse tree
+	 */
+	void exitEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#listarTareasProgramadas}.
+	 * @param ctx the parse tree
+	 */
+	void enterListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#listarTareasProgramadas}.
+	 * @param ctx the parse tree
+	 */
+	void exitListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#eliminarTareasProgramadas}.
+	 * @param ctx the parse tree
+	 */
+	void enterEliminarTareasProgramadas(proyectoParser.EliminarTareasProgramadasContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#eliminarTareasProgramadas}.
+	 * @param ctx the parse tree
+	 */
+	void exitEliminarTareasProgramadas(proyectoParser.EliminarTareasProgramadasContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#eliminarTareaProgramada}.
+	 * @param ctx the parse tree
+	 */
+	void enterEliminarTareaProgramada(proyectoParser.EliminarTareaProgramadaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#eliminarTareaProgramada}.
+	 * @param ctx the parse tree
+	 */
+	void exitEliminarTareaProgramada(proyectoParser.EliminarTareaProgramadaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#cambiarTareaProgramada}.
+	 * @param ctx the parse tree
+	 */
+	void enterCambiarTareaProgramada(proyectoParser.CambiarTareaProgramadaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#cambiarTareaProgramada}.
+	 * @param ctx the parse tree
+	 */
+	void exitCambiarTareaProgramada(proyectoParser.CambiarTareaProgramadaContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link proyectoParser#programacion}.
 	 * @param ctx the parse tree
 	 */
@@ -209,6 +279,36 @@ public interface proyectoListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSimulacion(proyectoParser.SimulacionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#comandoSistema}.
+	 * @param ctx the parse tree
+	 */
+	void enterComandoSistema(proyectoParser.ComandoSistemaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#comandoSistema}.
+	 * @param ctx the parse tree
+	 */
+	void exitComandoSistema(proyectoParser.ComandoSistemaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#ejecutarPowerShell}.
+	 * @param ctx the parse tree
+	 */
+	void enterEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#ejecutarPowerShell}.
+	 * @param ctx the parse tree
+	 */
+	void exitEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#ejecutarLinux}.
+	 * @param ctx the parse tree
+	 */
+	void enterEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#ejecutarLinux}.
+	 * @param ctx the parse tree
+	 */
+	void exitEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link proyectoParser#accionArchivo}.
 	 * @param ctx the parse tree
@@ -440,6 +540,16 @@ public interface proyectoListener extends ParseTreeListener {
 	 */
 	void exitEliminarCarpeta(proyectoParser.EliminarCarpetaContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link proyectoParser#sinConfirmar}.
+	 * @param ctx the parse tree
+	 */
+	void enterSinConfirmar(proyectoParser.SinConfirmarContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#sinConfirmar}.
+	 * @param ctx the parse tree
+	 */
+	void exitSinConfirmar(proyectoParser.SinConfirmarContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link proyectoParser#comprimir}.
 	 * @param ctx the parse tree
 	 */
@@ -489,6 +599,16 @@ public interface proyectoListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFiltro(proyectoParser.FiltroContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link proyectoParser#unidadTamano}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnidadTamano(proyectoParser.UnidadTamanoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link proyectoParser#unidadTamano}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnidadTamano(proyectoParser.UnidadTamanoContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link proyectoParser#mostrar}.
 	 * @param ctx the parse tree

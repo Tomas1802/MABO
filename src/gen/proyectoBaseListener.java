@@ -1,4 +1,4 @@
-// Generated from C:/Users/LauraValentinaPabonC/Downloads/Bash/Bash/.idea/grammar/proyecto.g4 by ANTLR 4.13.2
+// Generated from .idea/grammar/proyecto.g4 by ANTLR 4.13.2
 
     package gen;
 
@@ -50,6 +50,30 @@ public class proyectoBaseListener implements proyectoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitImportar(proyectoParser.ImportarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMostrarRuta(proyectoParser.MostrarRutaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMostrarRuta(proyectoParser.MostrarRutaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -163,6 +187,66 @@ public class proyectoBaseListener implements proyectoListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEliminarTareasProgramadas(proyectoParser.EliminarTareasProgramadasContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEliminarTareasProgramadas(proyectoParser.EliminarTareasProgramadasContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEliminarTareaProgramada(proyectoParser.EliminarTareaProgramadaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEliminarTareaProgramada(proyectoParser.EliminarTareaProgramadaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterCambiarTareaProgramada(proyectoParser.CambiarTareaProgramadaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCambiarTareaProgramada(proyectoParser.CambiarTareaProgramadaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterProgramacion(proyectoParser.ProgramacionContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -254,6 +338,42 @@ public class proyectoBaseListener implements proyectoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitSimulacion(proyectoParser.SimulacionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterComandoSistema(proyectoParser.ComandoSistemaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitComandoSistema(proyectoParser.ComandoSistemaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -535,6 +655,18 @@ public class proyectoBaseListener implements proyectoListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterSinConfirmar(proyectoParser.SinConfirmarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitSinConfirmar(proyectoParser.SinConfirmarContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterComprimir(proyectoParser.ComprimirContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -590,6 +722,18 @@ public class proyectoBaseListener implements proyectoListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFiltro(proyectoParser.FiltroContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterUnidadTamano(proyectoParser.UnidadTamanoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitUnidadTamano(proyectoParser.UnidadTamanoContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

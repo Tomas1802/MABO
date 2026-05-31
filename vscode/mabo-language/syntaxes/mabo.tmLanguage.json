@@ -1,0 +1,69 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "MABO",
+  "scopeName": "source.mabo",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#keywords" },
+    { "include": "#operators" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.number-sign.mabo",
+          "match": "#.*$"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.mabo",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.mabo",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.mabo",
+          "match": "\\b\\d+(\\.\\d+)?\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.mabo",
+          "match": "\\b(Si|Entonces|Sino|FinSi|Mientras|FinMientras|Para|Cada|FinPara|Intentar|Capturar|FinIntentar|Funcion|FinFuncion|Retornar|Tarea|Fin)\\b"
+        },
+        {
+          "name": "keyword.other.mabo",
+          "match": "\\b(Variable|Importar|Ejecutar|PowerShell|Linux|Simular|Crear|Leer|Escribir|Anexar|Buscar|Listar|Eliminar|Mover|Copiar|Renombrar|Obtener|Existe|Cambiar|Comprimir|Descomprimir|Backup|Archivo|Archivos|Carpeta|Carpetas|Contenido|Tamano|Cantidad|Propiedad|Permisos|Extension|Nombre|Prefijo|Sufijo|Mayor|Menor|Antiguos|Recientes|Programacion|Programada|Programadas|Tareas|Ruta|Mostrar|Verdadero|Falso|Sin|Confirmar|Recursivamente)\\b"
+        },
+        {
+          "name": "keyword.operator.word.mabo",
+          "match": "\\b(En|A|De|Con|Que|Al|Iniciar|Sistema|Las|Horas|Minutos|Dias|Bytes|KB|MB|GB|Y|O|No|Mas|Menos|Por|Entre|Modulo)\\b"
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.symbol.mabo",
+          "match": "(==|!=|>=|<=|[+\\-*/%=<>])"
+        }
+      ]
+    }
+  }
+}

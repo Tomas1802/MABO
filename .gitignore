@@ -1,6 +1,9 @@
 ### IntelliJ IDEA ###
 out/
 .idea/workspace.xml
+.idea/misc.xml
+.idea/modules.xml
+*.iml
 !**/src/main/**/out/
 !**/src/test/**/out/
 .kotlin
@@ -26,6 +29,7 @@ bin/
 
 ### VS Code ###
 .vscode/
+*.vsix
 
 ### Mac OS ###
 .DS_Store
@@ -33,3 +37,8 @@ bin/
 ### Runtime ###
 logs/*.log
 *.ndjson
+testdata/
+
+### Gradle ###
+.gradle/
+build/

@@ -28,8 +28,7 @@ public class FilterUtils {
         return p -> p.getFileName() != null && p.getFileName().toString().toLowerCase().contains(t);
     }
 
-    public static Predicate<Path> sizeComparator(long sizeMb, String comparator) {
-        long bytes = sizeMb * 1024 * 1024;
+    public static Predicate<Path> sizeComparator(long bytes, String comparator) {
         switch (comparator) {
             case ">": return p -> fileSize(p) > bytes;
             case "<": return p -> fileSize(p) < bytes;

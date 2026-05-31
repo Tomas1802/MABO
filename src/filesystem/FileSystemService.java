@@ -10,9 +10,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import logs.AuditService;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -22,6 +26,7 @@ public class FileSystemService {
 
     private static final Pattern WINDOWS_ENV_PATTERN = Pattern.compile("%([A-Za-z_][A-Za-z0-9_]*)%");
     private static final Pattern UNIX_ENV_PATTERN = Pattern.compile("\\$\\{([A-Za-z_][A-Za-z0-9_]*)\\}|\\$([A-Za-z_][A-Za-z0-9_]*)");
+    private Path workingDirectory = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize();
 
     public Path pathOf(Object value) {
         if (value == null) {
@@ -36,8 +41,22 @@ public class FileSystemService {
     }
 
     private Path resolve(Path path) {
-        Path resolved = path.isAbsolute() ? path : Paths.get(System.getProperty("user.dir")).resolve(path);
+        Path resolved = path.isAbsolute() ? path : workingDirectory.resolve(path);
         return resolved.toAbsolutePath().normalize();
+    }
+
+    public Path getWorkingDirectory() {
+        return workingDirectory;
+    }
+
+    public Path changeWorkingDirectory(Object value) {
+        Path target = pathOf(value);
+        SecurityValidator.validatePath(target);
+        if (!Files.isDirectory(target)) {
+            throw new ExecutionException("La ruta no es una carpeta existente: " + target);
+        }
+        workingDirectory = target;
+        return workingDirectory;
     }
 
     // For display: expands env vars; normalizes separators only if result is a Windows absolute path
@@ -51,7 +70,22 @@ public class FileSystemService {
 
     // For path resolution: expands env vars AND normalizes separators
     private String expandPathTokens(String raw) {
-        return expandEnvVars(raw).replace('/', java.io.File.separatorChar);
+        String expanded = expandEnvVars(raw).replace('/', java.io.File.separatorChar);
+        if (isWindows() && startsWithSingleRootSeparator(expanded)) {
+            return expanded.replaceFirst("^[\\\\/]+", "");
+        }
+        return expanded;
+    }
+
+    private boolean isWindows() {
+        return java.io.File.separatorChar == '\\';
+    }
+
+    private boolean startsWithSingleRootSeparator(String path) {
+        return path.length() > 1
+                && (path.charAt(0) == '\\' || path.charAt(0) == '/')
+                && path.charAt(1) != '\\'
+                && path.charAt(1) != '/';
     }
 
     private String expandEnvVars(String raw) {
@@ -368,6 +402,10 @@ public class FileSystemService {
     }
 
     public void delete(Path p, boolean simulate) {
+        delete(p, simulate, false);
+    }
+
+    public void delete(Path p, boolean simulate, boolean skipConfirmation) {
         Path resolved = resolve(p);
         AuditService audit = new logs.AuditService();
         SecurityValidator.validatePath(resolved);
@@ -380,9 +418,10 @@ public class FileSystemService {
                 audit.record("DELETE", resolved, null, true, "simulated");
                 return;
             }
-            // ask confirmation once per delete
-            boolean ok = ConfirmationService.confirm("Eliminar " + resolved + " ?", false);
-            if (!ok) { audit.record("DELETE", resolved, null, false, "cancelled by user"); return; }
+            if (!skipConfirmation) {
+                boolean ok = ConfirmationService.confirm("Eliminar " + resolved + " ?", false);
+                if (!ok) { audit.record("DELETE", resolved, null, false, "cancelled by user"); return; }
+            }
             if (Files.isDirectory(resolved)) {
                 deleteRecursive(resolved);
             } else {
@@ -532,5 +571,55 @@ public class FileSystemService {
             audit.record("DECOMPRESS", resolvedSource, resolvedTarget, false, e.getMessage());
             throw new ExecutionException("Error descomprimiendo: " + resolvedSource, e);
         }
+    }
+
+    public void changePermissions(Path path, String permissions, boolean simulate) {
+        Path resolved = resolve(path);
+        AuditService audit = new logs.AuditService();
+        SecurityValidator.validatePath(resolved);
+        if (!Files.exists(resolved)) {
+            audit.record("CHMOD", resolved, null, false, "not found");
+            throw new ExecutionException("Ruta no encontrada para permisos: " + resolved);
+        }
+        Set<PosixFilePermission> parsed = parsePermissions(permissions);
+        try {
+            if (simulate) {
+                audit.record("CHMOD", resolved, null, true, "simulated: " + permissions);
+                return;
+            }
+            Files.setPosixFilePermissions(resolved, parsed);
+            audit.record("CHMOD", resolved, null, true, "ok: " + permissions);
+        } catch (UnsupportedOperationException ex) {
+            audit.record("CHMOD", resolved, null, false, "POSIX permissions unsupported");
+            throw new ExecutionException("Cambiar Permisos solo está disponible en sistemas con permisos POSIX", ex);
+        } catch (IOException ex) {
+            audit.record("CHMOD", resolved, null, false, ex.getMessage());
+            throw new ExecutionException("Error cambiando permisos: " + resolved, ex);
+        }
+    }
+
+    private Set<PosixFilePermission> parsePermissions(String raw) {
+        String value = raw == null ? "" : raw.trim();
+        if (value.matches("[0-7]{3}")) {
+            Set<PosixFilePermission> out = new HashSet<>();
+            addOctalPermissions(out, value.charAt(0), PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
+            addOctalPermissions(out, value.charAt(1), PosixFilePermission.GROUP_READ, PosixFilePermission.GROUP_WRITE, PosixFilePermission.GROUP_EXECUTE);
+            addOctalPermissions(out, value.charAt(2), PosixFilePermission.OTHERS_READ, PosixFilePermission.OTHERS_WRITE, PosixFilePermission.OTHERS_EXECUTE);
+            return out;
+        }
+        if (value.matches("[r-][w-][x-][r-][w-][x-][r-][w-][x-]")) {
+            return PosixFilePermissions.fromString(value);
+        }
+        throw new ExecutionException("Formato de permisos inválido. Usa 755 o rwxr-xr-x");
+    }
+
+    private void addOctalPermissions(Set<PosixFilePermission> out, char digit,
+                                     PosixFilePermission read,
+                                     PosixFilePermission write,
+                                     PosixFilePermission execute) {
+        int value = digit - '0';
+        if ((value & 4) != 0) out.add(read);
+        if ((value & 2) != 0) out.add(write);
+        if ((value & 1) != 0) out.add(execute);
     }
 }

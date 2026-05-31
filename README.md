@@ -24,11 +24,12 @@ Este proyecto implementa un lenguaje de scripting en español que permite automa
 
 ## Tecnologías
 
-- **Java 21+** (compatible con JDK 25)
+- **Java 17+** para ejecutar MABO
 - **ANTLR 4.13.1** — generación de lexer/parser desde gramática `.g4`
 - **Java NIO** — operaciones de archivos (`Files`, `Path`, `Paths`)
 - **java.util.zip** — compresión y descompresión ZIP
 - **ScheduledExecutorService** — programación de tareas periódicas
+- **Gradle** — compilación, pruebas y regeneración de gramática
 - **IntelliJ IDEA** — entorno de desarrollo recomendado
 
 ---
@@ -57,7 +58,8 @@ src/
 │   └── ScheduleStore.java           # Persistencia de tareas programadas
 ├── logs/
 │   ├── LoggerService.java           # Log de ejecución (app.log)
-│   └── AuditService.java            # Log de auditoría NDJSON
+│   ├── AuditService.java            # Log de auditoría NDJSON
+│   └── TaskLogService.java          # Logs detallados por tarea
 ├── model/
 │   └── Task.java                    # Modelo de tarea DSL
 ├── utils/
@@ -68,9 +70,20 @@ src/
 │   ├── SemanticException.java
 │   ├── SecurityException.java
 │   └── ReturnException.java         # Control de flujo para retorno de funciones
-├── input_prueba_completa.txt        # Script de prueba con los 16 bloques
-└── .idea/grammar/
-    └── proyecto.g4                  # Gramática ANTLR del DSL
+└── test/java/                       # Pruebas automatizadas
+examples/
+├── limpieza.mabo                    # Ejemplo de limpieza de archivos
+└── organizar-pdf.mabo               # Ejemplo de organización de PDF
+docs/
+└── index.html                       # Documentación de usuario
+scripts/
+├── install-windows.ps1              # Instalador local/remoto
+├── uninstall-windows.ps1            # Desinstalador
+├── package-release.ps1              # Empaquetado de release
+└── publish-release.ps1              # Publicación con GitHub CLI
+vscode/mabo-language/                # Extensión simple para VS Code
+.idea/grammar/
+└── proyecto.g4                      # Gramática ANTLR del DSL
 ```
 
 ---
@@ -79,8 +92,8 @@ src/
 
 ### Requisitos
 
-1. JDK 21 o superior
-2. `antlr-runtime-4.13.1.jar` en el classpath
+1. JDK 17 o superior. En Windows puedes instalarlo con `winget install EclipseAdoptium.Temurin.21.JDK`.
+2. Gradle para compilar desde el codigo fuente.
 3. IntelliJ IDEA (recomendado)
 
 ### Desde IntelliJ IDEA
@@ -88,16 +101,125 @@ src/
 1. Abrir el proyecto en IntelliJ
 2. Agregar `antlr-runtime-4.13.1.jar` en **File → Project Structure → Modules → Dependencies**
 3. Si se modifica la gramática `proyecto.g4`: clic derecho sobre el archivo → *Generate ANTLR Recognizer* → reconstruir proyecto (**Build → Rebuild Project**)
-4. Ejecutar `Main.java` con el path del script DSL como argumento de programa:
+4. Ejecutar `Main.java` con el path de un script MABO como argumento de programa:
 
 ```
-src/input_prueba_completa.txt
+examples/limpieza.mabo
 ```
 
-### Desde línea de comandos
+### Desde Gradle
 
 ```bash
-java -classpath "out/production/Bash;antlr-runtime-4.13.1.jar" Main src/input_prueba_completa.txt
+gradle clean test
+gradle run --args="examples/limpieza.mabo"
+```
+
+Las pruebas automatizadas viven en `src/test/java`. Si modificas la gramática, ejecuta `gradle regenerateGrammar` para actualizar los archivos generados en `src/gen`.
+
+### Instalar en Windows
+
+#### Instalación para usuarios
+
+Cuando exista una release publicada en GitHub, instala MABO con:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://github.com/Tomas1802/MABO/releases/latest/download/install-windows.ps1 | iex"
+```
+
+Para instalar una versión concreta:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://github.com/Tomas1802/MABO/releases/download/v1.0.0/install-windows.ps1 | iex"
+```
+
+El instalador descarga `mabo-windows.zip`, instala en `%LOCALAPPDATA%\MABO` y agrega `%LOCALAPPDATA%\MABO\bin` al `PATH` del usuario.
+
+MABO requiere Java 17 o superior. Si al ejecutar `mabo` ves un error como `UnsupportedClassVersionError` o `class file version`, significa que Windows esta usando una version antigua de Java. Ejecuta:
+
+```powershell
+java -version
+winget install EclipseAdoptium.Temurin.21.JDK
+```
+
+Despues de instalar Java, cierra y abre PowerShell. `java -version` debe mostrar 17 o superior.
+
+#### Instalación desde el código fuente
+
+Desde PowerShell, en la raíz del proyecto:
+
+```powershell
+.\scripts\install-windows.ps1
+```
+
+Cuando se ejecuta desde el repositorio, el instalador compila la distribución con Gradle, la instala en `%LOCALAPPDATA%\MABO` y agrega `%LOCALAPPDATA%\MABO\bin` al `PATH` de usuario. Después de abrir una nueva terminal se puede ejecutar:
+
+```powershell
+mabo
+mabo examples/limpieza.mabo
+mabo --check examples/limpieza.mabo
+```
+
+`mabo` sin argumentos abre el modo interactivo para escribir comandos directamente:
+
+```text
+mabo> Variable base = "%USERPROFILE%/Documents/MABO"
+mabo> Ir A base
+mabo> Mostrar Ruta
+mabo> Crear Carpeta base + "/prueba"
+mabo> Listar Contenido
+mabo> salir
+```
+
+En este ejemplo, `base` es una variable que guarda la ruta principal de trabajo. `Ir A base` cambia la carpeta actual de MABO, `Mostrar Ruta` muestra esa carpeta y el operador `+` une esa ruta con otro texto, por ejemplo `base + "/prueba"`.
+
+Al iniciar, MABO muestra tambien la carpeta de logs de tareas. En Windows queda normalmente en:
+
+```text
+%LOCALAPPDATA%\MABO\logs\tasks
+```
+
+También se puede ejecutar una instrucción corta con `-c`. En Windows es mejor reservarlo para comandos sin comillas internas; para rutas y textos usa el modo interactivo.
+
+```powershell
+mabo -c "Mostrar 123"
+```
+
+Los archivos propios de MABO usan la extensión `.mabo`. `mabo archivo.mabo` ejecuta el archivo. `mabo --check archivo.mabo` o `mabo validar archivo.mabo` valida sintaxis y semántica sin ejecutar acciones.
+
+La extensión simple de VS Code está en `vscode/mabo-language`. Incluye resaltado de sintaxis, comentarios, pares de símbolos y comandos para ejecutar o validar el archivo actual. Para probarla:
+
+```powershell
+cd vscode/mabo-language
+code .
+```
+
+Presiona F5 desde VS Code para abrir una ventana de desarrollo con la extensión cargada. La extensión espera que `mabo` esté instalado en PATH.
+
+Para desinstalar:
+
+```powershell
+.\scripts\uninstall-windows.ps1
+```
+
+#### Publicar una release
+
+Con GitHub CLI autenticado (`gh auth login`), crea y sube los artefactos de release:
+
+```powershell
+.\scripts\publish-release.ps1 -Tag v1.0.0
+```
+
+Esto ejecuta pruebas, genera `build/release/mabo-windows.zip`, copia `install-windows.ps1` y crea una GitHub Release con ambos archivos. También se puede publicar automáticamente empujando un tag:
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+### Desde línea de comandos manual
+
+```bash
+gradle run --args="examples/limpieza.mabo"
 ```
 
 ---
@@ -105,7 +227,7 @@ java -classpath "out/production/Bash;antlr-runtime-4.13.1.jar" Main src/input_pr
 ## Flujo de Ejecución
 
 ```
-Script .txt
+Script .mabo
     │
     ▼
 proyectoLexer  →  proyectoParser  →  ParseTree
@@ -129,28 +251,30 @@ proyectoLexer  →  proyectoParser  →  ParseTree
 ### Variables
 
 ```
-Guardar 10 En numero
-Guardar "Hola mundo" En mensaje
-Guardar "%USERPROFILE%/Documents/MiCarpeta" En ruta
+Variable numero = 10
+Variable mensaje = "Hola mundo"
+Variable ruta = "%USERPROFILE%/Documents/MiCarpeta"
 ```
 
 ### Operadores Aritméticos
 
 | Palabra DSL | Símbolo equivalente | Operación |
 |-------------|---------------------|-----------|
-| `Mas` | `+` | Suma / concatenación |
+| `+` (`Mas`) | `+` | Suma / concatenación |
 | `Menos` | `-` | Resta |
 | `Por` | `*` | Multiplicación |
 | `Entre` | `/` | División |
 | `Modulo` | `%` | Módulo |
 
 ```
-Mostrar "10 + 3 = " Mas (a Mas b)
-Mostrar "10 - 3 = " Mas (a Menos b)
-Mostrar "10 * 3 = " Mas (a Por b)
-Mostrar "10 / 3 = " Mas (a Entre b)
-Mostrar "10 % 3 = " Mas (a Modulo b)
+Mostrar "10 + 3 = " + (a + b)
+Mostrar "10 - 3 = " + (a Menos b)
+Mostrar "10 * 3 = " + (a Por b)
+Mostrar "10 / 3 = " + (a Entre b)
+Mostrar "10 % 3 = " + (a Modulo b)
 ```
+
+La guia recomienda usar `+` porque es mas familiar. La palabra `Mas` sigue funcionando como alias del operador, y tambien aparece en filtros como `Mas Antiguos Que 30 Dias`, donde forma parte de la frase del filtro.
 
 ### Operadores de Comparación y Lógicos
 
@@ -167,8 +291,8 @@ No Verdadero
 
 ```
 Mostrar "Hola, mundo!"
-Mostrar "Resultado: " Mas (a Mas b)
-Mostrar "Ruta: " Mas ruta
+Mostrar "Resultado: " + (a + b)
+Mostrar "Ruta: " + ruta
 ```
 
 ### Condiciones
@@ -189,10 +313,10 @@ FinSi
 
 ```
 # Ciclo Mientras
-Guardar 1 En i
+Variable i = 1
 Mientras i <= 5
     Mostrar i
-    i = i Mas 1
+    i = i + 1
 FinMientras
 
 # Ciclo Para Cada (sobre lista literal)
@@ -203,7 +327,7 @@ FinPara
 # Ciclo Para Cada (sobre resultado de búsqueda)
 Buscar Archivos En "%USERPROFILE%/Documents" Con Extension ".txt"
 Para Cada archivo En ultimoResultado
-    Mostrar "Encontrado: " Mas archivo
+    Mostrar "Encontrado: " + archivo
 FinPara
 ```
 
@@ -211,7 +335,7 @@ FinPara
 
 ```
 Funcion Sumar(x, y)
-    Retornar x Mas y
+    Retornar x + y
 FinFuncion
 
 Funcion Factorial(n)
@@ -222,8 +346,8 @@ Funcion Factorial(n)
     FinSi
 FinFuncion
 
-Guardar Sumar(10, 5) En resultado
-Mostrar "Factorial de 5: " Mas Factorial(5)
+Variable resultado = Sumar(10, 5)
+Mostrar "Factorial de 5: " + Factorial(5)
 ```
 
 Las funciones soportan:
@@ -260,9 +384,36 @@ Ejecutar Tarea LimpiarTemp
 Importar "otro_script.txt"
 ```
 
+### Comandos Nativos PowerShell / Linux
+
+El DSL puede delegar acciones no soportadas a PowerShell o a un shell Linux. Los comandos se ejecutan desde un directorio seguro (`%USERPROFILE%/Documents/MABO`), se auditan y se bloquean patrones peligrosos.
+
+```
+Ejecutar PowerShell "Get-ChildItem | Select-Object Name"
+Ejecutar Linux "ls -la"
+
+Simular Ejecutar PowerShell "Write-Output 'prueba'"
+Simular Ejecutar Linux "echo prueba"
+```
+
+La simulación registra la intención sin ejecutar el comando. La ejecución real de PowerShell está habilitada en Windows y la de Linux en Linux/Unix.
+
 ---
 
 ## Operaciones de Archivos y Carpetas
+
+### Navegacion
+
+```
+Mostrar Ruta
+Ir A "%USERPROFILE%/Documents"
+Ir A "C:\Users\tparr\Documents\TOMAS"
+Ir A "TOMAS"
+Ir A ".."
+Listar Contenido
+```
+
+`Ir A` cambia la carpeta actual de MABO. Las rutas relativas se resuelven desde esa carpeta y el modo interactivo la muestra en el prompt.
 
 ### Crear
 
@@ -271,12 +422,19 @@ Crear Archivo "ruta/archivo.txt"
 Crear Carpeta "ruta/carpeta"
 ```
 
+MABO acepta rutas con `/` y con `\`, por lo que estas dos formas son validas en Windows:
+
+```
+Ir A "C:/Users/tparr/Documents/TOMAS"
+Ir A "C:\Users\tparr\Documents\TOMAS"
+```
+
 ### Leer y Escribir
 
 ```
 Leer Archivo "ruta/archivo.txt"
-Escribir "contenido inicial" En Archivo "ruta/archivo.txt"
-Anexar "\nlinea adicional" En Archivo "ruta/archivo.txt"
+Escribir "contenido inicial" En "ruta/archivo.txt"
+Anexar "\nlinea adicional" En "ruta/archivo.txt"
 ```
 
 ### Copiar, Mover y Renombrar
@@ -294,9 +452,13 @@ Renombrar Carpeta "vieja/" A "nueva/"
 
 ```
 Eliminar Archivo "ruta/archivo.txt"
+Eliminar Archivo "ruta/archivo.txt" Sin Confirmar
 Eliminar Carpeta "ruta/carpeta"
 Eliminar Carpeta "ruta/carpeta" Recursivamente
+Eliminar Carpeta "ruta/carpeta" Recursivamente Sin Confirmar
 ```
+
+`Sin Confirmar` omite la pregunta interactiva de seguridad. Usalo solo en rutinas revisadas o junto con `Simular` durante pruebas.
 
 ### Búsqueda con Filtros
 
@@ -314,8 +476,8 @@ Buscar Archivos En "ruta/" Con Prefijo "backup"
 Buscar Archivos En "ruta/" Con Sufijo "final"
 
 # Por tamaño (en MB)
-Buscar Archivos En "ruta/" Menores Que 5
-Buscar Archivos En "ruta/" Mayores Que 10
+Buscar Archivos En "ruta/" Con Tamano Menor Que 5 MB
+Buscar Archivos En "ruta/" Con Tamano Mayor Que 10 MB
 
 # Por antigüedad (en días)
 Buscar Archivos En "ruta/" Mas Antiguos Que 30 Dias
@@ -328,8 +490,11 @@ Buscar Carpetas En "ruta/" Con Nombre "docs"
 ### Consultas
 
 ```
-# Listar contenido directo de una carpeta
-Listar Contenido En "ruta/"
+# Listar contenido de la carpeta actual
+Listar Contenido
+
+# Listar contenido directo de otra carpeta
+Listar Contenido "ruta/"
 
 # Verificar existencia
 Existe Archivo "ruta/archivo.txt"
@@ -344,11 +509,11 @@ FinSi
 
 # Tamaño en bytes
 Obtener Tamano Archivo "ruta/archivo.txt"
-Mostrar "Tamaño: " Mas ultimoResultado
+Mostrar "Tamaño: " + ultimoResultado
 
 # Cantidad de archivos (recursivo)
 Obtener Cantidad Archivos En "ruta/"
-Mostrar "Total: " Mas ultimoResultado
+Mostrar "Total: " + ultimoResultado
 
 # Propiedades de un archivo
 Obtener Propiedad nombre De "ruta/archivo.txt"
@@ -374,6 +539,17 @@ Descomprimir "ruta/archivo.zip" En "ruta/destino/"
 ```
 Crear Backup De "ruta/origen" En "ruta/respaldo"
 ```
+
+### Permisos
+
+En sistemas con permisos POSIX se puede cambiar permisos usando formato octal o simbólico:
+
+```
+Cambiar Permisos "ruta/script.sh" A "755"
+Cambiar Permisos "ruta/archivo.txt" A "rw-r-----"
+```
+
+En Windows la operación falla con un mensaje claro porque los permisos POSIX no están disponibles.
 
 ---
 
@@ -406,12 +582,92 @@ Fin
 Ejecutar VerificacionPeriodica Cada 1 Minutos
 Ejecutar VerificacionPeriodica Cada 2 Horas
 Ejecutar VerificacionPeriodica Cada 1 Dias
+Ejecutar Tarea VerificacionPeriodica Cada 2 Horas
 
 # Ejecutar al iniciar el sistema
 Ejecutar VerificacionPeriodica Al Iniciar Sistema
+
+# Ejecutar una sola vez a una hora específica
+Ejecutar VerificacionPeriodica A Las "23:00"
+Ejecutar Tarea VerificacionPeriodica A Las "23:00"
+
+# Ejecutar y programar archivos .mabo
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" A Las "23:00"
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Cada 24 Horas
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Al Iniciar Sistema
 ```
 
-> El proceso permanece activo mientras haya tareas programadas. Presionar `Ctrl+C` para detenerlo.
+La palabra `Tarea` es opcional al ejecutar o programar tareas. Estas dos instrucciones son equivalentes: `Ejecutar VerificacionPeriodica A Las "23:00"` y `Ejecutar Tarea VerificacionPeriodica A Las "23:00"`.
+
+Para rutinas persistentes suele ser más simple programar el archivo `.mabo` completo. Por ejemplo, un archivo de limpieza puede contener solo las acciones:
+
+```mabo
+Buscar Archivos En "C:\Users\tparr\Downloads" Con Extension ".xml"
+
+Para Cada archivo En ultimoResultado
+    Eliminar Archivo archivo Sin Confirmar
+FinPara
+```
+
+Y luego se programa desde el modo interactivo:
+
+```mabo
+Ejecutar Archivo "C:\Users\tparr\Documents\TAREAS\LimpiarXML.mabo" Al Iniciar Sistema
+```
+
+Las tareas programadas se guardan en:
+
+```text
+%USERPROFILE%/Documents/MABO/schedules.ndjson
+```
+
+Si vienes de una version anterior, MABO intenta copiar las programaciones antiguas a la nueva carpeta la primera vez que necesita leerlas y la nueva ruta aun no existe.
+
+`A Las "HH:mm"` crea una programación de una sola ejecución. Cuando la tarea o archivo se ejecuta correctamente, MABO la elimina de `schedules.ndjson`.
+
+`Cada X Minutos/Horas/Dias` ejecuta inmediatamente y luego repite mientras el proceso siga activo. La programación queda guardada para restaurarla.
+
+`Al Iniciar Sistema` solo registra el arranque; no ejecuta inmediatamente. Permanece guardada hasta que la elimines.
+
+> El proceso permanece activo mientras haya tareas programadas en memoria. `Al Iniciar Sistema` intenta registrar una tarea nativa del sistema operativo: Task Scheduler en Windows y autostart de usuario en Linux. Si el registro nativo falla, se conserva el registro del DSL y se informa en logs. Para tareas por nombre, la definición debe existir en el script o sesión actual. Para archivos, MABO guarda la ruta del `.mabo` y lo ejecuta directamente.
+
+### Administrar tareas programadas
+
+```
+Listar Tareas Programadas
+Eliminar Tarea Programada VerificacionPeriodica
+Eliminar Tareas Programadas
+Cambiar Programacion De Tarea VerificacionPeriodica Cada 2 Horas
+Cambiar Programacion De Tarea VerificacionPeriodica A Las "23:30"
+```
+
+`Listar Tareas Programadas` muestra las programaciones guardadas, incluidas las de archivos `.mabo`.
+
+`Eliminar Tarea Programada Nombre` cancela una programación de tarea por nombre, la borra del archivo y elimina el registro nativo de inicio si aplica.
+
+`Eliminar Tareas Programadas` elimina todas las programaciones guardadas, incluidas las de archivos `.mabo` y las entradas de arranque creadas por MABO.
+
+`Cambiar Programacion De Tarea` reemplaza la programación anterior de una tarea con nombre.
+
+Cada ejecución de una tarea genera un log propio en `%LOCALAPPDATA%\MABO\logs\tasks` en Windows. El archivo se llama con el nombre de la tarea y la fecha, por ejemplo `LimpiarArchivosXML-2026-05-31.log`. Allí se registran inicio, fin, errores, búsquedas, listados y operaciones de archivos como crear, mover, copiar, escribir, eliminar, comprimir y ejecutar comandos nativos.
+
+También existe `scheduler.log` en esa misma carpeta para ver cuándo se programó o restauró una tarea y si una ejecución programada falló. Si una tarea programada falla, el scheduler conserva la programación y escribe el error en el log.
+
+En Windows, las programaciones `Al Iniciar Sistema` intentan usar Task Scheduler. Si Windows responde `Acceso denegado`, MABO usa como respaldo la carpeta Startup del usuario: `%APPDATA%\Microsoft\Windows\Start Menu\Programs\Startup`. En ambos casos crea un wrapper en `%LOCALAPPDATA%\MABO\startup` y escribe salida de arranque en `%LOCALAPPDATA%\MABO\logs\startup`. Esto permite diagnosticar errores que ocurren antes de que MABO alcance a crear logs de tarea.
+
+Para verificar una programación de arranque en Windows:
+
+```powershell
+Get-ChildItem "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup" | Where-Object Name -like "MABO_*"
+Get-ChildItem "$env:LOCALAPPDATA\MABO\startup" | Where-Object Name -like "MABO_*"
+```
+
+Si Windows permitió Task Scheduler, también puede aparecer como `MABO_<nombre>`:
+
+```powershell
+schtasks /Query /FO LIST /V | findstr MABO
+```
 
 ---
 
@@ -421,12 +677,11 @@ Las rutas soportan expansión de variables de entorno en formato Windows y Unix:
 
 ```
 # Windows
-Guardar "%USERPROFILE%/Documents/MiProyecto" En base
-Guardar "%APPDATA%/MiApp" En config
-
+Variable base = "%USERPROFILE%/Documents/MiProyecto"
+Variable config = "%APPDATA%/MiApp"
 # Unix / cross-platform
-Guardar "${HOME}/documentos" En base2
-Guardar "~/documentos" En base3
+Variable base2 = "${HOME}/documentos"
+Variable base3 = "~/documentos"
 ```
 
 ---
@@ -438,7 +693,7 @@ La variable reservada `ultimoResultado` almacena automáticamente el resultado d
 ```
 Buscar Archivos En "ruta/" Con Extension ".log"
 Para Cada archivo En ultimoResultado
-    Eliminar Archivo archivo
+    Eliminar Archivo archivo Sin Confirmar
 FinPara
 
 Existe Archivo "ruta/config.txt"
@@ -447,14 +702,16 @@ Si ultimoResultado Entonces
 FinSi
 
 Obtener Cantidad Archivos En "ruta/"
-Mostrar "Total archivos: " Mas ultimoResultado
+Mostrar "Total archivos: " + ultimoResultado
 ```
 
 ---
 
 ## Seguridad
 
-El DSL implementa una lista blanca de rutas permitidas (`SecurityValidator`). Solo se pueden operar rutas que hayan sido registradas como raíces válidas, lo cual ocurre automáticamente al usar `Guardar <ruta> En variable`. Las rutas críticas del sistema operativo (System32, Program Files, raíces del disco) están bloqueadas.
+El DSL implementa una lista blanca de rutas permitidas (`SecurityValidator`). Por defecto se permite trabajar dentro del perfil del usuario y dentro de la carpeta actual del proyecto. Tambien se registran como raices validas las rutas guardadas con `Variable nombre = <ruta>`. Las rutas criticas del sistema operativo (System32, Program Files, raices del disco) estan bloqueadas.
+
+Los comandos nativos agregan una segunda capa de seguridad: validación de shell por plataforma, bloqueo de patrones peligrosos, confirmación para comandos potencialmente destructivos, soporte de simulación y auditoría de salida/código de retorno.
 
 ---
 
@@ -462,39 +719,42 @@ El DSL implementa una lista blanca de rutas permitidas (`SecurityValidator`). So
 
 - **`logs/app.log`** — log de ejecución en texto plano con timestamp. Registra inicio, acciones, variables, errores y fin.
 - **Auditoría NDJSON** — cada operación de archivo genera una entrada con: operación, origen, destino, éxito/fallo y detalle.
+- **Logs de tareas** — en Windows se guardan en `%LOCALAPPDATA%\MABO\logs\tasks`. Cada tarea tiene un archivo por día, por ejemplo `BackupDiario-2026-05-31.log`, y el scheduler usa `scheduler.log`.
+- **Logs de arranque** — en Windows se guardan en `%LOCALAPPDATA%\MABO\logs\startup` cuando se usa `Al Iniciar Sistema`.
+- **Programaciones guardadas** — se guardan en `%USERPROFILE%/Documents/MABO/schedules.ndjson`.
 
 ---
 
 ## Ejemplo Completo
 
 ```
-Guardar "%USERPROFILE%/Documents/MiProyecto" En base
-Mostrar "Trabajando en: " Mas base
+Variable base = "%USERPROFILE%/Documents/MiProyecto"
+Mostrar "Trabajando en: " + base
 
 # Crear estructura
 Crear Carpeta base
-Crear Archivo base Mas "\datos.txt"
-Escribir "Linea 1" En Archivo base Mas "\datos.txt"
-Anexar "\nLinea 2" En Archivo base Mas "\datos.txt"
+Crear Archivo base + "\datos.txt"
+Escribir "Linea 1" En base + "\datos.txt"
+Anexar "\nLinea 2" En base + "\datos.txt"
 
 # Leer
-Leer Archivo base Mas "\datos.txt"
+Leer Archivo base + "\datos.txt"
 
 # Buscar y recorrer
 Buscar Archivos En base Con Extension ".txt"
 Para Cada archivo En ultimoResultado
-    Mostrar "Encontrado: " Mas archivo
+    Mostrar "Encontrado: " + archivo
 FinPara
 
 # Manejo de errores
 Intentar
-    Leer Archivo base Mas "\no_existe.txt"
+    Leer Archivo base + "\no_existe.txt"
 Capturar
     Mostrar "Archivo no encontrado, continuando..."
 FinIntentar
 
 # Comprimir todo
-Comprimir base A base Mas "\respaldo"
+Comprimir base A base + "\respaldo"
 Mostrar "Backup comprimido creado"
 
 # Tarea programada
@@ -510,25 +770,11 @@ Ejecutar Verificar Cada 1 Horas
 
 ---
 
-## Archivo de Prueba Incluido
+## Archivos de Ejemplo y Pruebas
 
-El proyecto incluye `src/input_prueba_completa.txt` con **16 bloques de prueba** que cubren todas las funcionalidades:
+Los ejemplos de uso para usuarios están en `examples/`:
 
-| Bloque | Contenido |
-|--------|-----------|
-| 1 | Variables y operadores aritméticos |
-| 2 | Comparaciones y operadores lógicos |
-| 3 | Funciones con parámetros, retorno y recursividad |
-| 4 | Condiciones Si / Sino / FinSi |
-| 5 | Ciclos Mientras y Para Cada |
-| 6 | Crear estructura de archivos y carpetas |
-| 7 | Leer, copiar, mover y renombrar |
-| 8 | Búsqueda con todos los filtros disponibles |
-| 9 | Consultas: Existe, Tamaño, Cantidad, Propiedad |
-| 10 | Para Cada sobre resultado de búsqueda |
-| 11 | Modo simulación |
-| 12 | Intentar / Capturar |
-| 13 | Backup de carpeta |
-| 14 | Función que usa operaciones de archivos |
-| 15 | Tarea programada con scheduler |
-| 16 | Compresión y descompresión ZIP |
+- `examples/limpieza.mabo`
+- `examples/organizar-pdf.mabo`
+
+Las pruebas automatizadas están en `src/test/java` y cubren parser, ejecución, validación, seguridad, archivos, shell y comandos de verificación.

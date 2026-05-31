@@ -1,4 +1,4 @@
-// Generated from C:/Users/LauraValentinaPabonC/Downloads/Bash/Bash/.idea/grammar/proyecto.g4 by ANTLR 4.13.2
+// Generated from .idea/grammar/proyecto.g4 by ANTLR 4.13.2
 
     package gen;
 
@@ -30,6 +30,18 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitImportar(proyectoParser.ImportarContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#cambiarDirectorio}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCambiarDirectorio(proyectoParser.CambiarDirectorioContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#mostrarRuta}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMostrarRuta(proyectoParser.MostrarRutaContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link proyectoParser#declaracionVariable}.
 	 * @param ctx the parse tree
@@ -85,6 +97,36 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitEjecutarTarea(proyectoParser.EjecutarTareaContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link proyectoParser#ejecutarArchivo}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEjecutarArchivo(proyectoParser.EjecutarArchivoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#listarTareasProgramadas}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitListarTareasProgramadas(proyectoParser.ListarTareasProgramadasContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#eliminarTareasProgramadas}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEliminarTareasProgramadas(proyectoParser.EliminarTareasProgramadasContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#eliminarTareaProgramada}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEliminarTareaProgramada(proyectoParser.EliminarTareaProgramadaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#cambiarTareaProgramada}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCambiarTareaProgramada(proyectoParser.CambiarTareaProgramadaContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link proyectoParser#programacion}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -132,6 +174,24 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSimulacion(proyectoParser.SimulacionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#comandoSistema}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitComandoSistema(proyectoParser.ComandoSistemaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#ejecutarPowerShell}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEjecutarPowerShell(proyectoParser.EjecutarPowerShellContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#ejecutarLinux}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEjecutarLinux(proyectoParser.EjecutarLinuxContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link proyectoParser#accionArchivo}.
 	 * @param ctx the parse tree
@@ -271,6 +331,12 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitEliminarCarpeta(proyectoParser.EliminarCarpetaContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link proyectoParser#sinConfirmar}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSinConfirmar(proyectoParser.SinConfirmarContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link proyectoParser#comprimir}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -300,6 +366,12 @@ public interface proyectoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitFiltro(proyectoParser.FiltroContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link proyectoParser#unidadTamano}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnidadTamano(proyectoParser.UnidadTamanoContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link proyectoParser#mostrar}.
 	 * @param ctx the parse tree

@@ -15,6 +15,8 @@ programa
 sentencia
     : declaracionVariable
     | asignacionVariable
+    | mostrarRuta
+    | cambiarDirectorio
     | mostrar
     | condicion
     | cicloMientras
@@ -23,8 +25,13 @@ sentencia
     | llamadaFuncion
     | retornar
     | tarea
+    | ejecutarArchivo
     | ejecutarTarea
-    | programacion
+    | listarTareasProgramadas
+    | eliminarTareasProgramadas
+    | eliminarTareaProgramada
+    | cambiarTareaProgramada
+    | comandoSistema
     | simulacion
     | intentarCapturar
     | importar
@@ -43,11 +50,24 @@ importar
 
 
 /* =========================================================================
+   NAVEGACION
+   ========================================================================= */
+
+cambiarDirectorio
+    : IR A expresion
+    ;
+
+mostrarRuta
+    : MOSTRAR RUTA
+    ;
+
+
+/* =========================================================================
    VARIABLES
    ========================================================================= */
 
 declaracionVariable
-    : GUARDAR expresion EN ID
+    : VARIABLE ID IGUAL expresion
     ;
 
 asignacionVariable
@@ -94,7 +114,27 @@ tarea
     ;
 
 ejecutarTarea
-    : EJECUTAR TAREA ID
+    : EJECUTAR TAREA? ID programacion?
+    ;
+
+ejecutarArchivo
+    : EJECUTAR ARCHIVO expresion programacion?
+    ;
+
+listarTareasProgramadas
+    : LISTAR TAREAS PROGRAMADAS
+    ;
+
+eliminarTareasProgramadas
+    : ELIMINAR TAREAS PROGRAMADAS
+    ;
+
+eliminarTareaProgramada
+    : ELIMINAR TAREA PROGRAMADA ID
+    ;
+
+cambiarTareaProgramada
+    : CAMBIAR PROGRAMACION DE TAREA ID programacion
     ;
 
 
@@ -103,8 +143,9 @@ ejecutarTarea
    ========================================================================= */
 
 programacion
-    : EJECUTAR ID CADA numero tiempo
-    | EJECUTAR ID AL INICIAR SISTEMA
+    : CADA numero tiempo
+    | AL INICIAR SISTEMA
+    | A LAS cadena
     ;
 
 tiempo
@@ -171,7 +212,25 @@ bloque
    ========================================================================= */
 
 simulacion
-    : SIMULAR accionArchivo
+    : SIMULAR (accionArchivo | comandoSistema)
+    ;
+
+
+/* =========================================================================
+   COMANDOS NATIVOS
+   ========================================================================= */
+
+comandoSistema
+    : ejecutarPowerShell
+    | ejecutarLinux
+    ;
+
+ejecutarPowerShell
+    : EJECUTAR POWERSHELL expresion
+    ;
+
+ejecutarLinux
+    : EJECUTAR LINUX expresion
     ;
 
 
@@ -238,7 +297,7 @@ buscarCarpetas
     ;
 
 listarContenido
-    : LISTAR CONTENIDO EN expresion
+    : LISTAR CONTENIDO expresion?
     ;
 
 existeArchivo
@@ -292,11 +351,11 @@ renombrarCarpeta
     ;
 
 escribirArchivo
-    : ESCRIBIR expresion EN ARCHIVO expresion
+    : ESCRIBIR expresion EN expresion
     ;
 
 anexarArchivo
-    : ANEXAR expresion EN ARCHIVO expresion
+    : ANEXAR expresion EN expresion
     ;
 
 cambiarPermisos
@@ -309,12 +368,15 @@ cambiarPermisos
    ========================================================================= */
 
 eliminarArchivo
-    : ELIMINAR ARCHIVO expresion
+    : ELIMINAR ARCHIVO expresion sinConfirmar?
     ;
 
 eliminarCarpeta
-    : ELIMINAR CARPETA expresion
-    | ELIMINAR CARPETA expresion RECURSIVAMENTE
+    : ELIMINAR CARPETA expresion RECURSIVAMENTE? sinConfirmar?
+    ;
+
+sinConfirmar
+    : SIN CONFIRMAR
     ;
 
 
@@ -348,10 +410,17 @@ filtro
     | CON NOMBRE cadena
     | CON PREFIJO cadena
     | CON SUFIJO cadena
-    | MAYORES QUE expresion
-    | MENORES QUE expresion
+    | CON TAMANO MAYOR QUE expresion unidadTamano
+    | CON TAMANO MENOR QUE expresion unidadTamano
     | MAS ANTIGUOS QUE expresion DIAS
     | MAS RECIENTES QUE expresion DIAS
+    ;
+
+unidadTamano
+    : BYTES
+    | KB
+    | MB
+    | GB
     ;
 
 
@@ -439,16 +508,20 @@ booleano
 
 IMPORTAR           : 'Importar';
 
-GUARDAR            : 'Guardar';
+VARIABLE           : 'Variable';
 EN                  : 'En';
 
-FUNCION            : 'Funcion';
+FUNCION            : 'Funcion' | 'Función';
 FINFUNCION         : 'FinFuncion';
 RETORNAR           : 'Retornar';
 
 FIN                : 'Fin';
 
 TAREA              : 'Tarea';
+TAREAS             : 'Tareas';
+PROGRAMADA         : 'Programada';
+PROGRAMADAS        : 'Programadas';
+PROGRAMACION       : 'Programacion' | 'Programación';
 EJECUTAR           : 'Ejecutar';
 
 SI                  : 'Si';
@@ -483,7 +556,7 @@ OBTENER            : 'Obtener';
 EXISTE             : 'Existe';
 CAMBIAR            : 'Cambiar';
 
-TAMANO             : 'Tamano';
+TAMANO             : 'Tamano' | 'Tamaño';
 CANTIDAD           : 'Cantidad';
 
 ARCHIVO            : 'Archivo';
@@ -496,7 +569,7 @@ CONTENIDO          : 'Contenido';
 
 BACKUP             : 'Backup';
 
-COMPRESION         : 'Compresion';
+COMPRESION         : 'Compresion' | 'Compresión';
 COMPRIMIR          : 'Comprimir';
 DESCOMPRIMIR       : 'Descomprimir';
 
@@ -507,27 +580,38 @@ CON                : 'Con';
 DE                  : 'De';
 A                   : 'A';
 
-EXTENSION          : 'Extension';
+EXTENSION          : 'Extension' | 'Extensión';
 NOMBRE             : 'Nombre';
 PREFIJO            : 'Prefijo';
 SUFIJO             : 'Sufijo';
 
-MAYORES            : 'Mayores';
-MENORES            : 'Menores';
+MAYOR              : 'Mayor';
+MENOR              : 'Menor';
 ANTIGUOS           : 'Antiguos';
 RECIENTES          : 'Recientes';
 
 QUE                : 'Que';
 
 RECURSIVAMENTE     : 'Recursivamente';
+SIN                : 'Sin';
+CONFIRMAR          : 'Confirmar';
 
 AL                 : 'Al';
 INICIAR            : 'Iniciar';
 SISTEMA            : 'Sistema';
+LAS                : 'Las';
+IR                 : 'Ir';
+RUTA               : 'Ruta';
 
 HORAS              : 'Horas';
 MINUTOS            : 'Minutos';
-DIAS               : 'Dias';
+DIAS               : 'Dias' | 'Días';
+BYTES              : 'Bytes';
+KB                 : 'KB';
+MB                 : 'MB';
+GB                 : 'GB';
+POWERSHELL         : 'PowerShell';
+LINUX              : 'Linux';
 
 MOSTRAR            : 'Mostrar';
 
@@ -553,7 +637,7 @@ MENOR_QUE          : '<';
 MAYOR_IGUAL        : '>=';
 MENOR_IGUAL        : '<=';
 
-MAS                : 'Mas' | '+';
+MAS                : 'Mas' | 'Más' | '+';
 MENOS              : 'Menos' | '-';
 MULT               : 'Por' | '*';
 DIV                : 'Entre' | '/';

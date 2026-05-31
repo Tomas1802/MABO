@@ -18,7 +18,7 @@ public class LoggerService {
         if (configured.isAbsolute()) {
             this.logFile = configured;
         } else {
-            Path evidenceRoot = Paths.get(System.getProperty("user.home"), "Documents", "DSLDemo");
+            Path evidenceRoot = Paths.get(System.getProperty("user.home"), "Documents", "MABO");
             this.logFile = evidenceRoot.resolve(configured).normalize();
         }
         try {

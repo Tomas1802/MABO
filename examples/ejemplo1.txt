@@ -1,7 +1,0 @@
-Tarea LimpiarDescargas:
-    Guardar "Descargas" En carpeta
-    Buscar Archivos En carpeta Con Extension ".pdf"
-    Simular Eliminar Archivos
-Fin
-
-Ejecutar Tarea LimpiarDescargas
