@@ -28,7 +28,6 @@
       <a href="#inicio">Inicio rapido</a>
       <a href="#instalacion">Instalacion</a>
       <a href="#formas-de-uso">Formas de uso</a>
-      <a href="#conceptos">Conceptos clave</a>
       <a href="#rutas">Rutas y seguridad</a>
       <a href="#navegacion">Navegacion</a>
       <a href="#variables">Variables</a>
@@ -47,7 +46,7 @@
       <a href="#comandos-nativos">PowerShell y Linux</a>
       <a href="#backup">Backup y ZIP</a>
       <a href="#permisos">Permisos</a>
-      <a href="#recetas">Recetas completas</a>
+      <a href="#recetas">Ejemplos practicos</a>
       <a href="#referencia">Referencia rapida</a>
       <a href="#problemas">Problemas comunes</a>
     </nav>
@@ -64,25 +63,15 @@
           <a class="button secondary" href="#referencia">Ver referencia</a>
         </div>
       </div>
-      <div class="terminal-preview" aria-label="Vista previa de consola">
-        <div class="terminal-title">mabo</div>
-        <pre><code>mabo&gt; Variable base = "%USERPROFILE%/Documents/DSLDemo"
-mabo&gt; Ir A base
-mabo C:\Users\tparr\Documents\DSLDemo&gt; Mostrar Ruta
-mabo&gt; Crear Carpeta base + "/PDF"
-mabo&gt; Listar Contenido
-mabo&gt; Mostrar ultimoResultado</code></pre>
-      </div>
     </section>
 
     <section class="doc-section" id="instalacion" data-search="instalacion windows gradle powershell path localappdata instalar desinstalar">
       <h2>1. Instalacion en Windows</h2>
-      <p>Despues de instalar Gradle y Java, ejecuta el instalador incluido en el proyecto. Esto crea una distribucion local de MABO y agrega el comando <code>mabo</code> al PATH de tu usuario.</p>
-      <div class="steps">
+      <p>Instala MABO desde la ultima release de GitHub. El instalador descarga la distribucion, la copia en <code>%LOCALAPPDATA%\MABO</code> y agrega <code>mabo</code> al PATH de tu usuario.</p>
+      <div class="steps stack">
         <article>
           <h3>Instalar</h3>
-          <pre><code>cd C:\Users\tparr\Documents\TOMAS\UNAL\PROYECTO\Bash
-powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-windows.ps1</code></pre>
+          <pre><code>powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://github.com/Tomas1802/MABO/releases/latest/download/install-windows.ps1 | iex"</code></pre>
         </article>
         <article>
           <h3>Abrir una nueva terminal</h3>
@@ -91,7 +80,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-windows.ps
         </article>
         <article>
           <h3>Desinstalar</h3>
-          <pre><code>powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\uninstall-windows.ps1</code></pre>
+          <pre><code>powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://github.com/Tomas1802/MABO/releases/latest/download/uninstall-windows.ps1 | iex"</code></pre>
         </article>
       </div>
       <div class="note">
@@ -141,37 +130,10 @@ Escribir "Mi primera nota" En base + "/prueba/notas.txt"
 Leer Archivo base + "/prueba/notas.txt"
 Ir A base + "/prueba"
 Listar Contenido</code></pre>
-      <div class="note">
-        <strong>Que significa <code>base</code>?</strong>
-        <p><code>base</code> es solo el nombre de una variable. La primera linea guarda la ruta <code>%USERPROFILE%/Documents/DSLDemo</code> dentro de esa variable.</p>
-        <p>Despues, <code>base + "/prueba"</code> une la ruta guardada con el texto <code>"/prueba"</code>. Es una forma corta de escribir la ruta completa sin repetirla.</p>
-      </div>
-    </section>
-
-    <section class="doc-section" id="conceptos" data-search="conceptos clave sentencia expresion bloque ultimoresultado">
-      <h2>4. Conceptos clave</h2>
-      <div class="definition-list">
-        <div>
-          <h3>Sentencia</h3>
-          <p>Una instruccion completa, por ejemplo <code>Crear Carpeta "docs"</code>.</p>
-        </div>
-        <div>
-          <h3>Expresion</h3>
-          <p>Un valor que MABO puede calcular: texto, numero, booleano, variable, lista o una operacion.</p>
-        </div>
-        <div>
-          <h3>Bloque</h3>
-          <p>Un conjunto de sentencias dentro de <code>Tarea</code>, <code>Funcion</code>, <code>Si</code>, <code>Mientras</code>, <code>Para Cada</code> o <code>Intentar</code>.</p>
-        </div>
-        <div>
-          <h3>ultimoResultado</h3>
-          <p>Variable especial que guarda el resultado de la ultima operacion. Es muy util despues de buscar, verificar existencia o calcular propiedades.</p>
-        </div>
-      </div>
     </section>
 
     <section class="doc-section" id="rutas" data-search="rutas seguridad userprofile documents dsldemo variables entorno windows unix">
-      <h2>5. Rutas y seguridad</h2>
+      <h2>4. Rutas y seguridad</h2>
       <p>MABO trabaja con rutas del sistema de archivos. Por seguridad, valida que las rutas esten dentro de raices permitidas y bloquea rutas criticas del sistema.</p>
       <h3>Rutas recomendadas</h3>
       <pre><code>Variable base = "%USERPROFILE%/Documents/DSLDemo"
@@ -194,7 +156,7 @@ Variable descargas = base + "/Descargas"</code></pre>
     </section>
 
     <section class="doc-section" id="navegacion" data-search="navegacion ruta actual directorio carpeta actual ir a mostrar ruta cd pwd">
-      <h2>6. Navegacion</h2>
+      <h2>5. Navegacion</h2>
       <p>MABO tiene una carpeta actual. Las rutas relativas se resuelven desde esa carpeta y el modo interactivo la muestra en el prompt.</p>
 <pre><code>Mostrar Ruta
 Ir A "%USERPROFILE%/Documents"
@@ -207,7 +169,7 @@ Listar Contenido</code></pre>
     </section>
 
     <section class="doc-section" id="variables" data-search="variables guardar asignacion tipos numeros texto booleanos listas">
-      <h2>7. Variables</h2>
+      <h2>6. Variables</h2>
       <p>Las variables guardan valores para reutilizarlos. Se crean con <code>Variable nombre = valor</code> y se modifican con <code>=</code>.</p>
       <pre><code>Variable cantidad = 10
 Variable nombre = "reporte.txt"
@@ -228,20 +190,20 @@ Mostrar cantidad</code></pre>
     </section>
 
     <section class="doc-section" id="salida" data-search="mostrar imprimir resultado consola concatenar">
-      <h2>8. Mostrar resultados</h2>
+      <h2>7. Mostrar resultados</h2>
       <p>Usa <code>Mostrar</code> para imprimir texto o valores en la consola.</p>
       <pre><code>Mostrar "Hola"
 Mostrar 10
 Mostrar Verdadero
 Mostrar "Total: " + 25</code></pre>
-      <p>El operador <code>+</code> concatena texto o suma numeros segun el contexto. MABO tambien acepta <code>Mas</code>, pero esta guia usa <code>+</code> porque es mas familiar.</p>
+      <p>El operador <code>+</code> concatena texto o suma numeros segun el contexto.</p>
       <pre><code>Mostrar 10 + 5
 Mostrar "Hola " + "Mundo"
 Mostrar base + "/archivo.txt"</code></pre>
     </section>
 
     <section class="doc-section" id="archivos" data-search="archivos crear leer escribir anexar copiar mover renombrar eliminar">
-      <h2>9. Comandos para archivos</h2>
+      <h2>8. Comandos para archivos</h2>
       <div class="command-list">
         <article>
           <h3>Crear Archivo</h3>
@@ -288,7 +250,7 @@ Eliminar Archivo "ruta/archivo.txt" Sin Confirmar</code></pre>
     </section>
 
     <section class="doc-section" id="carpetas" data-search="carpetas crear copiar mover renombrar eliminar recursivamente listar contenido">
-      <h2>10. Comandos para carpetas</h2>
+      <h2>9. Comandos para carpetas</h2>
       <div class="command-list">
         <article>
           <h3>Crear Carpeta</h3>
@@ -327,7 +289,7 @@ Eliminar Carpeta "ruta/carpeta" Recursivamente Sin Confirmar</code></pre>
     </section>
 
     <section class="doc-section" id="busqueda" data-search="buscar archivos carpetas filtros extension nombre prefijo sufijo tamano antiguedad">
-      <h2>11. Busqueda y filtros</h2>
+      <h2>10. Busqueda y filtros</h2>
       <p>Los comandos de busqueda recorren una carpeta y devuelven rutas que coinciden con filtros. El resultado queda en <code>ultimoResultado</code>.</p>
       <h3>Buscar archivos</h3>
       <pre><code>Buscar Archivos En "ruta" Con Extension ".pdf"
@@ -347,7 +309,7 @@ Buscar Archivos En "ruta" Mas Recientes Que 7 Dias</code></pre>
     </section>
 
     <section class="doc-section" id="consultas" data-search="existe obtener tamano cantidad propiedad nombre extension ruta existe esarchivo escarpeta">
-      <h2>12. Consultas sobre archivos y carpetas</h2>
+      <h2>11. Consultas sobre archivos y carpetas</h2>
       <pre><code>Existe Archivo "ruta/archivo.txt"
 Existe Carpeta "ruta/carpeta"
 Obtener Tamano Archivo "ruta/archivo.txt"
@@ -369,7 +331,7 @@ FinSi</code></pre>
     </section>
 
     <section class="doc-section" id="control" data-search="condiciones si sino finsi mientras finmientras para cada finpara operadores logicos">
-      <h2>13. Condiciones y ciclos</h2>
+      <h2>12. Condiciones y ciclos</h2>
       <h3>Condiciones</h3>
       <pre><code>Si cantidad > 0 Entonces
     Mostrar "Hay archivos"
@@ -399,7 +361,7 @@ FinPara</code></pre>
     </section>
 
     <section class="doc-section" id="funciones" data-search="funciones parametros retornar recursividad reutilizar">
-      <h2>14. Funciones</h2>
+      <h2>13. Funciones</h2>
       <p>Una funcion calcula o ejecuta algo reutilizable. Puede recibir parametros y devolver un valor con <code>Retornar</code>.</p>
       <pre><code>Funcion NombreCompleto(nombre, apellido)
     Retornar nombre + " " + apellido
@@ -416,7 +378,7 @@ FinFuncion</code></pre>
     </section>
 
     <section class="doc-section" id="tareas" data-search="tareas rutina ejecutar tarea bloque automatizacion">
-      <h2>15. Tareas</h2>
+      <h2>14. Tareas</h2>
       <p>Una tarea es una rutina con nombre. No devuelve valor; sirve para agrupar pasos de automatizacion.</p>
       <pre><code>Tarea PrepararProyecto:
     Crear Carpeta base + "/entrada"
@@ -429,7 +391,7 @@ Ejecutar Tarea PrepararProyecto</code></pre>
     </section>
 
     <section class="doc-section" id="programacion" data-search="programar tareas cada minutos horas dias iniciar sistema a las scheduler">
-      <h2>16. Programacion de tareas</h2>
+      <h2>15. Programacion de tareas</h2>
       <p>Las tareas pueden ejecutarse inmediatamente, cada cierto tiempo, al iniciar el sistema o una sola vez a una hora especifica.</p>
       <pre><code>Ejecutar Tarea Limpieza
 Ejecutar Limpieza
@@ -445,14 +407,15 @@ Ejecutar Tarea Respaldo A Las "23:00"</code></pre>
       <h3>Administrar programaciones</h3>
       <pre><code>Listar Tareas Programadas
 Eliminar Tarea Programada Limpieza
+Eliminar Tareas Programadas
 Cambiar Programacion De Tarea Limpieza Cada 2 Horas
 Cambiar Programacion De Tarea Limpieza A Las "23:30"</code></pre>
-      <p><code>Listar</code> muestra lo guardado. <code>Eliminar</code> cancela y borra la programacion. <code>Cambiar Programacion</code> reemplaza la programacion anterior de esa tarea.</p>
+      <p><code>Listar</code> muestra lo guardado. <code>Eliminar Tarea Programada</code> cancela y borra una programacion. <code>Eliminar Tareas Programadas</code> borra todas. <code>Cambiar Programacion</code> reemplaza la programacion anterior de esa tarea.</p>
       <div class="warning">Las tareas programadas mantienen el proceso activo cuando usan el scheduler interno. Para detenerlo, usa Ctrl+C en la terminal.</div>
     </section>
 
     <section class="doc-section" id="logs" data-search="logs tareas scheduler auditoria localappdata errores diagnostico">
-      <h2>17. Logs de tareas</h2>
+      <h2>16. Logs de tareas</h2>
       <p>Las tareas manuales y programadas escriben logs para que puedas revisar que hicieron cuando no estabas viendo la terminal.</p>
       <pre><code>%LOCALAPPDATA%\MABO\logs\tasks</code></pre>
       <p>Cada tarea crea un archivo por dia con este formato:</p>
@@ -464,7 +427,7 @@ Cambiar Programacion De Tarea Limpieza A Las "23:30"</code></pre>
     </section>
 
     <section class="doc-section" id="simulacion" data-search="simular modo seguro previsualizar eliminar copiar mover comandos nativos">
-      <h2>18. Modo simulacion</h2>
+      <h2>17. Modo simulacion</h2>
       <p><code>Simular</code> ejecuta la validacion y auditoria, pero no modifica archivos ni ejecuta comandos nativos reales.</p>
       <pre><code>Simular Eliminar Archivo base + "/temp/cache.tmp"
 Simular Copiar Carpeta base + "/datos" A base + "/backup"
@@ -474,7 +437,7 @@ Simular Ejecutar PowerShell "Write-Output 'prueba'"</code></pre>
     </section>
 
     <section class="doc-section" id="errores" data-search="errores intentar capturar manejo excepciones archivo no existe">
-      <h2>19. Manejo de errores</h2>
+      <h2>18. Manejo de errores</h2>
       <p>Usa <code>Intentar</code> y <code>Capturar</code> para continuar cuando algo falle.</p>
       <pre><code>Intentar
     Leer Archivo base + "/no_existe.txt"
@@ -485,7 +448,7 @@ FinIntentar</code></pre>
     </section>
 
     <section class="doc-section" id="comandos-nativos" data-search="powershell linux comandos nativos ejecutar shell seguridad stdout stderr">
-      <h2>20. PowerShell y Linux</h2>
+      <h2>19. PowerShell y Linux</h2>
       <p>Cuando MABO no tenga un comando propio para algo, puedes delegar a PowerShell en Windows o a un shell Linux en Linux/Unix.</p>
       <pre><code>Ejecutar PowerShell "Get-ChildItem"
 Ejecutar Linux "ls -la"</code></pre>
@@ -502,7 +465,7 @@ Ejecutar Linux "ls -la"</code></pre>
     </section>
 
     <section class="doc-section" id="backup" data-search="backup comprimir descomprimir zip respaldo">
-      <h2>21. Backup y compresion</h2>
+      <h2>20. Backup y compresion</h2>
       <pre><code>Crear Backup De base + "/datos" En base + "/respaldo/datos"
 Comprimir base + "/datos" A base + "/respaldo/datos_zip"
 Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pre>
@@ -510,7 +473,7 @@ Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pr
     </section>
 
     <section class="doc-section" id="permisos" data-search="permisos chmod posix linux windows cambiar permisos">
-      <h2>22. Permisos</h2>
+      <h2>21. Permisos</h2>
       <p>En sistemas POSIX puedes cambiar permisos con formato octal o simbolico.</p>
       <pre><code>Cambiar Permisos "scripts/run.sh" A "755"
 Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
@@ -518,7 +481,7 @@ Cambiar Permisos "datos.txt" A "rw-r-----"</code></pre>
     </section>
 
     <section class="doc-section" id="recetas" data-search="recetas ejemplos pdf limpieza respaldo descargas documentos">
-      <h2>23. Recetas completas</h2>
+      <h2>22. Ejemplos practicos</h2>
       <article class="recipe">
         <h3>Organizar PDF desde Descargas</h3>
         <pre><code>Variable base = "%USERPROFILE%/Documents/DSLDemo"
@@ -551,7 +514,7 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
     </section>
 
     <section class="doc-section" id="referencia" data-search="referencia rapida comandos sintaxis tabla">
-      <h2>24. Referencia rapida de comandos</h2>
+      <h2>23. Referencia rapida de comandos</h2>
       <table class="reference-table">
         <thead><tr><th>Accion</th><th>Sintaxis</th></tr></thead>
         <tbody>
@@ -594,13 +557,14 @@ Ejecutar BackupDiario Cada 24 Horas</code></pre>
           <tr><td>Al iniciar</td><td><code>Ejecutar Nombre Al Iniciar Sistema</code></td></tr>
           <tr><td>Listar programaciones</td><td><code>Listar Tareas Programadas</code></td></tr>
           <tr><td>Eliminar programacion</td><td><code>Eliminar Tarea Programada Nombre</code></td></tr>
+          <tr><td>Eliminar todas</td><td><code>Eliminar Tareas Programadas</code></td></tr>
           <tr><td>Cambiar programacion</td><td><code>Cambiar Programacion De Tarea Nombre Cada 2 Horas</code></td></tr>
         </tbody>
       </table>
     </section>
 
     <section class="doc-section" id="problemas" data-search="problemas errores comunes reservado backup comillas ruta seguridad">
-      <h2>25. Problemas comunes</h2>
+      <h2>24. Problemas comunes</h2>
       <div class="faq">
         <article>
           <h3>El nombre de mi tarea no funciona</h3>

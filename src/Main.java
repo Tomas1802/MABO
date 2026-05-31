@@ -41,7 +41,31 @@ public class Main {
             return;
         }
 
+        if ("--check".equals(args[0]) || "validar".equalsIgnoreCase(args[0])) {
+            if (args.length < 2) {
+                System.err.println("Uso: mabo --check archivo.mabo");
+                return;
+            }
+            checkScript(Paths.get(args[1]), ctx);
+            return;
+        }
+
         runScript(Paths.get(args[0]), ctx, logger);
+    }
+
+    private static void checkScript(Path p, ExecutionContext ctx) throws IOException {
+        if (!Files.exists(p)) {
+            System.err.println("Script no encontrado: " + p.toAbsolutePath());
+            return;
+        }
+        proyectoParser parser = parserFor(CharStreams.fromPath(p));
+        ParseTree tree = parser.programa();
+        if (parser.getNumberOfSyntaxErrors() > 0) {
+            throw new RuntimeException("El archivo contiene errores de sintaxis");
+        }
+        SemanticVisitor sem = new SemanticVisitor(ctx);
+        sem.validar(tree);
+        System.out.println("OK: " + p.toAbsolutePath());
     }
 
     private static void runScript(Path p, ExecutionContext ctx, LoggerService logger) throws IOException {

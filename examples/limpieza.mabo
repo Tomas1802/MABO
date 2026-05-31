@@ -1,0 +1,13 @@
+Variable base = "%USERPROFILE%/Documents/DSLDemo"
+Variable temp = base + "/Temp"
+
+Tarea LimpiarTemporales:
+    Crear Carpeta temp
+    Buscar Archivos En temp Con Extension ".tmp" Mas Antiguos Que 30 Dias
+    Para Cada archivo En ultimoResultado
+        Simular Eliminar Archivo archivo Sin Confirmar
+    FinPara
+    Mostrar "Limpieza simulada"
+Fin
+
+Ejecutar Tarea LimpiarTemporales

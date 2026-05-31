@@ -161,4 +161,37 @@ class ExecutionFeatureTest {
             Files.deleteIfExists(scheduleFile);
         }
     }
+
+    @Test
+    void canDeleteAllPersistedSchedules() throws Exception {
+        Path scheduleFile = Files.createTempFile("mabo-schedules-all", ".ndjson");
+        String previousScheduleFile = System.getProperty("mabo.schedule.file");
+        System.setProperty("mabo.schedule.file", scheduleFile.toString());
+
+        try {
+            ScheduleStore store = new ScheduleStore();
+            store.saveIntervalSchedule("LimpiarXML", 3600);
+            store.saveOneTimeSchedule("UnaVez", LocalDateTime.now().plusHours(1));
+
+            String script = "Eliminar Tareas Programadas";
+
+            proyectoLexer lexer = new proyectoLexer(CharStreams.fromString(script));
+            proyectoParser parser = new proyectoParser(new CommonTokenStream(lexer));
+            ExecutionVisitor visitor = new ExecutionVisitor(
+                    new ExecutionContext(),
+                    new LoggerService(Files.createTempFile("mabo-test", ".log").toString())
+            );
+
+            visitor.visit(parser.programa());
+
+            assertTrue(store.loadSchedules().isEmpty());
+        } finally {
+            if (previousScheduleFile == null) {
+                System.clearProperty("mabo.schedule.file");
+            } else {
+                System.setProperty("mabo.schedule.file", previousScheduleFile);
+            }
+            Files.deleteIfExists(scheduleFile);
+        }
+    }
 }

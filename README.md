@@ -107,13 +107,31 @@ Gradle regenera el parser desde `.idea/grammar/proyecto.g4` usando ANTLR y ejecu
 
 ### Instalar en Windows
 
+#### Instalación para usuarios
+
+Cuando exista una release publicada en GitHub, instala MABO con:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://github.com/Tomas1802/MABO/releases/latest/download/install-windows.ps1 | iex"
+```
+
+Para instalar una versión concreta:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -Command "irm https://github.com/Tomas1802/MABO/releases/download/v1.0.0/install-windows.ps1 | iex"
+```
+
+El instalador descarga `mabo-windows.zip`, instala en `%LOCALAPPDATA%\MABO` y agrega `%LOCALAPPDATA%\MABO\bin` al `PATH` del usuario.
+
+#### Instalación desde el código fuente
+
 Desde PowerShell, en la raíz del proyecto:
 
 ```powershell
 .\scripts\install-windows.ps1
 ```
 
-Esto compila la distribución con Gradle, la instala en `%LOCALAPPDATA%\MABO` y agrega `%LOCALAPPDATA%\MABO\bin` al `PATH` de usuario. Después de abrir una nueva terminal se puede ejecutar:
+Cuando se ejecuta desde el repositorio, el instalador compila la distribución con Gradle, la instala en `%LOCALAPPDATA%\MABO` y agrega `%LOCALAPPDATA%\MABO\bin` al `PATH` de usuario. Después de abrir una nueva terminal se puede ejecutar:
 
 ```powershell
 mabo
@@ -150,6 +168,21 @@ Para desinstalar:
 
 ```powershell
 .\scripts\uninstall-windows.ps1
+```
+
+#### Publicar una release
+
+Con GitHub CLI autenticado (`gh auth login`), crea y sube los artefactos de release:
+
+```powershell
+.\scripts\publish-release.ps1 -Tag v1.0.0
+```
+
+Esto ejecuta pruebas, genera `build/release/mabo-windows.zip`, copia `install-windows.ps1` y crea una GitHub Release con ambos archivos. También se puede publicar automáticamente empujando un tag:
+
+```powershell
+git tag v1.0.0
+git push origin v1.0.0
 ```
 
 ### Desde línea de comandos manual
@@ -545,11 +578,12 @@ Las tareas programadas se guardan en:
 ```
 Listar Tareas Programadas
 Eliminar Tarea Programada VerificacionPeriodica
+Eliminar Tareas Programadas
 Cambiar Programacion De Tarea VerificacionPeriodica Cada 2 Horas
 Cambiar Programacion De Tarea VerificacionPeriodica A Las "23:30"
 ```
 
-`Listar Tareas Programadas` muestra las programaciones guardadas. `Eliminar Tarea Programada` cancela la programación en memoria, la borra del archivo y elimina el registro nativo de inicio si aplica. `Cambiar Programacion De Tarea` reemplaza la programación anterior de esa tarea.
+`Listar Tareas Programadas` muestra las programaciones guardadas. `Eliminar Tarea Programada` cancela una programación en memoria, la borra del archivo y elimina el registro nativo de inicio si aplica. `Eliminar Tareas Programadas` elimina todas las programaciones guardadas. `Cambiar Programacion De Tarea` reemplaza la programación anterior de esa tarea.
 
 Cada ejecución de una tarea genera un log propio en `%LOCALAPPDATA%\MABO\logs\tasks` en Windows. El archivo se llama con el nombre de la tarea y la fecha, por ejemplo `LimpiarArchivosXML-2026-05-31.log`. Allí se registran inicio, fin, errores, búsquedas, listados y operaciones de archivos como crear, mover, copiar, escribir, eliminar, comprimir y ejecutar comandos nativos.
 

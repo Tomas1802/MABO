@@ -1,0 +1,11 @@
+Variable base = "%USERPROFILE%/Documents/DSLDemo"
+Variable descargas = base + "/Descargas"
+Variable pdfs = base + "/Documentos/PDF"
+
+Crear Carpeta pdfs
+Buscar Archivos En descargas Con Extension ".pdf"
+
+Para Cada archivo En ultimoResultado
+    Obtener Propiedad nombre De archivo
+    Mover Archivo archivo A pdfs + "/" + ultimoResultado
+FinPara

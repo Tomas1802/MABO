@@ -58,6 +58,15 @@ public class ScheduleStore {
         return removed;
     }
 
+    public int deleteAllSchedules() {
+        List<ScheduleEntry> schedules = loadSchedules();
+        int removed = schedules.size();
+        if (removed > 0) {
+            writeAll(new ArrayList<>());
+        }
+        return removed;
+    }
+
     public List<ScheduleEntry> loadSchedules() {
         Map<String, ScheduleEntry> byTask = new LinkedHashMap<>();
         if (!Files.exists(storeFile)) {

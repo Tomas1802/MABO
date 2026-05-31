@@ -61,6 +61,7 @@ class ParserFeatureTest {
                 Ejecutar Tarea LimpiarArchivosXML A Las "19:50"
                 Listar Tareas Programadas
                 Eliminar Tarea Programada LimpiarArchivosXML
+                Eliminar Tareas Programadas
                 Cambiar Programacion De Tarea LimpiarArchivosXML Cada 2 Horas
                 """;
 

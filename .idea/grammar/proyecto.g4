@@ -27,6 +27,7 @@ sentencia
     | tarea
     | ejecutarTarea
     | listarTareasProgramadas
+    | eliminarTareasProgramadas
     | eliminarTareaProgramada
     | cambiarTareaProgramada
     | comandoSistema
@@ -117,6 +118,10 @@ ejecutarTarea
 
 listarTareasProgramadas
     : LISTAR TAREAS PROGRAMADAS
+    ;
+
+eliminarTareasProgramadas
+    : ELIMINAR TAREAS PROGRAMADAS
     ;
 
 eliminarTareaProgramada

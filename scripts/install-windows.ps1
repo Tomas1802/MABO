@@ -1,38 +1,57 @@
 param(
     [string]$InstallDir = "$env:LOCALAPPDATA\MABO",
     [switch]$SkipPath,
-    [switch]$StopRunning
+    [switch]$StopRunning,
+    [switch]$FromSource,
+    [string]$Repository = "Tomas1802/MABO",
+    [string]$Version = "latest",
+    [string]$SourceZipUrl
 )
 
 $ErrorActionPreference = "Stop"
 
-$ProjectRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $InstallPath = [System.IO.Path]::GetFullPath($InstallDir)
 $BinPath = Join-Path $InstallPath "bin"
-$BuildInstallPath = Join-Path $ProjectRoot "build\install\mabo"
+$ScriptRoot = if ([string]::IsNullOrWhiteSpace($PSScriptRoot)) { $null } else { $PSScriptRoot }
+$ProjectRoot = $null
+if ($ScriptRoot) {
+    $CandidateRoot = [System.IO.Path]::GetFullPath((Join-Path $ScriptRoot ".."))
+    if (Test-Path (Join-Path $CandidateRoot "build.gradle")) {
+        $ProjectRoot = $CandidateRoot
+    }
+}
+$BuildInstallPath = if ($ProjectRoot) { Join-Path $ProjectRoot "build\install\mabo" } else { $null }
 
 function Get-MaboInstallProcesses {
-    param([string]$Path)
+    param([string[]]$Paths)
 
-    $escapedPath = $Path.Replace('\', '\\')
+    $ExistingPaths = @($Paths | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
     Get-CimInstance Win32_Process |
         Where-Object {
-            $_.CommandLine -and (
-                $_.CommandLine -like "*$Path*" -or
-                $_.CommandLine -like "*$escapedPath*" -or
-                $_.CommandLine -like "*mabo.bat*"
-            )
+            if (-not $_.CommandLine) {
+                return $false
+            }
+            if ($_.CommandLine -like "*mabo.bat*") {
+                return $true
+            }
+            foreach ($Path in $ExistingPaths) {
+                $EscapedPath = $Path.Replace('\', '\\')
+                if ($_.CommandLine -like "*$Path*" -or $_.CommandLine -like "*$EscapedPath*") {
+                    return $true
+                }
+            }
+            return $false
         } |
         Select-Object ProcessId,Name,CommandLine
 }
 
 function Stop-Or-ReportMaboProcesses {
     param(
-        [string]$Path,
+        [string[]]$Paths,
         [bool]$ShouldStop
     )
 
-    $processes = @(Get-MaboInstallProcesses -Path $Path)
+    $processes = @(Get-MaboInstallProcesses -Paths $Paths)
     if ($processes.Count -eq 0) {
         return
     }
@@ -52,53 +71,112 @@ function Stop-Or-ReportMaboProcesses {
     throw "Close all terminals running mabo and retry, or run this installer with -StopRunning."
 }
 
-Push-Location $ProjectRoot
-try {
-    Stop-Or-ReportMaboProcesses -Path $InstallPath -ShouldStop $StopRunning.IsPresent
-    Stop-Or-ReportMaboProcesses -Path $BuildInstallPath -ShouldStop $StopRunning.IsPresent
+function Add-ToUserPath {
+    param([string]$PathToAdd)
 
-    & gradle clean installDist
-    if ($LASTEXITCODE -ne 0) {
-        throw "Gradle build failed with exit code $LASTEXITCODE. MABO was not installed."
+    $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
+    $Parts = @()
+    if (-not [string]::IsNullOrWhiteSpace($UserPath)) {
+        $Parts = $UserPath -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
     }
 
-    $Distribution = Join-Path $ProjectRoot "build\install\mabo"
+    $AlreadyPresent = $false
+    foreach ($Part in $Parts) {
+        if ($Part.TrimEnd('\') -ieq $PathToAdd.TrimEnd('\')) {
+            $AlreadyPresent = $true
+            break
+        }
+    }
+
+    if (-not $AlreadyPresent) {
+        $NewPath = ($Parts + $PathToAdd) -join ';'
+        [Environment]::SetEnvironmentVariable("Path", $NewPath, "User")
+        $env:Path = $env:Path + ";" + $PathToAdd
+    }
+}
+
+function Get-ReleaseZipUrl {
+    if (-not [string]::IsNullOrWhiteSpace($SourceZipUrl)) {
+        return $SourceZipUrl
+    }
+    if ($Version -eq "latest") {
+        return "https://github.com/$Repository/releases/latest/download/mabo-windows.zip"
+    }
+    return "https://github.com/$Repository/releases/download/$Version/mabo-windows.zip"
+}
+
+function Install-FromDistribution {
+    param([string]$Distribution)
+
     if (-not (Test-Path $Distribution)) {
-        throw "Gradle distribution was not created at $Distribution"
+        throw "MABO distribution was not found at $Distribution"
     }
-
     if (Test-Path $InstallPath) {
         Remove-Item -LiteralPath $InstallPath -Recurse -Force
     }
     New-Item -ItemType Directory -Force -Path $InstallPath | Out-Null
     Copy-Item -Path (Join-Path $Distribution "*") -Destination $InstallPath -Recurse -Force
+}
 
-    if (-not $SkipPath) {
-        $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
-        $Parts = @()
-        if (-not [string]::IsNullOrWhiteSpace($UserPath)) {
-            $Parts = $UserPath -split ';' | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
-        }
-
-        $AlreadyPresent = $false
-        foreach ($Part in $Parts) {
-            if ($Part.TrimEnd('\') -ieq $BinPath.TrimEnd('\')) {
-                $AlreadyPresent = $true
-                break
-            }
-        }
-
-        if (-not $AlreadyPresent) {
-            $NewPath = ($Parts + $BinPath) -join ';'
-            [Environment]::SetEnvironmentVariable("Path", $NewPath, "User")
-            $env:Path = $env:Path + ";" + $BinPath
-        }
+function Install-FromSource {
+    if (-not $ProjectRoot) {
+        throw "No local project was found. Run from the repository, or omit -FromSource to install from GitHub Releases."
     }
+    Push-Location $ProjectRoot
+    try {
+        & gradle clean installDist
+        if ($LASTEXITCODE -ne 0) {
+            throw "Gradle build failed with exit code $LASTEXITCODE. MABO was not installed."
+        }
 
-    Write-Host "MABO installed at: $InstallPath"
-    Write-Host "Command: mabo <script.dsl>"
-    Write-Host "If this is a new terminal, reopen it before running mabo."
+        Install-FromDistribution -Distribution (Join-Path $ProjectRoot "build\install\mabo")
+    }
+    finally {
+        Pop-Location
+    }
 }
-finally {
-    Pop-Location
+
+function Install-FromRelease {
+    $ZipUrl = Get-ReleaseZipUrl
+    $TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("mabo-install-" + [System.Guid]::NewGuid().ToString("N"))
+    $ZipPath = Join-Path $TempRoot "mabo-windows.zip"
+    $ExtractPath = Join-Path $TempRoot "extract"
+
+    New-Item -ItemType Directory -Force -Path $TempRoot | Out-Null
+    try {
+        Write-Host "Downloading MABO from $ZipUrl"
+        Invoke-WebRequest -Uri $ZipUrl -OutFile $ZipPath
+        Expand-Archive -LiteralPath $ZipPath -DestinationPath $ExtractPath -Force
+
+        $Distribution = Join-Path $ExtractPath "mabo"
+        if (-not (Test-Path $Distribution)) {
+            $Distribution = $ExtractPath
+        }
+        Install-FromDistribution -Distribution $Distribution
+    }
+    finally {
+        Remove-Item -LiteralPath $TempRoot -Recurse -Force -ErrorAction SilentlyContinue
+    }
 }
+
+$PathsToCheck = @($InstallPath)
+if ($BuildInstallPath) {
+    $PathsToCheck += $BuildInstallPath
+}
+
+Stop-Or-ReportMaboProcesses -Paths $PathsToCheck -ShouldStop $StopRunning.IsPresent
+
+$CanBuildLocal = $ProjectRoot -and (Test-Path (Join-Path $ProjectRoot "build.gradle"))
+if ($FromSource -or $CanBuildLocal) {
+    Install-FromSource
+} else {
+    Install-FromRelease
+}
+
+if (-not $SkipPath) {
+    Add-ToUserPath -PathToAdd $BinPath
+}
+
+Write-Host "MABO installed at: $InstallPath"
+Write-Host "Command: mabo <script.dsl>"
+Write-Host "If this is a new terminal, reopen it before running mabo."

@@ -213,6 +213,15 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitEliminarTareasProgramadas(proyectoParser.EliminarTareasProgramadasContext node) {
+        int removed = cancelAllScheduledTasks();
+        System.out.println(removed > 0
+                ? "Tareas programadas eliminadas: " + removed
+                : "No hay tareas programadas.");
+        return removed;
+    }
+
+    @Override
     public Object visitCambiarTareaProgramada(proyectoParser.CambiarTareaProgramadaContext node) {
         String name = node.ID().getText();
         scheduleTask(name, node.programacion());
@@ -893,6 +902,28 @@ public class ExecutionVisitor extends proyectoBaseVisitor<Object> {
             scheduler.shutdown();
         }
         return changed;
+    }
+
+    private int cancelAllScheduledTasks() {
+        List<ScheduleStore.ScheduleEntry> persisted = scheduleStore.loadSchedules();
+        java.util.Set<String> names = new java.util.HashSet<>();
+        names.addAll(scheduledTasks);
+        for (ScheduleStore.ScheduleEntry entry : persisted) {
+            names.add(entry.task);
+        }
+
+        for (ScheduledFuture<?> future : scheduledFutures.values()) {
+            future.cancel(false);
+        }
+        scheduledFutures.clear();
+        scheduledTasks.clear();
+        for (String name : names) {
+            startupRegistration.unregister(name);
+        }
+        int persistedRemoved = scheduleStore.deleteAllSchedules();
+        scheduler.shutdown();
+        taskLogger.scheduler("Todas las programaciones fueron eliminadas: " + Math.max(names.size(), persistedRemoved));
+        return Math.max(names.size(), persistedRemoved);
     }
 
     private String formatSchedule(ScheduleStore.ScheduleEntry schedule) {
