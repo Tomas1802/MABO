@@ -1,5 +1,6 @@
 package filesystem;
 
+import exceptions.ExecutionException;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Files;
@@ -7,6 +8,7 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FileSystemServiceTest {
     @Test
@@ -60,5 +62,27 @@ class FileSystemServiceTest {
             Files.deleteIfExists(file);
             Files.deleteIfExists(base);
         }
+    }
+
+    @Test
+    void refusesToCopyDirectoryInsideItself() throws Exception {
+        FileSystemService fs = new FileSystemService();
+        Path base = Files.createTempDirectory(Path.of(System.getProperty("user.home")), "mabo-copy-loop-");
+        try {
+            Files.writeString(base.resolve("nota.txt"), "contenido");
+            fs.changeWorkingDirectory(base);
+
+            assertThrows(ExecutionException.class, () -> fs.copy(fs.pathOf("."), fs.pathOf("/backup"), false));
+            assertFalse(Files.exists(base.resolve("backup").resolve("backup")));
+        } finally {
+            deleteIfExists(base.resolve("backup").resolve("nota.txt"));
+            deleteIfExists(base.resolve("backup"));
+            deleteIfExists(base.resolve("nota.txt"));
+            deleteIfExists(base);
+        }
+    }
+
+    private static void deleteIfExists(Path path) throws Exception {
+        Files.deleteIfExists(path);
     }
 }

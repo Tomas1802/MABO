@@ -381,6 +381,10 @@ public class FileSystemService {
             audit.record("COPY", resolvedSource, resolvedTarget, false, "source not found");
             throw new ExecutionException("Archivo origen no encontrado: " + resolvedSource);
         }
+        if (Files.isDirectory(resolvedSource) && isSameOrInside(resolvedSource, resolvedTarget)) {
+            audit.record("COPY", resolvedSource, resolvedTarget, false, "target inside source");
+            throw new ExecutionException("El destino no puede estar dentro de la carpeta origen: " + resolvedTarget);
+        }
         try {
             if (simulate) {
                 audit.record("COPY", resolvedSource, resolvedTarget, true, "simulated");
@@ -470,6 +474,12 @@ public class FileSystemService {
                 return FileVisitResult.CONTINUE;
             }
         });
+    }
+
+    private boolean isSameOrInside(Path source, Path target) {
+        Path normalizedSource = source.toAbsolutePath().normalize();
+        Path normalizedTarget = target.toAbsolutePath().normalize();
+        return normalizedTarget.equals(normalizedSource) || normalizedTarget.startsWith(normalizedSource);
     }
 
     private void deleteRecursive(Path path) throws IOException {

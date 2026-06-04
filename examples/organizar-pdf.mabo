@@ -1,9 +1,9 @@
-Variable base = "%USERPROFILE%/Documents/MABO"
-Variable descargas = base + "/Descargas"
-Variable pdfs = base + "/Documentos/PDF"
+Variable base = "%USERPROFILE%"
+Variable descargas = base + "/Downloads"
+Variable pdfs = base + "/Documents/XML"
 
 Crear Carpeta pdfs
-Buscar Archivos En descargas Con Extension ".pdf"
+Buscar Archivos En descargas Con Extension ".xml"
 
 Para Cada archivo En ultimoResultado
     Obtener Propiedad nombre De archivo

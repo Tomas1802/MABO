@@ -560,6 +560,7 @@ Ejecutar Linux "ls -la"</code></pre>
 Comprimir base + "/datos" A base + "/respaldo/datos_zip"
 Descomprimir base + "/respaldo/datos_zip.zip" En base + "/restaurado"</code></pre>
       <p>Si el destino de <code>Comprimir</code> no termina en <code>.zip</code>, MABO agrega la extension automaticamente.</p>
+      <div class="note">El destino de un backup no puede estar dentro de la carpeta origen. Por ejemplo, desde Descargas no uses <code>Crear Backup De "." En "/backup"</code>; usa una carpeta externa como <code>"%USERPROFILE%/Documents/MABO/backup-descargas"</code>.</div>
     </section>
 
     <section class="doc-section" id="permisos" data-search="permisos chmod posix linux windows cambiar permisos">

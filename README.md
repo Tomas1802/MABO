@@ -577,6 +577,8 @@ Descomprimir "ruta/archivo.zip" En "ruta/destino/"
 Crear Backup De "ruta/origen" En "ruta/respaldo"
 ```
 
+El destino no puede estar dentro de la carpeta origen. Por ejemplo, desde Descargas no uses `Crear Backup De "." En "/backup"`; usa una carpeta externa como `"%USERPROFILE%/Documents/MABO/backup-descargas"`.
+
 ### Permisos
 
 En sistemas con permisos POSIX se puede cambiar permisos usando formato octal o simbólico:
