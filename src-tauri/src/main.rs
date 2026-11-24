@@ -33,15 +33,20 @@ fn find_in_path(exe: &str) -> Option<PathBuf> {
         .find(|p| p.is_file())
 }
 
-fn shell_command() -> Result<CommandBuilder, String> {
+fn shell_command(cwd: Option<&str>) -> Result<CommandBuilder, String> {
     let shell = find_in_path("pwsh.exe").unwrap_or_else(|| "powershell.exe".into());
     let script = std::env::temp_dir().join("mabo-integration.ps1");
     // BOM so Windows PowerShell 5.1 reads the script's Unicode glyphs as UTF-8.
     std::fs::write(&script, format!("\u{feff}{INTEGRATION_PS1}")).map_err(err)?;
     let mut cmd = CommandBuilder::new(shell);
     cmd.args(["-NoLogo", "-NoExit", "-Command", &format!(". '{}'", script.display())]);
-    if let Some(home) = std::env::var_os("USERPROFILE") {
-        cmd.cwd(home);
+    match cwd.filter(|d| std::path::Path::new(d).is_dir()) {
+        Some(dir) => cmd.cwd(dir),
+        None => {
+            if let Some(home) = std::env::var_os("USERPROFILE") {
+                cmd.cwd(home);
+            }
+        }
     }
     // Don't leak a parent agent session (e.g. when launched from Claude Code) into new shells;
     // a nested `claude` would otherwise act as a child session (wrong --resume list, etc).
@@ -65,12 +70,13 @@ fn pty_spawn(
     id: u32,
     cols: u16,
     rows: u16,
+    cwd: Option<String>,
     on_data: Channel<String>,
 ) -> Result<(), String> {
     let pair = native_pty_system()
         .openpty(PtySize { rows, cols, pixel_width: 0, pixel_height: 0 })
         .map_err(err)?;
-    let mut child = pair.slave.spawn_command(shell_command()?).map_err(err)?;
+    let mut child = pair.slave.spawn_command(shell_command(cwd.as_deref())?).map_err(err)?;
     drop(pair.slave);
     let mut reader = pair.master.try_clone_reader().map_err(err)?;
     let writer = pair.master.take_writer().map_err(err)?;
@@ -188,8 +194,22 @@ fn resolve_paths(cwd: Option<String>, candidates: Vec<String>) -> Vec<Option<Str
         .collect()
 }
 
+/// Folder passed on the command line (`mabo --cwd <dir>`, used by the Explorer menu).
+#[tauri::command]
+fn initial_cwd() -> Option<String> {
+    util::cwd_from_args(std::env::args())
+}
+
 fn main() {
     tauri::Builder::default()
+        // Must be first: a second launch (e.g. "Open MABO here") opens a tab in the running window.
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            let _ = app.emit("open-tab", util::cwd_from_args(argv.into_iter()));
+            if let Some(win) = app.get_webview_window("main") {
+                let _ = win.unminimize();
+                let _ = win.set_focus();
+            }
+        }))
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
@@ -203,6 +223,7 @@ fn main() {
             clipboard_paste,
             clipboard_copy,
             read_text,
+            initial_cwd,
             resolve_paths
         ])
         .run(tauri::generate_context!())

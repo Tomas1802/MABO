@@ -74,7 +74,8 @@ function makeTabEl(tab) {
   return el;
 }
 
-async function newTab() {
+/** @param {string | null} [cwd] folder to start in; defaults to the user's home */
+async function newTab(cwd = null) {
   const id = nextId++;
   const el = document.createElement('div');
   el.className = 'term-host';
@@ -93,8 +94,8 @@ async function newTab() {
     // OSC 8 hyperlinks (Claude Code prints file:// links this way).
     linkHandler: {
       allowNonHttpProtocols: true,
-      activate: (_e, uri) => {
-        if (/^file:/i.test(uri)) openPath(decodeURIComponent(uri.replace(/^file:\/\/\/?/i, '')).replace(/\//g, '\\'));
+      activate: (e, uri) => {
+        if (/^file:/i.test(uri)) pathMenu(e, decodeURIComponent(uri.replace(/^file:\/\/\/?/i, '')).replace(/\//g, '\\'));
         else if (/^(https?|mailto):/i.test(uri)) openUrl(uri).catch(report('open url'));
       },
     },
@@ -112,7 +113,7 @@ async function newTab() {
   }
 
   const tab = {
-    kind: 'term', id, term, fit, el, glyph: '❯', title: 'Terminal', cwd: null,
+    kind: 'term', id, term, fit, el, glyph: '❯', title: 'New Terminal', cwd: null,
     show() {
       fit.fit();
       term.focus();
@@ -124,13 +125,13 @@ async function newTab() {
   };
   addTab(tab, false);
 
-  term.registerLinkProvider(fileLinkProvider(term, () => tab.cwd, openPath));
+  term.registerLinkProvider(fileLinkProvider(term, () => tab.cwd, (path, e) => pathMenu(e, path)));
   attachIntegration(tab, { onNotify, onProgress, onCwd: renderTab });
   term.attachCustomKeyEventHandler((e) => handleKey(e, tab));
   term.onData((data) => invoke('pty_write', { id, data }).catch(() => {}));
   term.onResize(({ cols, rows }) => invoke('pty_resize', { id, cols, rows }).catch(() => {}));
   term.onTitleChange((title) => {
-    tab.title = title || 'Terminal';
+    tab.title = !title || title === '~' ? 'New Terminal' : title;
     renderTab(tab);
   });
 
@@ -138,7 +139,7 @@ async function newTab() {
   const onData = new Channel();
   onData.onmessage = (data) => term.write(data);
   try {
-    await invoke('pty_spawn', { id, cols: term.cols, rows: term.rows, onData });
+    await invoke('pty_spawn', { id, cols: term.cols, rows: term.rows, cwd, onData });
   } catch (e) {
     term.write(`\x1b[31mFailed to start shell: ${e}\x1b[0m\r\n`);
   }
@@ -164,6 +165,38 @@ function openPath(path) {
   termsEl.append(tab.el);
   addTab(tab, true);
   activate(tab);
+}
+
+/** Click on a file path: small menu to copy it or open it. */
+function pathMenu(e, path) {
+  document.querySelector('.ctx-menu')?.remove();
+  const menu = document.createElement('div');
+  menu.className = 'ctx-menu';
+  const item = (label, run) => {
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.onclick = () => { close(); active?.term?.focus(); run(); };
+    menu.append(b);
+  };
+  item('Copy path', () => invoke('clipboard_copy', { text: path }).catch(report('copy')));
+  item(isMarkdown(path) ? 'Open in tab' : 'Show in Explorer', () => openPath(path));
+  document.body.append(menu);
+  const { innerWidth: w, innerHeight: h } = window;
+  menu.style.left = Math.min(e.clientX, w - menu.offsetWidth - 4) + 'px';
+  menu.style.top = Math.min(e.clientY, h - menu.offsetHeight - 4) + 'px';
+  const onDown = (ev) => { if (!menu.contains(ev.target)) close(); };
+  const onKey = (ev) => { if (ev.key === 'Escape') close(); };
+  function close() {
+    menu.remove();
+    removeEventListener('mousedown', onDown, true);
+    removeEventListener('keydown', onKey, true);
+    removeEventListener('blur', close);
+  }
+  setTimeout(() => {
+    addEventListener('mousedown', onDown, true);
+    addEventListener('keydown', onKey, true);
+    addEventListener('blur', close);
+  });
 }
 
 function closeTab(tab) {
@@ -270,7 +303,7 @@ function setFontSize(size) {
 
 function navAction(e, k, ctrl, tab) {
   return (
-    (ctrl && e.shiftKey && k === 't' && newTab) ||
+    (ctrl && e.shiftKey && k === 't' && (() => newTab(tab.cwd))) ||
     (ctrl && e.shiftKey && k === 'w' && (() => closeTab(tab))) ||
     (ctrl && k === 'tab' && (() => cycle(e.shiftKey ? -1 : 1))) ||
     (ctrl && e.shiftKey && k === 'u' && nextAttention)
@@ -349,7 +382,7 @@ fontEl.addEventListener('change', () => {
 
 // ---------- window ----------
 
-document.getElementById('new-tab').addEventListener('click', newTab);
+document.getElementById('new-tab').addEventListener('click', () => newTab(active?.cwd));
 document.getElementById('win-min').addEventListener('click', () => win.minimize());
 document.getElementById('win-max').addEventListener('click', () => win.toggleMaximize());
 document.getElementById('win-close').addEventListener('click', () => win.close());
@@ -361,6 +394,9 @@ new ResizeObserver(() => active?.fit?.fit()).observe(termsEl);
 window.addEventListener('focus', () => {
   if (active?.attention) activate(active);
 });
+
+// "Open MABO here" while MABO is already running: new tab in that folder.
+listen('open-tab', ({ payload }) => newTab(payload));
 
 listen('pty-exit', ({ payload }) => {
   const tab = tabs.find((t) => t.id === payload);
@@ -378,5 +414,7 @@ getCurrentWebview().onDragDropEvent(({ payload }) => {
   canNotify = (await isPermissionGranted()) || (await requestPermission()) === 'granted';
 })().catch(report('notification permission'));
 
-loadFont(fontName).then(newTab).catch(report('first tab'));
+Promise.all([loadFont(fontName), invoke('initial_cwd')])
+  .then(([, cwd]) => newTab(cwd))
+  .catch(report('first tab'));
 startUpdater(document.getElementById('update'));

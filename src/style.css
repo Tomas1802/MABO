@@ -197,6 +197,7 @@ body { display: flex; flex-direction: column; }
   position: absolute;
   inset: 0;
   padding: 12px 6px 6px 16px;
+  box-sizing: content-box; /* fit addon reads the host height; border-box would count the padding as rows */
   visibility: hidden;
 }
 .term-host.active { visibility: visible; }
@@ -321,3 +322,30 @@ body { display: flex; flex-direction: column; }
 .update-pill:hover { filter: brightness(1.1); }
 .update-pill:disabled { filter: grayscale(0.5); }
 .update-pill[hidden] { display: none; }
+
+/* ---------- path click menu ---------- */
+
+.ctx-menu {
+  position: fixed;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  padding: 4px;
+  background: color-mix(in srgb, var(--bg) 92%, var(--fg));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.35);
+}
+.ctx-menu button {
+  height: 28px;
+  padding: 0 10px;
+  text-align: left;
+  font: inherit;
+  color: var(--fg);
+  background: none;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.ctx-menu button:hover { background: var(--hover); color: var(--accent); }

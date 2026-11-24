@@ -18,7 +18,7 @@ export function fileLinkProvider(term, getCwd, onOpen) {
             ? [{
                 text: m[0],
                 range: { start: { x: m.index + 1, y }, end: { x: m.index + m[0].length, y } },
-                activate: () => onOpen(resolved[i]),
+                activate: (e) => onOpen(resolved[i], e),
               }]
             : [],
         );

@@ -42,6 +42,19 @@ pub fn resolve_path(cwd: Option<&str>, raw: &str) -> Option<PathBuf> {
     full.exists().then_some(full)
 }
 
+/// Extracts the value of `--cwd <dir>` from process arguments.
+pub fn cwd_from_args(args: impl Iterator<Item = String>) -> Option<String> {
+    let mut args = args.skip_while(|a| a != "--cwd");
+    args.next()?;
+    let dir = args.next()?;
+    let dir = dir.trim_end_matches('"');
+    match dir {
+        "" => None,
+        d if d.ends_with(':') => Some(format!("{d}\\")),
+        d => Some(d.to_string()),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -62,6 +75,16 @@ mod tests {
         let mut carry = Vec::new();
         assert_eq!(decode_utf8(&mut carry, &[b'x', 0xff, b'y']), "x\u{fffd}y");
         assert!(carry.is_empty());
+    }
+
+    #[test]
+    fn cwd_argument() {
+        let args = |v: &[&str]| v.iter().map(|s| s.to_string()).collect::<Vec<_>>().into_iter();
+        assert_eq!(cwd_from_args(args(&["mabo.exe", "--cwd", "C:\\x y"])), Some("C:\\x y".into()));
+        // Explorer's "%V" on a drive root ("C:\") arrives as `C:"`: the backslash escaped the quote.
+        assert_eq!(cwd_from_args(args(&["mabo.exe", "--cwd", "C:\""])), Some("C:\\".into()));
+        assert_eq!(cwd_from_args(args(&["mabo.exe"])), None);
+        assert_eq!(cwd_from_args(args(&["mabo.exe", "--cwd"])), None);
     }
 
     #[test]
