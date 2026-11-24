@@ -1,15 +1,10 @@
 name: Release
 
+# Push a tag like v2.0.1 to build, sign and publish a release.
+# Installed copies of MABO pick it up automatically through latest.json.
 on:
   push:
-    tags:
-      - "v*"
-  workflow_dispatch:
-    inputs:
-      tag:
-        description: "Release tag, for example v1.0.0"
-        required: true
-        type: string
+    tags: ['v*']
 
 permissions:
   contents: write
@@ -17,48 +12,27 @@ permissions:
 jobs:
   release:
     runs-on: windows-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Java
-        uses: actions/setup-java@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          distribution: temurin
-          java-version: "21"
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
         with:
-          gradle-version: current
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+          workspaces: src-tauri
+      - run: npm ci
+      - run: cargo test --manifest-path src-tauri/Cargo.toml
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
-          node-version: "20"
-
-      - name: Package release
-        shell: pwsh
-        run: ./scripts/package-release.ps1
-
-      - name: Resolve tag
-        id: release_tag
-        shell: pwsh
-        run: |
-          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
-            "tag=${{ inputs.tag }}" >> $env:GITHUB_OUTPUT
-          } else {
-            "tag=${{ github.ref_name }}" >> $env:GITHUB_OUTPUT
-          }
-
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.release_tag.outputs.tag }}
-          name: MABO ${{ steps.release_tag.outputs.tag }}
-          files: |
-            build/release/mabo-windows.zip
-            build/release/install-windows.ps1
-            build/release/uninstall-windows.ps1
-            build/release/mabo-language-0.1.0.vsix
+          tagName: ${{ github.ref_name }}
+          releaseName: MABO ${{ github.ref_name }}
+          releaseBody: See the assets below to download and install MABO for Windows.
+          releaseDraft: false
+          prerelease: false
+          includeUpdaterJson: true

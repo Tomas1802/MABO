@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MABO</title>
+  </head>
+  <body>
+    <header id="titlebar" data-tauri-drag-region>
+      <div id="tabs"></div>
+      <button id="new-tab" class="icon-btn" title="New tab (Ctrl+Shift+T)">+</button>
+      <div class="spacer" data-tauri-drag-region></div>
+      <button id="update" class="update-pill" hidden></button>
+      <select id="font" class="picker" title="Font"></select>
+      <select id="theme" class="picker" title="Theme"></select>
+      <div class="win-btns">
+        <button id="win-min" title="Minimize">&#xE921;</button>
+        <button id="win-max" title="Maximize">&#xE922;</button>
+        <button id="win-close" class="close" title="Close">&#xE8BB;</button>
+      </div>
+    </header>
+    <main id="terms"></main>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

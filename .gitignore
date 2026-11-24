@@ -1,44 +1,4 @@
-### IntelliJ IDEA ###
-out/
-.idea/workspace.xml
-.idea/misc.xml
-.idea/modules.xml
-*.iml
-!**/src/main/**/out/
-!**/src/test/**/out/
-.kotlin
-
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
-
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
-
-### VS Code ###
-.vscode/
-*.vsix
-
-### Mac OS ###
-.DS_Store
-
-### Runtime ###
-logs/*.log
-*.ndjson
-testdata/
-
-### Gradle ###
-.gradle/
-build/
+node_modules/
+dist/
+src-tauri/target/
+src-tauri/gen/
